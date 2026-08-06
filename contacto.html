@@ -1,190 +1,146 @@
-/*
-  datos.js — Obtiene el catálogo de productos.
-  Si AYFA_CONFIG.SHEET_ID está configurado, lee en vivo desde el Google Sheet
-  publicado (vía el endpoint gviz, que no requiere API key). Si no, usa el
-  archivo /data/productos.json de ejemplo.
-*/
 
-const AyfaDatos = (function () {
-  const CACHE_KEY = "ayfa_productos_cache_v1";
-  const CACHE_MS = 3 * 60 * 1000; // 3 minutos
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contacto — AY-FA Distribuciones</title>
+<link rel="icon" href="assets/logo.png">
+<link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
 
-  function parseCSV(texto) {
-    // Parser CSV simple que soporta comas dentro de comillas.
-    const filas = [];
-    let fila = [], campo = "", enComillas = false;
-    for (let i = 0; i < texto.length; i++) {
-      const c = texto[i];
-      if (enComillas) {
-        if (c === '"' && texto[i + 1] === '"') { campo += '"'; i++; }
-        else if (c === '"') { enComillas = false; }
-        else { campo += c; }
-      } else {
-        if (c === '"') enComillas = true;
-        else if (c === ',') { fila.push(campo); campo = ""; }
-        else if (c === '\n') { fila.push(campo); filas.push(fila); fila = []; campo = ""; }
-        else if (c === '\r') { /* ignorar */ }
-        else { campo += c; }
-      }
-    }
-    if (campo.length || fila.length) { fila.push(campo); filas.push(fila); }
-    return filas.filter(f => f.some(x => x !== ""));
-  }
+<div class="topbar">🚚 Envío a domicilio · 🏬 Retiro en depósito · 📍 Reparto local por zonas — <strong>Hacé tu pedido online</strong></div>
 
-  // Convierte un número en formato argentino ("4.368,24", "$ 23.453,03",
-  // "300,00", o un simple "2450") a un Number de JS. El punto es separador
-  // de miles y la coma es el separador decimal.
-  function parseMonedaAR(valor) {
-    let s = String(valor == null ? "" : valor).trim();
-    if (!s) return NaN;
-    s = s.replace(/[^0-9.,-]/g, "");
-    if (s.includes(",")) {
-      // Formato AR: sacamos los puntos de miles y la coma pasa a ser el punto decimal.
-      s = s.replace(/\./g, "").replace(",", ".");
-    }
-    // Si no hay coma pero sí varios puntos (ej. "1.234.567"), son miles: sacarlos todos.
-    else if ((s.match(/\./g) || []).length > 1) {
-      s = s.replace(/\./g, "");
-    }
-    return parseFloat(s);
-  }
+<header class="site-header">
+  <div class="header-inner">
+    <a href="index.html" class="logo-link"><img src="assets/logo.png" alt="AY-FA Distribuciones"></a>
+    <form class="search-bar" data-search-form>
+      <input type="text" placeholder="Buscar productos, marcas, categorías...">
+      <button type="submit">Buscar</button>
+    </form>
+    <nav class="main-nav">
+      <a href="index.html">Inicio</a>
+      <a href="catalogo.html">Catálogo</a>
+      <a href="contacto.html" class="activo">Contacto</a>
+      <a href="ingresar.html" data-login-link>Ingresar</a>
+      <a href="mi-cuenta.html" class="user-chip" data-user-chip style="display:none;"></a>
+      <a href="carrito.html" class="cart-btn">🛒 Carrito <span class="cart-count" data-cart-count>0</span></a>
+    </nav>
+  </div>
+  <div class="cat-bar">
+    <div class="cat-bar-inner">
+      <a href="catalogo.html?cat=Galletitas">Galletitas</a>
+      <a href="catalogo.html?cat=Perfumer%C3%ADa">Perfumería</a>
+      <a href="catalogo.html?cat=Limpieza">Limpieza</a>
+      <a href="catalogo.html?cat=Vinos">Vinos</a>
+      <a href="catalogo.html?cat=Enlatados">Enlatados</a>
+      <a href="catalogo.html?cat=Golosinas">Golosinas</a>
+      <a href="catalogo.html?cat=Bebidas">Bebidas</a>
+      <a href="catalogo.html">Ver todo</a>
+    </div>
+  </div>
+</header>
 
-  // nombreProveedor = nombre de la pestaña de donde salió esta lista (se usa
-  // como proveedor si la fila no tiene su propia columna "Proveedor").
-  function normalizarFilas(filas, nombreProveedor) {
-    if (!filas.length) return [];
-    const headers = filas[0].map(h => h.trim());
-    const idx = (nombre) => headers.findIndex(h => h.toLowerCase() === nombre.toLowerCase());
-    const iSKU = idx("SKU"), iProd = idx("Producto"), iCat = idx("Categoria"),
-      iMarca = idx("Marca"), iPres = idx("Presentacion"), iPrecio = idx("Precio"),
-      iStock = idx("Stock"), iPromo = idx("Promo"), iPrecioPromo = idx("PrecioPromo"),
-      iImg = idx("Imagen"), iDest = idx("Destacado"), iProv = idx("Proveedor");
+<section class="container" style="padding: 40px 0 60px;">
+  <div class="section-title">
+    <h2>Contacto</h2>
+  </div>
 
-    const productos = [];
-    for (let r = 1; r < filas.length; r++) {
-      const f = filas[r];
-      if (!f[iProd]) continue;
-      const precio = parseMonedaAR(f[iPrecio]);
-      // Stock vacío/sin columna = "no lo estamos controlando puntualmente" (se
-      // muestra "Disponible" en vez de "Sin stock"). Solo si ponen 0 a propósito
-      // se muestra "Sin stock".
-      const stockTexto = (iStock >= 0 ? f[iStock] : "");
-      const stock = (stockTexto === undefined || stockTexto === null || String(stockTexto).trim() === "")
-        ? null
-        : (parseInt(String(stockTexto).replace(/[^0-9-]/g, ""), 10) || 0);
-      const precioPromo = f[iPrecioPromo] ? parseMonedaAR(f[iPrecioPromo]) : null;
-      const sku = (f[iSKU] || "").trim();
-      const proveedor = (iProv >= 0 && f[iProv]) ? f[iProv].trim() : nombreProveedor;
-      productos.push({
-        id: proveedor + "::" + (sku || ("fila" + r)),
-        sku, proveedor,
-        nombre: (f[iProd] || "").trim(),
-        categoria: (f[iCat] || "Otros").trim(),
-        marca: (f[iMarca] || "").trim(),
-        presentacion: (f[iPres] || "").trim(),
-        precio: isNaN(precio) ? 0 : precio,
-        stock,
-        promo: (f[iPromo] || "").trim(),
-        precioPromo: precioPromo && !isNaN(precioPromo) ? precioPromo : null,
-        imagen: (f[iImg] || "").trim(),
-        destacado: (f[iDest] || "").trim().toUpperCase() === "SI"
-      });
-    }
-    return productos;
-  }
+  <div class="beneficios" style="margin-bottom:28px;">
+    <div class="beneficio-card">
+      <div class="icono">📞</div>
+      <h3>WhatsApp</h3>
+      <p><a href="#" data-whatsapp target="_blank" style="color:var(--teal); font-weight:600;">Escribinos directo</a></p>
+    </div>
+    <div class="beneficio-card">
+      <div class="icono">✉️</div>
+      <h3>Email</h3>
+      <p data-empresa-email>—</p>
+    </div>
+    <div class="beneficio-card">
+      <div class="icono">🏬</div>
+      <h3>Depósito / Retiro</h3>
+      <p data-empresa-direccion>—</p>
+    </div>
+    <div class="beneficio-card">
+      <div class="icono">🕒</div>
+      <h3>Horarios</h3>
+      <p data-empresa-horarios>—</p>
+    </div>
+  </div>
 
-  function normalizarJSON(json) {
-    return (json.productos || []).map((p, i) => {
-      const sku = String(p.SKU || "").trim();
-      const proveedor = p.Proveedor || "Catálogo de ejemplo";
-      return {
-        id: proveedor + "::" + (sku || ("fila" + i)),
-        sku, proveedor,
-        nombre: p.Producto || "",
-        categoria: p.Categoria || "Otros",
-        marca: p.Marca || "",
-        presentacion: p.Presentacion || "",
-        precio: Number(p.Precio) || 0,
-        stock: (p.Stock === "" || p.Stock === undefined || p.Stock === null) ? null : (Number(p.Stock) || 0),
-        promo: p.Promo || "",
-        precioPromo: p.PrecioPromo ? Number(p.PrecioPromo) : null,
-        imagen: p.Imagen || "",
-        destacado: String(p.Destacado || "").toUpperCase() === "SI"
-      };
-    });
-  }
+  <div class="form-card">
+    <h2>Escribinos</h2>
+    <p style="color:var(--gray); font-size:0.9rem; margin-top:-10px;">Completá el formulario y te contactamos por WhatsApp o email.</p>
+    <form id="form-contacto">
+      <div class="campo-fila">
+        <div class="campo">
+          <label for="c-nombre">Nombre</label>
+          <input type="text" id="c-nombre" required>
+        </div>
+        <div class="campo">
+          <label for="c-email">Email</label>
+          <input type="email" id="c-email">
+        </div>
+      </div>
+      <div class="campo">
+        <label for="c-mensaje">Mensaje</label>
+        <textarea id="c-mensaje" rows="4" required></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Enviar por WhatsApp</button>
+    </form>
+  </div>
+</section>
 
-  async function obtenerDeUnaHoja(nombreHoja) {
-    const url = `https://docs.google.com/spreadsheets/d/${AYFA_CONFIG.SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(nombreHoja)}`;
-    const res = await fetch(url, { cache: "no-store" });
-    if (!res.ok) throw new Error(`No se pudo leer la hoja "${nombreHoja}" del Google Sheet`);
-    const texto = await res.text();
-    return normalizarFilas(parseCSV(texto), nombreHoja);
-  }
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <h4>AY-FA Distribuciones</h4>
+        <p>Tu distribuidora de confianza: almacén, bebidas, limpieza, perfumería y más, a los mejores precios.</p>
+      </div>
+      <div>
+        <h4>Enlaces</h4>
+        <a href="catalogo.html">Catálogo completo</a>
+        <a href="registro.html">Crear cuenta</a>
+        <a href="ingresar.html">Ingresar</a>
+        <a href="contacto.html">Contacto</a>
+      </div>
+      <div>
+        <h4>Entrega</h4>
+        <p>🚚 Envío a domicilio</p>
+        <p>🏬 Retiro en depósito</p>
+        <p>📍 Reparto local por zonas</p>
+      </div>
+      <div>
+        <h4>Contacto</h4>
+        <p data-empresa-email>—</p>
+        <p data-empresa-horarios>—</p>
+      </div>
+    </div>
+    <div class="footer-bottom">© <span data-anio></span> AY-FA Distribuciones. Todos los derechos reservados.</div>
+  </div>
+</footer>
+<a href="#" class="whatsapp-float" data-whatsapp title="Escribinos por WhatsApp" target="_blank">💬</a>
 
-  // Lee TODAS las pestañas listadas en SHEET_TABS_PRODUCTOS y las combina en
-  // un solo catálogo. Si alguna pestaña falla (ej. todavía no la creaste),
-  // se ignora esa y se sigue con las demás en vez de romper todo el sitio.
-  async function obtenerDesdeSheet() {
-    const tabs = AYFA_CONFIG.SHEET_TABS_PRODUCTOS && AYFA_CONFIG.SHEET_TABS_PRODUCTOS.length
-      ? AYFA_CONFIG.SHEET_TABS_PRODUCTOS
-      : ["Productos"];
-    const resultados = await Promise.allSettled(tabs.map(obtenerDeUnaHoja));
-    let productos = [];
-    let algunaOk = false;
-    resultados.forEach((r, i) => {
-      if (r.status === "fulfilled") { productos = productos.concat(r.value); algunaOk = true; }
-      else console.warn(`No se pudo leer la pestaña "${tabs[i]}":`, r.reason);
-    });
-    if (!algunaOk) throw new Error("No se pudo leer ninguna pestaña de productos del Google Sheet");
-    return productos;
-  }
-
-  async function obtenerDesdeJSON() {
-    const res = await fetch("data/productos.json", { cache: "no-store" });
-    const json = await res.json();
-    return normalizarJSON(json);
-  }
-
-  async function obtenerProductos({ forzar = false } = {}) {
-    if (!forzar) {
-      try {
-        const cache = JSON.parse(sessionStorage.getItem(CACHE_KEY) || "null");
-        if (cache && Date.now() - cache.t < CACHE_MS) return cache.data;
-      } catch (e) { /* sin cache */ }
-    }
-    let productos = [];
-    try {
-      if (AYFA_CONFIG.SHEET_ID) {
-        productos = await obtenerDesdeSheet();
-      } else {
-        productos = await obtenerDesdeJSON();
-      }
-    } catch (e) {
-      console.warn("Fallo al leer Google Sheet, usando catálogo de ejemplo.", e);
-      productos = await obtenerDesdeJSON();
-    }
-    try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ t: Date.now(), data: productos })); } catch (e) {}
-    return productos;
-  }
-
-  function porId(productos, id) {
-    return productos.find(p => p.id === id);
-  }
-
-  // stock === null significa "no tenemos el dato exacto" (ej. la lista del
-  // proveedor no trae columna de stock): se muestra como disponible, sin
-  // limitar la cantidad a comprar.
-  function estadoStock(stock) {
-    if (stock === null || stock === undefined) return { texto: "Disponible", clase: "stock-ok" };
-    if (stock <= 0) return { texto: "Sin stock", clase: "stock-sin" };
-    if (stock <= 10) return { texto: `Stock bajo (${stock})`, clase: "stock-bajo" };
-    return { texto: `En stock (${stock})`, clase: "stock-ok" };
-  }
-
-  function formatoPrecio(n) {
-    return "$" + Number(n).toLocaleString("es-AR", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
-  }
-
-  return { obtenerProductos, porId, estadoStock, formatoPrecio };
+<script src="js/config.js"></script>
+<script src="js/datos.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/carrito.js"></script>
+<script src="js/principal.js"></script>
+<script>
+(function () {
+  const form = document.getElementById("form-contacto");
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const nombre = document.getElementById("c-nombre").value.trim();
+    const mensaje = document.getElementById("c-mensaje").value.trim();
+    const texto = `Hola AY-FA! Soy ${nombre}. ${mensaje}`;
+    const numero = (AYFA_CONFIG.EMPRESA && AYFA_CONFIG.EMPRESA.whatsapp) || "";
+    window.open("https://wa.me/" + numero + "?text=" + encodeURIComponent(texto), "_blank");
+  });
 })();
+</script>
+</body>
+</html>
