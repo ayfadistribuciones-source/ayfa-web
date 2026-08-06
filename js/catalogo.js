@@ -132,7 +132,16 @@
       texto = params.get("q");
       document.getElementById("input-buscar").value = texto;
     }
-    if (params.get("cat")) filtroCategorias.add(params.get("cat"));
+    if (params.get("cat")) {
+    // El menú de categorías arriba de la página linkea a categorías "madre"
+    // (ej. "Perfumería"), que en los datos reales pueden estar divididas en
+    // varias subcategorías (ej. "Perfumería - Cabello"). Matcheamos por
+    // coincidencia exacta o por prefijo para que el link funcione con todas.
+    const catParam = params.get("cat");
+    const categoriasReales = [...new Set(TODOS.map(p => p.categoria))];
+    const coincidencias = categoriasReales.filter(c => c === catParam || c.startsWith(catParam + " - "));
+    (coincidencias.length ? coincidencias : [catParam]).forEach(c => filtroCategorias.add(c));
+  }
 
     renderFiltros();
     render();
