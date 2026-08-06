@@ -49,6 +49,19 @@ const AyfaDatos = (function () {
     return parseFloat(s);
   }
 
+  // Prolijidad de nombres de categoría que vienen medio desprolijos de los
+  // PDF de los proveedores (ej. "Perf - Cabello", "Perf- Higiene Personal")
+  // se agrupan bajo un nombre consistente "Perfumería - X" para que el menú
+  // de categorías y los filtros funcionen bien.
+  function normalizarCategoria(cat) {
+    const c = (cat || "Otros").trim();
+    if (/^perf\s*-?\s*/i.test(c)) {
+      const resto = c.replace(/^perf\s*-?\s*/i, "").trim();
+      return "Perfumería" + (resto ? " - " + resto : "");
+    }
+    return c;
+  }
+
   // nombreProveedor = nombre de la pestaña de donde salió esta lista (se usa
   // como proveedor si la fila no tiene su propia columna "Proveedor").
   function normalizarFilas(filas, nombreProveedor) {
@@ -79,7 +92,7 @@ const AyfaDatos = (function () {
         id: proveedor + "::" + (sku || ("fila" + r)),
         sku, proveedor,
         nombre: (f[iProd] || "").trim(),
-        categoria: (f[iCat] || "Otros").trim(),
+        categoria: normalizarCategoria(f[iCat]),
         marca: (f[iMarca] || "").trim(),
         presentacion: (f[iPres] || "").trim(),
         precio: isNaN(precio) ? 0 : precio,
@@ -101,7 +114,7 @@ const AyfaDatos = (function () {
         id: proveedor + "::" + (sku || ("fila" + i)),
         sku, proveedor,
         nombre: p.Producto || "",
-        categoria: p.Categoria || "Otros",
+        categoria: normalizarCategoria(p.Categoria),
         marca: p.Marca || "",
         presentacion: p.Presentacion || "",
         precio: Number(p.Precio) || 0,
