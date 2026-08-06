@@ -31,6 +31,24 @@ const AyfaDatos = (function () {
     return filas.filter(f => f.some(x => x !== ""));
   }
 
+  // Convierte un número en formato argentino ("4.368,24", "$ 23.453,03",
+  // "300,00", o un simple "2450") a un Number de JS. El punto es separador
+  // de miles y la coma es el separador decimal.
+  function parseMonedaAR(valor) {
+    let s = String(valor == null ? "" : valor).trim();
+    if (!s) return NaN;
+    s = s.replace(/[^0-9.,-]/g, "");
+    if (s.includes(",")) {
+      // Formato AR: sacamos los puntos de miles y la coma pasa a ser el punto decimal.
+      s = s.replace(/\./g, "").replace(",", ".");
+    }
+    // Si no hay coma pero sí varios puntos (ej. "1.234.567"), son miles: sacarlos todos.
+    else if ((s.match(/\./g) || []).length > 1) {
+      s = s.replace(/\./g, "");
+    }
+    return parseFloat(s);
+  }
+
   // nombreProveedor = nombre de la pestaña de donde salió esta lista (se usa
   // como proveedor si la fila no tiene su propia columna "Proveedor").
   function normalizarFilas(filas, nombreProveedor) {
@@ -46,7 +64,7 @@ const AyfaDatos = (function () {
     for (let r = 1; r < filas.length; r++) {
       const f = filas[r];
       if (!f[iProd]) continue;
-      const precio = parseFloat(String(f[iPrecio] || "0").replace(/[^0-9.,-]/g, "").replace(",", "."));
+      const precio = parseMonedaAR(f[iPrecio]);
       // Stock vacío/sin columna = "no lo estamos controlando puntualmente" (se
       // muestra "Disponible" en vez de "Sin stock"). Solo si ponen 0 a propósito
       // se muestra "Sin stock".
@@ -54,7 +72,7 @@ const AyfaDatos = (function () {
       const stock = (stockTexto === undefined || stockTexto === null || String(stockTexto).trim() === "")
         ? null
         : (parseInt(String(stockTexto).replace(/[^0-9-]/g, ""), 10) || 0);
-      const precioPromo = f[iPrecioPromo] ? parseFloat(String(f[iPrecioPromo]).replace(/[^0-9.,-]/g, "").replace(",", ".")) : null;
+      const precioPromo = f[iPrecioPromo] ? parseMonedaAR(f[iPrecioPromo]) : null;
       const sku = (f[iSKU] || "").trim();
       const proveedor = (iProv >= 0 && f[iProv]) ? f[iProv].trim() : nombreProveedor;
       productos.push({
