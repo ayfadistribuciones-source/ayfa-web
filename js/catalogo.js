@@ -16,20 +16,12 @@
   const provList = document.getElementById("filtro-proveedores");
   const contador = document.getElementById("contador-resultados");
 
-  function iconoCategoria(cat) {
-    const mapa = {
-      "Almacén": "🛒", "Bebidas": "🥤", "Limpieza": "🧽", "Perfumería": "🧴",
-      "Kiosco": "🍬", "Congelados": "🧊", "Panificados": "🍞"
-    };
-    return mapa[cat] || "📦";
-  }
-
   function renderFiltros() {
     const categorias = [...new Set(TODOS.map(p => p.categoria))].sort();
     catList.innerHTML = categorias.map(c => `
       <label>
         <input type="checkbox" value="${c}" ${filtroCategorias.has(c) ? "checked" : ""}>
-        ${iconoCategoria(c)} ${c}
+        ${c}
       </label>
     `).join("");
     catList.querySelectorAll("input").forEach(inp => {
