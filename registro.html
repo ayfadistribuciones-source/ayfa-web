@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crear cuenta — AY-FA Distribuciones</title>
+<link rel="icon" href="assets/logo.png">
+<link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a href="index.html" class="logo-link"><img src="assets/logo.png" alt="AY-FA Distribuciones"></a>
+    <nav class="main-nav" style="margin-left:auto;">
+      <a href="index.html">Inicio</a>
+      <a href="catalogo.html">Catálogo</a>
+      <a href="ingresar.html">¿Ya tenés cuenta? Ingresá</a>
+    </nav>
+  </div>
+</header>
+
+<section class="container" style="padding: 40px 20px 70px;">
+  <div class="form-card">
+    <h2>Creá tu cuenta</h2>
+    <p style="color:var(--gray); margin-top:-10px; font-size:0.9rem;">Registrate para ver precios preferenciales, guardar tus datos de entrega y hacer pedidos más rápido.</p>
+
+    <div class="msg-box msg-error" id="msg-error"></div>
+    <div class="msg-box msg-ok" id="msg-ok"></div>
+
+    <form id="form-registro">
+      <div class="campo-fila">
+        <div class="campo">
+          <label>Nombre *</label>
+          <input type="text" name="nombre" required>
+        </div>
+        <div class="campo">
+          <label>Apellido *</label>
+          <input type="text" name="apellido" required>
+        </div>
+      </div>
+
+      <div class="campo">
+        <label>Tipo de cliente</label>
+        <select name="tipoCliente">
+          <option value="Consumidor final">Consumidor final</option>
+          <option value="Comercio / Revendedor">Comercio / Revendedor</option>
+        </select>
+      </div>
+
+      <div class="campo-fila">
+        <div class="campo">
+          <label>DNI / CUIT</label>
+          <input type="text" name="cuitDni" placeholder="Opcional para comercios">
+        </div>
+        <div class="campo">
+          <label>Teléfono / WhatsApp *</label>
+          <input type="tel" name="telefono" required>
+        </div>
+      </div>
+
+      <div class="campo">
+        <label>Email *</label>
+        <input type="email" name="email" required>
+      </div>
+
+      <div class="campo">
+        <label>Dirección (calle y número) *</label>
+        <input type="text" name="direccion" required>
+      </div>
+
+      <div class="campo-fila">
+        <div class="campo">
+          <label>Localidad *</label>
+          <input type="text" name="localidad" required>
+        </div>
+        <div class="campo">
+          <label>Zona de reparto</label>
+          <select name="zona">
+            <option value="">— No aplica / a coordinar —</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="campo-fila">
+        <div class="campo">
+          <label>Contraseña *</label>
+          <input type="password" name="password" minlength="6" required>
+          <div class="ayuda-texto">Mínimo 6 caracteres.</div>
+        </div>
+        <div class="campo">
+          <label>Repetir contraseña *</label>
+          <input type="password" name="password2" minlength="6" required>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block" id="btn-registrar">Crear cuenta</button>
+    </form>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-bottom">© <span data-anio></span> AY-FA Distribuciones. Todos los derechos reservados.</div>
+  </div>
+</footer>
+
+<script src="js/config.js"></script>
+<script src="js/datos.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/carrito.js"></script>
+<script src="js/principal.js"></script>
+<script>
+  // Cargar zonas de reparto local desde config.js
+  const selectZona = document.querySelector('select[name="zona"]');
+  AYFA_CONFIG.ZONAS_REPARTO_LOCAL.forEach(z => {
+    const opt = document.createElement("option");
+    opt.value = z; opt.textContent = z;
+    selectZona.appendChild(opt);
+  });
+
+  const form = document.getElementById("form-registro");
+  const msgError = document.getElementById("msg-error");
+  const msgOk = document.getElementById("msg-ok");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    msgError.style.display = "none";
+    msgOk.style.display = "none";
+
+    const fd = new FormData(form);
+    const datos = Object.fromEntries(fd.entries());
+
+    if (datos.password !== datos.password2) {
+      msgError.textContent = "Las contraseñas no coinciden.";
+      msgError.style.display = "block";
+      return;
+    }
+
+    const btn = document.getElementById("btn-registrar");
+    btn.disabled = true; btn.textContent = "Creando cuenta…";
+
+    try {
+      delete datos.password2;
+      await AyfaAuth.registrar(datos);
+      msgOk.textContent = "¡Cuenta creada con éxito! Redirigiendo…";
+      msgOk.style.display = "block";
+      setTimeout(() => { window.location.href = "mi-cuenta.html"; }, 1200);
+    } catch (err) {
+      msgError.textContent = err.message || "Ocurrió un error al crear la cuenta.";
+      msgError.style.display = "block";
+      btn.disabled = false; btn.textContent = "Crear cuenta";
+    }
+  });
+</script>
+</body>
+</html>

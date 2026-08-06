@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi cuenta — AY-FA Distribuciones</title>
+<link rel="icon" href="assets/logo.png">
+<link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a href="index.html" class="logo-link"><img src="assets/logo.png" alt="AY-FA Distribuciones"></a>
+    <nav class="main-nav" style="margin-left:auto;">
+      <a href="index.html">Inicio</a>
+      <a href="catalogo.html">Catálogo</a>
+      <a href="carrito.html" class="cart-btn">🛒 Carrito <span class="cart-count" data-cart-count>0</span></a>
+      <a href="#" data-logout>Cerrar sesión</a>
+    </nav>
+  </div>
+</header>
+
+<section class="container" style="padding: 40px 20px 80px;">
+  <div class="section-title"><h2>Mi cuenta</h2></div>
+
+  <div id="datos-cliente" class="beneficio-card" style="text-align:left; margin-bottom:30px;"></div>
+
+  <div class="section-title"><h2>Mis pedidos</h2></div>
+  <div id="lista-pedidos"></div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-bottom">© <span data-anio></span> AY-FA Distribuciones. Todos los derechos reservados.</div>
+  </div>
+</footer>
+
+<script src="js/config.js"></script>
+<script src="js/datos.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/carrito.js"></script>
+<script src="js/pedidos.js"></script>
+<script src="js/principal.js"></script>
+<script>
+  (async function () {
+    if (!AyfaAuth.requiereLogin("mi-cuenta.html")) return;
+    const u = AyfaAuth.usuarioActual();
+
+    document.getElementById("datos-cliente").innerHTML = `
+      <h3 style="margin-top:0; color:var(--navy);">${u.nombre} ${u.apellido || ""}</h3>
+      <p style="margin:4px 0;"><strong>Email:</strong> ${u.email}</p>
+      <p style="margin:4px 0;"><strong>Teléfono:</strong> ${u.telefono || "-"}</p>
+      <p style="margin:4px 0;"><strong>Dirección:</strong> ${u.direccion || "-"}, ${u.localidad || "-"}</p>
+      <p style="margin:4px 0;"><strong>Tipo de cliente:</strong> ${u.tipoCliente || "-"}</p>
+    `;
+
+    const cont = document.getElementById("lista-pedidos");
+    cont.innerHTML = `<div class="vacio-msg">Cargando pedidos…</div>`;
+    const pedidos = await AyfaPedidos.misPedidos(u.email);
+
+    if (!pedidos.length) {
+      cont.innerHTML = `<div class="vacio-msg"><div class="icono">📦</div>Todavía no hiciste ningún pedido.<br><a href="catalogo.html" class="btn btn-primary" style="margin-top:14px;">Ir al catálogo</a></div>`;
+      return;
+    }
+
+    cont.innerHTML = pedidos.map(p => `
+      <div class="carrito-item" style="align-items:flex-start; flex-direction:column;">
+        <div style="display:flex; justify-content:space-between; width:100%; flex-wrap:wrap; gap:8px;">
+          <div>
+            <strong>Pedido ${p.numero}</strong>
+            <div style="font-size:0.8rem; color:var(--gray);">${new Date(p.fecha).toLocaleString("es-AR")}</div>
+          </div>
+          <span class="badge-tag">${p.estado || "Nuevo"}</span>
+        </div>
+        <div style="font-size:0.85rem; margin-top:8px; color:var(--gray);">
+          Entrega: <strong>${p.tipoEntrega}</strong>${p.zona ? " — " + p.zona : ""}
+        </div>
+        <div style="font-size:0.85rem; margin-top:4px;">${(p.items || []).map(i => `${i.cantidad}x ${i.nombre}`).join(", ")}</div>
+        <div style="margin-top:8px; font-weight:800; color:var(--navy);">Total: ${AyfaDatos.formatoPrecio(p.total)}</div>
+      </div>
+    `).join("");
+  })();
+</script>
+</body>
+</html>
