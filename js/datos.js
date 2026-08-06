@@ -142,6 +142,31 @@ const AyfaDatos = (function () {
     return normalizarFilas(parseCSV(texto), nombreHoja);
   }
 
+  // Normaliza un nombre de producto para poder comparar el mismo producto
+  // entre listas de distintos proveedores (que no comparten SKU): pasa a
+  // minúsculas, saca acentos y puntuación, y junta espacios repetidos.
+  function normalizarNombre(s) {
+    return (s || "")
+      .toLowerCase()
+      .normalize("NFD").replace(/[̀-ͯ]/g, "")
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim()
+      .replace(/\s+/g, " ");
+  }
+
+  // Cuando el mismo producto está en más de una lista de proveedor (mismo
+  // nombre), nos quedamos con una sola fila: la de mayor precio.
+  function deduplicarPorNombre(productos) {
+    const mapa = new Map();
+    let sinNombre = 0;
+    for (const p of productos) {
+      const clave = normalizarNombre(p.nombre) || `__sin_nombre_${sinNombre++}`;
+      const actual = mapa.get(clave);
+      if (!actual || p.precio > actual.precio) mapa.set(clave, p);
+    }
+    return [...mapa.values()];
+  }
+
   // Lee TODAS las pestañas listadas en SHEET_TABS_PRODUCTOS y las combina en
   // un solo catálogo. Si alguna pestaña falla (ej. todavía no la creaste),
   // se ignora esa y se sigue con las demás en vez de romper todo el sitio.
@@ -157,7 +182,9 @@ const AyfaDatos = (function () {
       else console.warn(`No se pudo leer la pestaña "${tabs[i]}":`, r.reason);
     });
     if (!algunaOk) throw new Error("No se pudo leer ninguna pestaña de productos del Google Sheet");
-    return productos;
+    // Si el mismo producto aparece en más de una lista de proveedor, dejamos
+    // una sola fila (la de mayor precio) para que no se vea duplicado.
+    return deduplicarPorNombre(productos);
   }
 
   async function obtenerDesdeJSON() {
