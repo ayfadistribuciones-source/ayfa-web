@@ -267,11 +267,17 @@ section{ padding: 44px 0; }
   gap: 18px;
 }
 .producto-card{
-  background:#fff; border-radius: var(--radius); box-shadow: var(--shadow);
+  background:#fff; border-radius: var(--radius);
+  border: 1px solid #e7e9f0;
+  box-shadow: 0 3px 12px rgba(29,42,107,0.10);
   padding: 16px; display:flex; flex-direction:column; position:relative;
-  transition: box-shadow .15s ease, transform .15s ease;
+  transition: box-shadow .18s ease, transform .18s ease, border-color .18s ease;
 }
-.producto-card:hover{ box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+.producto-card:hover{
+  box-shadow: 0 10px 26px rgba(29,42,107,0.18);
+  transform: translateY(-3px);
+  border-color: var(--teal);
+}
 .producto-img{
   height: 130px; background: var(--gray-light); border-radius: 8px;
   display:flex; align-items:center; justify-content:center; margin-bottom: 10px;
