@@ -92,15 +92,50 @@
 
       <div class="grupo" id="campos-cliente" style="margin-top:8px;">
         <h4>Tus datos</h4>
-        <div class="campo">
-          <input type="text" id="cli-nombre" placeholder="Nombre y apellido">
+        <div id="cliente-logueado" style="display:none; font-size:0.85rem; background:var(--gray-light); border-radius:8px; padding:10px 12px;"></div>
+        <div id="cliente-invitado">
+          <div class="campo-fila">
+            <div class="campo">
+              <input type="text" id="cli-nombre" placeholder="Nombre y apellido">
+            </div>
+            <div class="campo">
+              <input type="text" id="cli-razon" placeholder="Razón social (opcional)">
+            </div>
+          </div>
+          <div class="campo-fila">
+            <div class="campo">
+              <input type="text" id="cli-doc" placeholder="CUIT / DNI">
+            </div>
+            <div class="campo">
+              <select id="cli-condicion-iva">
+                <option value="Consumidor Final">Consumidor Final</option>
+                <option value="Responsable Inscripto">Responsable Inscripto</option>
+                <option value="Monotributista">Monotributista</option>
+                <option value="Exento">Exento</option>
+              </select>
+            </div>
+          </div>
+          <div class="campo">
+            <input type="email" id="cli-email" placeholder="Email">
+          </div>
+          <div class="campo">
+            <input type="tel" id="cli-telefono" placeholder="Teléfono">
+          </div>
+          <div class="campo-fila">
+            <div class="campo">
+              <input type="text" id="cli-direccion" placeholder="Dirección">
+            </div>
+            <div class="campo">
+              <input type="text" id="cli-localidad" placeholder="Localidad">
+            </div>
+          </div>
+          <p style="font-size:0.78rem; color:var(--gray); margin:-6px 0 0;">¿Ya tenés cuenta? <a href="ingresar.html" style="color:var(--teal); font-weight:600;">Ingresá acá</a> para no completar esto cada vez.</p>
         </div>
-        <div class="campo">
-          <input type="email" id="cli-email" placeholder="Email">
-        </div>
-        <div class="campo">
-          <input type="tel" id="cli-telefono" placeholder="Teléfono">
-        </div>
+      </div>
+
+      <div class="grupo">
+        <h4>Notas del pedido (opcional)</h4>
+        <textarea id="cli-notas" rows="2" placeholder="Ej: llamar antes de entregar, horario preferido, etc." style="width:100%; padding:10px 12px; border:1px solid #d8dce3; border-radius:8px;"></textarea>
       </div>
 
       <div class="msg-box msg-error" id="msg-error"></div>
@@ -263,12 +298,29 @@
     }
 
     const usuario = AyfaAuth.usuarioActual();
-    const nombre = (usuario && usuario.nombre) || document.getElementById("cli-nombre").value.trim();
-    const email = (usuario && usuario.email) || document.getElementById("cli-email").value.trim();
-    const telefono = (usuario && usuario.telefono) || document.getElementById("cli-telefono").value.trim();
+    const cliente = usuario ? {
+      nombre: usuario.nombre || "",
+      razonSocial: usuario.razonSocial || "",
+      documento: usuario.documento || "",
+      condicionIVA: usuario.condicionIVA || "",
+      email: usuario.email || "",
+      telefono: usuario.telefono || "",
+      direccion: usuario.direccion || "",
+      localidad: usuario.localidad || ""
+    } : {
+      nombre: document.getElementById("cli-nombre").value.trim(),
+      razonSocial: document.getElementById("cli-razon").value.trim(),
+      documento: document.getElementById("cli-doc").value.trim(),
+      condicionIVA: document.getElementById("cli-condicion-iva").value,
+      email: document.getElementById("cli-email").value.trim(),
+      telefono: document.getElementById("cli-telefono").value.trim(),
+      direccion: document.getElementById("cli-direccion").value.trim(),
+      localidad: document.getElementById("cli-localidad").value.trim()
+    };
+    const notas = document.getElementById("cli-notas").value.trim();
 
-    if (!nombre || !email) {
-      msgError.textContent = "Completá tu nombre y email para poder confirmar el pedido.";
+    if (!cliente.nombre || !cliente.email || !cliente.telefono || !cliente.documento) {
+      msgError.textContent = "Completá tu nombre, CUIT/DNI, teléfono y email para poder confirmar el pedido.";
       msgError.style.display = "block";
       return;
     }
@@ -286,8 +338,9 @@
     if (entregaElegida === "reparto") costoEntrega = AYFA_CONFIG.COSTO_REPARTO_LOCAL || 0;
 
     const pedido = {
-      cliente: { nombre, email, telefono },
+      cliente,
       entrega: entregaInfo,
+      notas,
       items,
       subtotal,
       costoEntrega,
@@ -315,10 +368,23 @@
   (async function init() {
     PRODUCTOS = await AyfaDatos.obtenerProductos();
     const usuario = AyfaAuth.usuarioActual();
+    const logueadoBox = document.getElementById("cliente-logueado");
+    const invitadoBox = document.getElementById("cliente-invitado");
     if (usuario) {
-      document.getElementById("cli-nombre").value = usuario.nombre || "";
-      document.getElementById("cli-email").value = usuario.email || "";
-      document.getElementById("cli-telefono").value = usuario.telefono || "";
+      logueadoBox.style.display = "block";
+      invitadoBox.style.display = "none";
+      const partes = [
+        `<strong>${usuario.nombre || ""}</strong>` + (usuario.razonSocial ? ` — ${usuario.razonSocial}` : ""),
+        [usuario.documento, usuario.condicionIVA].filter(Boolean).join(" · "),
+        usuario.email,
+        usuario.telefono,
+        [usuario.direccion, usuario.localidad].filter(Boolean).join(", ")
+      ].filter(Boolean);
+      logueadoBox.innerHTML = partes.map(p => `<div>${p}</div>`).join("") +
+        `<div style="margin-top:6px;"><a href="mi-cuenta.html" style="color:var(--teal); font-weight:600;">¿No son correctos? Editá en Mi cuenta</a></div>`;
+    } else {
+      logueadoBox.style.display = "none";
+      invitadoBox.style.display = "block";
     }
     render();
   })();

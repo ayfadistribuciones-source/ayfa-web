@@ -50,9 +50,30 @@
     <div class="msg-box msg-error" id="msg-error"></div>
 
     <form id="form-registro">
-      <div class="campo">
-        <label for="campo-nombre">Nombre y apellido / Razón social</label>
-        <input type="text" id="campo-nombre" required>
+      <div class="campo-fila">
+        <div class="campo">
+          <label for="campo-nombre">Nombre y apellido</label>
+          <input type="text" id="campo-nombre" required>
+        </div>
+        <div class="campo">
+          <label for="campo-razon">Razón social (si facturás con CUIT)</label>
+          <input type="text" id="campo-razon" placeholder="Dejalo vacío si sos consumidor final">
+        </div>
+      </div>
+      <div class="campo-fila">
+        <div class="campo">
+          <label for="campo-doc">CUIT / DNI</label>
+          <input type="text" id="campo-doc" placeholder="Sin puntos ni guiones" required>
+        </div>
+        <div class="campo">
+          <label for="campo-condicion-iva">Condición frente al IVA</label>
+          <select id="campo-condicion-iva" required>
+            <option value="Consumidor Final">Consumidor Final</option>
+            <option value="Responsable Inscripto">Responsable Inscripto</option>
+            <option value="Monotributista">Monotributista</option>
+            <option value="Exento">Exento</option>
+          </select>
+        </div>
       </div>
       <div class="campo-fila">
         <div class="campo">
@@ -61,17 +82,23 @@
         </div>
         <div class="campo">
           <label for="campo-telefono">Teléfono</label>
-          <input type="tel" id="campo-telefono">
+          <input type="tel" id="campo-telefono" required>
         </div>
       </div>
-      <div class="campo">
-        <label for="campo-direccion">Dirección (para envío a domicilio)</label>
-        <input type="text" id="campo-direccion">
+      <div class="campo-fila">
+        <div class="campo">
+          <label for="campo-direccion">Dirección (calle y número)</label>
+          <input type="text" id="campo-direccion" required>
+        </div>
+        <div class="campo">
+          <label for="campo-localidad">Localidad</label>
+          <input type="text" id="campo-localidad" required>
+        </div>
       </div>
       <div class="campo">
         <label for="campo-zona">Zona de reparto local (si corresponde)</label>
         <select id="campo-zona">
-          <option value="">— Elegir zona —</option>
+          <option value="">— No uso reparto local —</option>
         </select>
       </div>
       <div class="campo">
@@ -141,15 +168,19 @@
 
     const datos = {
       nombre: document.getElementById("campo-nombre").value.trim(),
+      razonSocial: document.getElementById("campo-razon").value.trim(),
+      documento: document.getElementById("campo-doc").value.trim(),
+      condicionIVA: document.getElementById("campo-condicion-iva").value,
       email: document.getElementById("campo-email").value.trim().toLowerCase(),
       telefono: document.getElementById("campo-telefono").value.trim(),
       direccion: document.getElementById("campo-direccion").value.trim(),
+      localidad: document.getElementById("campo-localidad").value.trim(),
       zona: selectZona.value,
       password: document.getElementById("campo-password").value
     };
 
-    if (!datos.nombre || !datos.email || !datos.password) {
-      msgError.textContent = "Completá nombre, email y contraseña.";
+    if (!datos.nombre || !datos.email || !datos.password || !datos.documento || !datos.telefono || !datos.direccion || !datos.localidad) {
+      msgError.textContent = "Completá todos los campos obligatorios.";
       msgError.style.display = "block";
       return;
     }

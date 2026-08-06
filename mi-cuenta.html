@@ -50,8 +50,12 @@
   <div class="form-card" style="max-width:100%; margin-bottom:26px;">
     <h3 style="margin-top:0; color:var(--navy);">Mis datos</h3>
     <p id="dato-nombre" style="margin:4px 0;"></p>
+    <p id="dato-razon" style="margin:4px 0; color:var(--gray);"></p>
+    <p id="dato-doc" style="margin:4px 0; color:var(--gray);"></p>
     <p id="dato-email" style="margin:4px 0; color:var(--gray);"></p>
     <p id="dato-telefono" style="margin:4px 0; color:var(--gray);"></p>
+    <p id="dato-direccion" style="margin:4px 0; color:var(--gray);"></p>
+    <p style="font-size:0.78rem; color:var(--gray); margin-top:10px;">¿Algún dato desactualizado? Escribinos por <a href="#" data-whatsapp target="_blank" style="color:var(--teal); font-weight:600;">WhatsApp</a> y te lo actualizamos.</p>
   </div>
 
   <div class="section-title">
@@ -103,8 +107,11 @@
 
   const usuario = AyfaAuth.usuarioActual();
   document.getElementById("dato-nombre").innerHTML = "<strong>" + (usuario.nombre || "") + "</strong>";
+  document.getElementById("dato-razon").textContent = usuario.razonSocial || "";
+  document.getElementById("dato-doc").textContent = [usuario.documento, usuario.condicionIVA].filter(Boolean).join(" · ");
   document.getElementById("dato-email").textContent = usuario.email || "";
   document.getElementById("dato-telefono").textContent = usuario.telefono || "";
+  document.getElementById("dato-direccion").textContent = [usuario.direccion, usuario.localidad].filter(Boolean).join(", ");
 
   const lista = document.getElementById("lista-pedidos");
 
