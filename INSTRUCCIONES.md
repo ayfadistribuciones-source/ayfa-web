@@ -19,42 +19,51 @@ Abrí la carpeta `ay-fa-web` y hacé doble clic en `index.html`. Se abre en el n
    `https://tu-usuario.github.io/ayfa-web/`
 7. (Opcional) Si comprás un dominio propio (ej. `ayfadistribuciones.com.ar`), en GitHub Pages podés configurarlo en la misma sección "Settings → Pages → Custom domain".
 
-## 3. Conectar tu Google Sheet real (precios y stock en vivo)
+## 3. Conectar tu Google Sheet real (precios y stock en vivo, con una hoja por proveedor)
 
-Esto es lo que te permite que, cuando modificás un precio en la planilla, la web se actualice sola.
+Esto es lo que te permite que, cuando modificás un precio en la planilla, la web se actualice sola. Como tus proveedores no son el mismo y las listas te llegan en PDFs distintos, **cada proveedor tiene su propia pestaña**: pegás cada lista tal cual, sin tener que mezclarlas ni reordenarlas a mano. La web las junta sola para armar el catálogo completo.
 
 1. Creá un Google Sheet nuevo (o usá el que ya tengas armado con tus productos).
-2. En la primera hoja/pestaña, llamala **"Productos"** y poné estas columnas exactas en la primera fila (respetando mayúsculas):
 
-   | SKU | Producto | Categoria | Marca | Presentacion | Precio | Stock | Promo | PrecioPromo | Imagen | Destacado |
-   |---|---|---|---|---|---|---|---|---|---|---|
+2. Creá **una pestaña por proveedor**. Por ejemplo `Proveedor A` y `Proveedor B` (podés ponerles el nombre real de cada proveedor si preferís, ej. "Distribuidora Norte" y "Mayorista Sur" — solo tenés que usar esos mismos nombres en el paso 6). Si tenés 3 o más proveedores, agregás más pestañas siguiendo el mismo esquema.
 
-   - **SKU**: código único del producto.
-   - **Precio**: el precio final que ponés vos (con tu ganancia ya incluida).
-   - **Stock**: cantidad disponible (si ponés 0, la web muestra "Sin stock").
-   - **Promo**: texto corto opcional, ej. "3x2" o "Oferta".
+3. En **cada** pestaña de proveedor, poné estas columnas exactas en la primera fila (respetando mayúsculas). Las dos primeras (`CostoProveedor` y `Margen%`) son opcionales pero muy útiles: te calculan solas el precio de venta.
+
+   | SKU | Producto | Categoria | Marca | Presentacion | CostoProveedor | Margen% | Precio | Stock | Promo | PrecioPromo | Imagen | Destacado |
+   |---|---|---|---|---|---|---|---|---|---|---|---|---|
+
+   - **SKU**: código del producto (puede repetirse entre proveedores distintos sin problema, la web los distingue solos).
+   - **CostoProveedor**: lo que vos pagás por el producto (lo sacás de la lista en PDF).
+   - **Margen%**: tu ganancia en porcentaje, ej. `35` para 35%.
+   - **Precio**: el precio final de venta. Poné acá una fórmula que lo calcule solo, por ejemplo si CostoProveedor está en la columna F y Margen% en la G, en la fila 2 sería `=F2*(1+G2/100)` y después arrastrás la fórmula para abajo. Si preferís escribir el precio a mano, también funciona.
+   - **Stock**: opcional. Si no la completás (la dejás vacía), la web muestra "Disponible" sin límite de cantidad — pensada para cuando no controlás stock exacto. Si ponés un número, la web lo respeta como cantidad máxima ("Stock bajo" con 10 o menos). Si ponés `0` a propósito, muestra "Sin stock" y no deja comprar.
+   - **Promo**: texto corto opcional, ej. "3x2" u "Oferta".
    - **PrecioPromo**: si el producto está en oferta, poné acá el precio promocional (si no, dejalo vacío).
    - **Imagen**: opcional, un link a una foto del producto (podés subir fotos a Google Drive, Imgur, o similar y pegar el link "compartir públicamente").
    - **Destacado**: escribí `SI` para que aparezca en "Productos destacados" de la portada.
 
-   Podés copiar y pegar tu Excel actual acá, reordenando/renombrando columnas para que coincidan con esta lista.
+   Para pasar cada PDF: copiá la tabla del PDF (o escribila) directamente en la pestaña de ESE proveedor, y después acomodá/completá las columnas de Categoria, Marca, Presentacion, Margen%, etc. a mano la primera vez. Los próximos pedidos del mismo proveedor ya vas a tener la planilla armada, solo actualizás precios y stock.
 
-3. Publicá la planilla para que la web pueda leerla:
+4. Publicá la planilla para que la web pueda leerla:
    - Archivo → Compartir → Publicar en la Web.
-   - Elegí "Toda la hoja de cálculo" (o la pestaña "Productos"), formato "Página web" o "Valores separados por comas".
+   - Elegí "Todo el documento" (así se publican todas las pestañas de una vez), formato "Página web".
    - Hacé clic en "Publicar".
    - (Esto NO permite que la gente edite tu planilla, solo que la web pueda leer los precios).
 
-4. Conseguí el **ID de tu Sheet**: es la parte larga de la URL, entre `/d/` y `/edit`. Por ejemplo, en:
+5. Conseguí el **ID de tu Sheet**: es la parte larga de la URL, entre `/d/` y `/edit`. Por ejemplo, en:
    `https://docs.google.com/spreadsheets/d/1AbCdEfGhIjKlMnOpQrStUvWxYz/edit`
    el ID es `1AbCdEfGhIjKlMnOpQrStUvWxYz`.
 
-5. Abrí el archivo `js/config.js` de tu sitio y completá:
+6. Abrí el archivo `js/config.js` de tu sitio y completá:
    ```js
    SHEET_ID: "1AbCdEfGhIjKlMnOpQrStUvWxYz",
-   SHEET_TAB_PRODUCTOS: "Productos",
+   SHEET_TABS_PRODUCTOS: ["Proveedor A", "Proveedor B"],
    ```
-6. Volvé a subir el `config.js` actualizado a GitHub (Add file → Upload files, reemplazando el anterior). Listo: la web ya lee tus precios reales, y se actualiza cada vez que modificás la planilla (puede tardar hasta 3-5 minutos en reflejarse por el cacheo de Google).
+   Poné en la lista los nombres EXACTOS de las pestañas que creaste en el paso 2 (respetando mayúsculas/acentos). Si agregás un tercer proveedor más adelante, simplemente sumás su nombre a esta lista.
+
+7. Volvé a subir el `config.js` actualizado a GitHub (Add file → Upload files, reemplazando el anterior). Listo: la web ya lee tus precios reales de las dos pestañas y las combina en un solo catálogo. Se actualiza cada vez que modificás la planilla (puede tardar hasta 3-5 minutos en reflejarse por el cacheo de Google).
+
+   Nota: en el catálogo de la web vas a ver un filtro "Proveedor" en la barra lateral, para que vos (o tus clientes) puedan filtrar productos por proveedor si quieren.
 
 ## 4. Activar el registro de clientes y los pedidos (Google Apps Script)
 

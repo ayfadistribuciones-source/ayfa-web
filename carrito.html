@@ -114,9 +114,9 @@
           <div class="precio-unit">${AyfaDatos.formatoPrecio(i.precioUnit)} c/u</div>
         </div>
         <div class="carrito-item-acciones">
-          <input type="number" min="1" max="${i.stock}" value="${i.cantidad}" class="qty-input" data-cambiar-cant="${i.sku}">
+          <input type="number" min="1" ${(i.stock !== null && i.stock !== undefined) ? `max="${i.stock}"` : ""} value="${i.cantidad}" class="qty-input" data-cambiar-cant="${i.id}">
           <strong>${AyfaDatos.formatoPrecio(i.subtotal)}</strong>
-          <span class="quitar-item" data-quitar="${i.sku}">Quitar</span>
+          <span class="quitar-item" data-quitar="${i.id}">Quitar</span>
         </div>
       </div>
     `).join("");
@@ -167,7 +167,7 @@
     const u = AyfaAuth.usuarioActual();
     const pedido = {
       cliente: { nombre: u.nombre, apellido: u.apellido, email: u.email, telefono: u.telefono },
-      items: detalle.map(i => ({ sku: i.sku, nombre: i.nombre, cantidad: i.cantidad, precioUnit: i.precioUnit, subtotal: i.subtotal })),
+      items: detalle.map(i => ({ sku: i.sku, proveedor: i.proveedor, nombre: i.nombre, cantidad: i.cantidad, precioUnit: i.precioUnit, subtotal: i.subtotal })),
       total: detalle.reduce((a, i) => a + i.subtotal, 0),
       tipoEntrega: entradaSel.value,
       zona: opcion === "reparto" ? selectZona.value : "",
