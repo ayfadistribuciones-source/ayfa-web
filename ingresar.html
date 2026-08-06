@@ -1,79 +1,69 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ingresar — AY-FA Distribuciones</title>
-<link rel="icon" href="assets/logo.png">
-<link rel="stylesheet" href="css/estilos.css">
-</head>
-<body>
+/*
+  principal.js — Cosas comunes a todas las páginas: contador de carrito,
+  chip de usuario logueado, buscador del header, toasts y año del footer.
+*/
+function ayfaActualizarHeader() {
+  const cont = document.querySelectorAll("[data-cart-count]");
+  const total = AyfaCarrito.cantidadTotal();
+  cont.forEach(el => { el.textContent = total; el.style.display = total > 0 ? "inline-flex" : "none"; });
 
-<header class="site-header">
-  <div class="header-inner">
-    <a href="index.html" class="logo-link"><img src="assets/logo.png" alt="AY-FA Distribuciones"></a>
-    <nav class="main-nav" style="margin-left:auto;">
-      <a href="index.html">Inicio</a>
-      <a href="catalogo.html">Catálogo</a>
-      <a href="registro.html">Crear cuenta</a>
-    </nav>
-  </div>
-</header>
-
-<section class="container" style="padding: 60px 20px 90px;">
-  <div class="form-card">
-    <h2>Ingresá a tu cuenta</h2>
-    <div class="msg-box msg-error" id="msg-error"></div>
-
-    <form id="form-login">
-      <div class="campo">
-        <label>Email</label>
-        <input type="email" name="email" required>
-      </div>
-      <div class="campo">
-        <label>Contraseña</label>
-        <input type="password" name="password" required>
-      </div>
-      <button type="submit" class="btn btn-primary btn-block" id="btn-login">Ingresar</button>
-    </form>
-
-    <p style="text-align:center; font-size:0.88rem; color:var(--gray); margin-top:16px;">
-      ¿No tenés cuenta? <a href="registro.html" style="color:var(--teal); font-weight:700;">Registrate acá</a>
-    </p>
-  </div>
-</section>
-
-<footer class="site-footer">
-  <div class="container">
-    <div class="footer-bottom">© <span data-anio></span> AY-FA Distribuciones. Todos los derechos reservados.</div>
-  </div>
-</footer>
-
-<script src="js/config.js"></script>
-<script src="js/datos.js"></script>
-<script src="js/auth.js"></script>
-<script src="js/carrito.js"></script>
-<script src="js/principal.js"></script>
-<script>
-  const form = document.getElementById("form-login");
-  const msgError = document.getElementById("msg-error");
-
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    msgError.style.display = "none";
-    const fd = new FormData(form);
-    const btn = document.getElementById("btn-login");
-    btn.disabled = true; btn.textContent = "Ingresando…";
-    try {
-      await AyfaAuth.login(fd.get("email"), fd.get("password"));
-      const params = new URLSearchParams(window.location.search);
-      window.location.href = params.get("volver") || "mi-cuenta.html";
-    } catch (err) {
-      msgError.textContent = err.message || "No se pudo iniciar sesión.";
-      msgError.style.display = "block";
-      btn.disabled = false; btn.textContent = "Ingresar";
+  const user = AyfaAuth.usuarioActual();
+  const chip = document.querySelector("[data-user-chip]");
+  const loginLink = document.querySelector("[data-login-link]");
+  if (chip && loginLink) {
+    if (user) {
+      chip.style.display = "inline-flex";
+      chip.textContent = "Hola, " + (user.nombre || user.email);
+      loginLink.style.display = "none";
+    } else {
+      chip.style.display = "none";
+      loginLink.style.display = "inline-block";
     }
+  }
+}
+
+function ayfaMostrarToast(msg) {
+  let toast = document.querySelector(".toast");
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.className = "toast";
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.classList.add("show");
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => toast.classList.remove("show"), 2600);
+}
+
+function ayfaSetupBuscador() {
+  const form = document.querySelector("[data-search-form]");
+  if (!form) return;
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const q = form.querySelector("input").value.trim();
+    window.location.href = "catalogo.html" + (q ? ("?q=" + encodeURIComponent(q)) : "");
   });
-</script>
-</body>
-</html>
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  ayfaActualizarHeader();
+  ayfaSetupBuscador();
+  const anio = document.querySelector("[data-anio]");
+  if (anio) anio.textContent = new Date().getFullYear();
+
+  const logoutBtn = document.querySelector("[data-logout]");
+  if (logoutBtn) logoutBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    AyfaAuth.cerrarSesion();
+    window.location.href = "index.html";
+  });
+
+  const wa = document.querySelector("[data-whatsapp]");
+  if (wa && AYFA_CONFIG.EMPRESA.whatsapp) {
+    wa.href = "https://wa.me/" + AYFA_CONFIG.EMPRESA.whatsapp + "?text=" + encodeURIComponent("Hola AY-FA! Quiero hacer una consulta.");
+  }
+  document.querySelectorAll("[data-empresa-email]").forEach(el => el.textContent = AYFA_CONFIG.EMPRESA.email);
+  document.querySelectorAll("[data-empresa-horarios]").forEach(el => el.textContent = AYFA_CONFIG.EMPRESA.horarios);
+  document.querySelectorAll("[data-empresa-direccion]").forEach(el => el.textContent = AYFA_CONFIG.EMPRESA.direccionRetiro);
+});
+document.addEventListener("ayfa:carrito-actualizado", ayfaActualizarHeader);

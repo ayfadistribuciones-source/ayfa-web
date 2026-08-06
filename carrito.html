@@ -1,201 +1,154 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Carrito — AY-FA Distribuciones</title>
-<link rel="icon" href="assets/logo.png">
-<link rel="stylesheet" href="css/estilos.css">
-</head>
-<body>
+/*
+  catalogo.js — Lógica de la página de catálogo: filtros, búsqueda, orden
+  y renderizado de la grilla de productos.
+*/
+(function () {
+  let TODOS = [];
+  let filtroCategorias = new Set();
+  let filtroProveedores = new Set();
+  let filtroSoloOferta = false;
+  let filtroSoloStock = false;
+  let texto = "";
+  let orden = "relevancia";
 
-<header class="site-header">
-  <div class="header-inner">
-    <a href="index.html" class="logo-link"><img src="assets/logo.png" alt="AY-FA Distribuciones"></a>
-    <nav class="main-nav" style="margin-left:auto;">
-      <a href="index.html">Inicio</a>
-      <a href="catalogo.html">Catálogo</a>
-      <a href="ingresar.html" data-login-link>Ingresar</a>
-      <a href="mi-cuenta.html" class="user-chip" data-user-chip style="display:none;"></a>
-    </nav>
-  </div>
-</header>
+  const grid = document.getElementById("productos-grid");
+  const catList = document.getElementById("filtro-categorias");
+  const provList = document.getElementById("filtro-proveedores");
+  const contador = document.getElementById("contador-resultados");
 
-<section class="container" style="padding: 30px 20px 80px;">
-  <div class="section-title"><h2>Tu carrito</h2></div>
-
-  <div class="carrito-layout">
-    <div id="items-carrito"></div>
-
-    <div class="resumen-card">
-      <h3>Resumen del pedido</h3>
-      <div id="resumen-lineas"></div>
-
-      <h4 style="margin: 18px 0 6px; color:var(--navy); font-size:0.92rem;">¿Cómo lo recibís?</h4>
-      <div class="entrega-opciones" id="entrega-opciones">
-        <label class="entrega-opcion" data-opcion="envio">
-          <input type="radio" name="entrega" value="Envío a domicilio">
-          <div>
-            <div class="titulo">🚚 Envío a domicilio</div>
-            <div class="desc">Coordinamos el costo y horario según tu dirección.</div>
-          </div>
-        </label>
-        <label class="entrega-opcion" data-opcion="retiro">
-          <input type="radio" name="entrega" value="Retiro en depósito">
-          <div>
-            <div class="titulo">🏬 Retiro en depósito</div>
-            <div class="desc" data-empresa-direccion>Sin costo adicional.</div>
-          </div>
-        </label>
-        <label class="entrega-opcion" data-opcion="reparto">
-          <input type="radio" name="entrega" value="Reparto local">
-          <div style="width:100%;">
-            <div class="titulo">📍 Reparto local por zona</div>
-            <div class="desc">Reparto propio en el día según zona.</div>
-            <select id="select-zona-reparto" style="width:100%; margin-top:8px; padding:7px; border:1px solid #d8dce3; border-radius:6px; display:none;"></select>
-          </div>
-        </label>
-      </div>
-
-      <div class="campo" id="campo-direccion-envio" style="display:none;">
-        <label>Dirección de envío</label>
-        <input type="text" id="input-direccion-envio" placeholder="Calle, número, localidad">
-      </div>
-
-      <button class="btn btn-primary btn-block" id="btn-confirmar" style="margin-top:16px;">Confirmar pedido</button>
-      <p style="font-size:0.75rem; color:var(--gray); text-align:center; margin-top:10px;">El pago se coordina por WhatsApp o al recibir el pedido.</p>
-    </div>
-  </div>
-</section>
-
-<footer class="site-footer">
-  <div class="container">
-    <div class="footer-bottom">© <span data-anio></span> AY-FA Distribuciones. Todos los derechos reservados.</div>
-  </div>
-</footer>
-
-<script src="js/config.js"></script>
-<script src="js/datos.js"></script>
-<script src="js/auth.js"></script>
-<script src="js/carrito.js"></script>
-<script src="js/pedidos.js"></script>
-<script src="js/principal.js"></script>
-<script>
-(async function () {
-  const productos = await AyfaDatos.obtenerProductos();
-  const itemsCont = document.getElementById("items-carrito");
-  const resumenCont = document.getElementById("resumen-lineas");
-  const btnConfirmar = document.getElementById("btn-confirmar");
-
-  const selectZona = document.getElementById("select-zona-reparto");
-  AYFA_CONFIG.ZONAS_REPARTO_LOCAL.forEach(z => {
-    const opt = document.createElement("option");
-    opt.value = z; opt.textContent = z;
-    selectZona.appendChild(opt);
-  });
-
-  function renderCarrito() {
-    const detalle = AyfaCarrito.detalle(productos);
-
-    if (!detalle.length) {
-      itemsCont.innerHTML = `<div class="vacio-msg"><div class="icono">🛒</div>Tu carrito está vacío.<br><a href="catalogo.html" class="btn btn-primary" style="margin-top:14px;">Ir al catálogo</a></div>`;
-      resumenCont.innerHTML = "";
-      btnConfirmar.disabled = true;
-      return;
-    }
-    btnConfirmar.disabled = false;
-
-    itemsCont.innerHTML = detalle.map(i => `
-      <div class="carrito-item">
-        <div class="producto-img">${i.imagen ? `<img src="${i.imagen}">` : "📦"}</div>
-        <div class="carrito-item-info">
-          <div class="nombre">${i.nombre}</div>
-          <div class="precio-unit">${i.marca || ""} ${i.presentacion ? "· " + i.presentacion : ""}</div>
-          <div class="precio-unit">${AyfaDatos.formatoPrecio(i.precioUnit)} c/u</div>
-        </div>
-        <div class="carrito-item-acciones">
-          <input type="number" min="1" ${(i.stock !== null && i.stock !== undefined) ? `max="${i.stock}"` : ""} value="${i.cantidad}" class="qty-input" data-cambiar-cant="${i.id}">
-          <strong>${AyfaDatos.formatoPrecio(i.subtotal)}</strong>
-          <span class="quitar-item" data-quitar="${i.id}">Quitar</span>
-        </div>
-      </div>
+  function renderFiltros() {
+    const categorias = [...new Set(TODOS.map(p => p.categoria))].sort();
+    catList.innerHTML = categorias.map(c => `
+      <label>
+        <input type="checkbox" value="${c}" ${filtroCategorias.has(c) ? "checked" : ""}>
+        ${c}
+      </label>
     `).join("");
-
-    const total = detalle.reduce((a, i) => a + i.subtotal, 0);
-    resumenCont.innerHTML = `
-      <div class="resumen-linea"><span>Subtotal</span><span>${AyfaDatos.formatoPrecio(total)}</span></div>
-      <div class="resumen-total"><span>Total</span><span>${AyfaDatos.formatoPrecio(total)}</span></div>
-    `;
-
-    itemsCont.querySelectorAll("[data-cambiar-cant]").forEach(inp => {
+    catList.querySelectorAll("input").forEach(inp => {
       inp.addEventListener("change", () => {
-        AyfaCarrito.actualizarCantidad(inp.getAttribute("data-cambiar-cant"), Math.max(1, parseInt(inp.value, 10) || 1));
-        renderCarrito();
+        if (inp.checked) filtroCategorias.add(inp.value);
+        else filtroCategorias.delete(inp.value);
+        render();
       });
     });
-    itemsCont.querySelectorAll("[data-quitar]").forEach(el => {
-      el.addEventListener("click", () => {
-        AyfaCarrito.quitar(el.getAttribute("data-quitar"));
-        renderCarrito();
+
+    if (provList) {
+      const proveedores = [...new Set(TODOS.map(p => p.proveedor))].sort();
+      if (proveedores.length <= 1) {
+        provList.closest(".grupo").style.display = "none";
+      } else {
+        provList.closest(".grupo").style.display = "";
+        provList.innerHTML = proveedores.map(pr => `
+          <label>
+            <input type="checkbox" value="${pr}" ${filtroProveedores.has(pr) ? "checked" : ""}>
+            ${pr}
+          </label>
+        `).join("");
+        provList.querySelectorAll("input").forEach(inp => {
+          inp.addEventListener("change", () => {
+            if (inp.checked) filtroProveedores.add(inp.value);
+            else filtroProveedores.delete(inp.value);
+            render();
+          });
+        });
+      }
+    }
+  }
+
+  function productoCardHTML(p) {
+    const stockInfo = AyfaDatos.estadoStock(p.stock);
+    const sinStock = p.stock !== null && p.stock !== undefined && p.stock <= 0;
+    const maxAttr = (p.stock !== null && p.stock !== undefined && p.stock > 0) ? `max="${p.stock}"` : "";
+    const tienePromo = p.precioPromo && p.precioPromo > 0 && p.precioPromo < p.precio;
+    const precioMostrar = tienePromo ? p.precioPromo : p.precio;
+    const badge = tienePromo ? (p.promo || "Oferta") : (p.destacado ? "Destacado" : "");
+    return `
+      <div class="producto-card">
+        ${badge ? `<span class="producto-badge">${badge}</span>` : ""}
+        <div class="producto-img">${p.imagen ? `<img src="${p.imagen}" alt="${p.nombre}">` : "📦"}</div>
+        <div class="producto-marca">${p.marca || ""}</div>
+        <div class="producto-nombre">${p.nombre}</div>
+        <div class="producto-presentacion">${p.presentacion || ""}</div>
+        <div class="stock-info ${stockInfo.clase}">${stockInfo.texto}</div>
+        <div class="producto-precio-row">
+          ${tienePromo ? `<span class="precio-tachado">${AyfaDatos.formatoPrecio(p.precio)}</span>` : ""}
+          <span class="precio">${AyfaDatos.formatoPrecio(precioMostrar)}</span>
+        </div>
+        <div class="add-cart-row" style="margin-top:10px;">
+          <input type="number" min="1" value="1" ${maxAttr} class="qty-input" data-qty="${p.id}" ${sinStock ? "disabled" : ""}>
+          <button class="btn btn-primary btn-sm" data-agregar="${p.id}" ${sinStock ? "disabled" : ""} style="flex:1;">
+            ${sinStock ? "Sin stock" : "Agregar"}
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  function render() {
+    let lista = TODOS.slice();
+
+    if (texto) {
+      const t = texto.toLowerCase();
+      lista = lista.filter(p =>
+        p.nombre.toLowerCase().includes(t) ||
+        (p.marca || "").toLowerCase().includes(t) ||
+        (p.categoria || "").toLowerCase().includes(t)
+      );
+    }
+    if (filtroCategorias.size) lista = lista.filter(p => filtroCategorias.has(p.categoria));
+    if (filtroProveedores.size) lista = lista.filter(p => filtroProveedores.has(p.proveedor));
+    if (filtroSoloOferta) lista = lista.filter(p => p.precioPromo && p.precioPromo > 0);
+    if (filtroSoloStock) lista = lista.filter(p => p.stock === null || p.stock === undefined || p.stock > 0);
+
+    if (orden === "precio-asc") lista.sort((a, b) => (a.precioPromo || a.precio) - (b.precioPromo || b.precio));
+    else if (orden === "precio-desc") lista.sort((a, b) => (b.precioPromo || b.precio) - (a.precioPromo || a.precio));
+    else if (orden === "nombre") lista.sort((a, b) => a.nombre.localeCompare(b.nombre));
+
+    contador.textContent = `${lista.length} producto${lista.length === 1 ? "" : "s"} encontrado${lista.length === 1 ? "" : "s"}`;
+
+    if (!lista.length) {
+      grid.innerHTML = `<div class="vacio-msg" style="grid-column:1/-1;"><div class="icono">🔍</div>No encontramos productos con esos filtros.</div>`;
+      return;
+    }
+    grid.innerHTML = lista.map(productoCardHTML).join("");
+
+    grid.querySelectorAll("[data-agregar]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const id = btn.getAttribute("data-agregar");
+        const qtyInput = grid.querySelector(`[data-qty="${CSS.escape(id)}"]`);
+        const cantidad = Math.max(1, parseInt(qtyInput.value, 10) || 1);
+        AyfaCarrito.agregar(id, cantidad);
+        ayfaMostrarToast("Se agregó al carrito ✔");
       });
     });
   }
 
-  document.querySelectorAll(".entrega-opcion").forEach(op => {
-    op.addEventListener("click", () => {
-      document.querySelectorAll(".entrega-opcion").forEach(o => o.classList.remove("selected"));
-      op.classList.add("selected");
-      op.querySelector('input[type="radio"]').checked = true;
-      document.getElementById("campo-direccion-envio").style.display = op.dataset.opcion === "envio" ? "block" : "none";
-      selectZona.style.display = op.dataset.opcion === "reparto" ? "block" : "none";
+  async function init() {
+    grid.innerHTML = `<div class="vacio-msg" style="grid-column:1/-1;">Cargando catálogo…</div>`;
+    TODOS = await AyfaDatos.obtenerProductos();
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("q")) {
+      texto = params.get("q");
+      document.getElementById("input-buscar").value = texto;
+    }
+    if (params.get("cat")) filtroCategorias.add(params.get("cat"));
+
+    renderFiltros();
+    render();
+
+    document.getElementById("input-buscar").addEventListener("input", (e) => { texto = e.target.value; render(); });
+    document.getElementById("chk-oferta").addEventListener("change", (e) => { filtroSoloOferta = e.target.checked; render(); });
+    document.getElementById("chk-stock").addEventListener("change", (e) => { filtroSoloStock = e.target.checked; render(); });
+    document.getElementById("select-orden").addEventListener("change", (e) => { orden = e.target.value; render(); });
+    document.getElementById("btn-limpiar-filtros").addEventListener("click", () => {
+      filtroCategorias.clear(); filtroProveedores.clear(); filtroSoloOferta = false; filtroSoloStock = false; texto = "";
+      document.getElementById("input-buscar").value = "";
+      document.getElementById("chk-oferta").checked = false;
+      document.getElementById("chk-stock").checked = false;
+      renderFiltros(); render();
     });
-  });
+  }
 
-  btnConfirmar.addEventListener("click", async () => {
-    if (!AyfaAuth.requiereLogin("carrito.html")) return;
-
-    const entradaSel = document.querySelector('input[name="entrega"]:checked');
-    if (!entradaSel) { ayfaMostrarToast("Elegí cómo querés recibir tu pedido."); return; }
-
-    const opcion = document.querySelector(".entrega-opcion.selected").dataset.opcion;
-    if (opcion === "envio" && !document.getElementById("input-direccion-envio").value.trim()) {
-      ayfaMostrarToast("Ingresá la dirección de envío.");
-      return;
-    }
-
-    const detalle = AyfaCarrito.detalle(productos);
-    const u = AyfaAuth.usuarioActual();
-    const pedido = {
-      cliente: { nombre: u.nombre, apellido: u.apellido, email: u.email, telefono: u.telefono },
-      items: detalle.map(i => ({ sku: i.sku, proveedor: i.proveedor, nombre: i.nombre, cantidad: i.cantidad, precioUnit: i.precioUnit, subtotal: i.subtotal })),
-      total: detalle.reduce((a, i) => a + i.subtotal, 0),
-      tipoEntrega: entradaSel.value,
-      zona: opcion === "reparto" ? selectZona.value : "",
-      direccionEnvio: opcion === "envio" ? document.getElementById("input-direccion-envio").value.trim() : ""
-    };
-
-    btnConfirmar.disabled = true; btnConfirmar.textContent = "Enviando pedido…";
-    try {
-      const guardado = await AyfaPedidos.crearPedido(pedido);
-      AyfaCarrito.vaciar();
-      itemsCont.innerHTML = `
-        <div class="vacio-msg">
-          <div class="icono">✅</div>
-          <h3 style="color:var(--navy);">¡Pedido confirmado!</h3>
-          <p>Tu número de pedido es <strong>${guardado.numero}</strong>.<br>Te contactaremos para coordinar el pago y la entrega.</p>
-          <a href="mi-cuenta.html" class="btn btn-primary" style="margin-top:14px;">Ver mis pedidos</a>
-        </div>`;
-      resumenCont.innerHTML = "";
-      document.getElementById("entrega-opciones").style.display = "none";
-      btnConfirmar.style.display = "none";
-    } catch (err) {
-      ayfaMostrarToast(err.message || "No se pudo enviar el pedido.");
-      btnConfirmar.disabled = false; btnConfirmar.textContent = "Confirmar pedido";
-    }
-  });
-
-  renderCarrito();
+  document.addEventListener("DOMContentLoaded", init);
 })();
-</script>
-</body>
-</html>
