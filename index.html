@@ -1,54 +1,186 @@
-/*
-  pedidos.js — Crear pedidos y consultar historial. Igual que auth.js: si hay
-  APPS_SCRIPT_URL configurada, todo se guarda en el Google Sheet (hoja
-  "Pedidos"). Si no, se guarda en el navegador (localStorage).
-*/
-const AyfaPedidos = (function () {
-  const KEY_LOCAL = "ayfa_pedidos_local";
 
-  function usarBackend() {
-    return !!(AYFA_CONFIG.APPS_SCRIPT_URL && AYFA_CONFIG.APPS_SCRIPT_URL.trim());
-  }
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AY-FA Distribuciones — Almacén, bebidas, limpieza y más al mejor precio</title>
+<meta name="description" content="Distribuidora AY-FA: catálogo completo con precios y stock en vivo, envío a domicilio, retiro en depósito y reparto local.">
+<link rel="icon" href="assets/logo.png">
+<link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
 
-  async function llamarBackend(payload) {
-    const res = await fetch(AYFA_CONFIG.APPS_SCRIPT_URL, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(payload)
-    });
-    return res.json();
-  }
+<div class="topbar">🚚 Envío a domicilio · 🏬 Retiro en depósito · 📍 Reparto local por zonas — <strong>Hacé tu pedido online</strong></div>
 
-  function leerLocal() {
-    try { return JSON.parse(localStorage.getItem(KEY_LOCAL) || "[]"); } catch (e) { return []; }
-  }
-  function guardarLocal(lista) { localStorage.setItem(KEY_LOCAL, JSON.stringify(lista)); }
+<header class="site-header">
+  <div class="header-inner">
+    <a href="index.html" class="logo-link"><img src="assets/logo.png" alt="AY-FA Distribuciones"></a>
+    <form class="search-bar" data-search-form>
+      <input type="text" placeholder="Buscar productos, marcas, categorías...">
+      <button type="submit">Buscar</button>
+    </form>
+    <nav class="main-nav">
+      <a href="index.html" class="activo">Inicio</a>
+      <a href="catalogo.html">Catálogo</a>
+      <a href="contacto.html">Contacto</a>
+      <a href="ingresar.html" data-login-link>Ingresar</a>
+      <a href="mi-cuenta.html" class="user-chip" data-user-chip style="display:none;"></a>
+      <a href="carrito.html" class="cart-btn">🛒 Carrito <span class="cart-count" data-cart-count>0</span></a>
+    </nav>
+  </div>
+  <div class="cat-bar">
+    <div class="cat-bar-inner">
+      <a href="catalogo.html?cat=Almac%C3%A9n">Almacén</a>
+      <a href="catalogo.html?cat=Bebidas">Bebidas</a>
+      <a href="catalogo.html?cat=Limpieza">Limpieza</a>
+      <a href="catalogo.html?cat=Perfumer%C3%ADa">Perfumería</a>
+      <a href="catalogo.html?cat=Kiosco">Kiosco</a>
+      <a href="catalogo.html?cat=Congelados">Congelados</a>
+      <a href="catalogo.html?cat=Panificados">Panificados</a>
+      <a href="catalogo.html">Ver todo</a>
+    </div>
+  </div>
+</header>
 
-  async function crearPedido(pedido) {
-    pedido.numero = "AYFA-" + Date.now().toString().slice(-8);
-    pedido.fecha = new Date().toISOString();
-    pedido.estado = "Nuevo";
+<section class="hero" style="padding-top:44px; padding-bottom:44px;">
+  <div class="hero-inner">
+    <div class="hero-text">
+      <h1>Todo tu almacén, en un solo pedido.</h1>
+      <p>Consultá precios y disponibilidad actualizados, armá tu pedido online y elegí cómo lo recibís: envío a domicilio, retiro en depósito o reparto local por zonas.</p>
+      <div class="hero-actions">
+        <a href="catalogo.html" class="btn btn-primary">Ver catálogo</a>
+        <a href="registro.html" class="btn btn-outline">Crear cuenta gratis</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <img src="assets/logo-fondo.png" alt="AY-FA Distribuciones">
+    </div>
+  </div>
+</section>
 
-    if (usarBackend()) {
-      const resp = await llamarBackend({ accion: "pedido", pedido });
-      if (!resp.ok) throw new Error(resp.mensaje || "No se pudo enviar el pedido.");
-      return pedido;
-    } else {
-      const lista = leerLocal();
-      lista.unshift(pedido);
-      guardarLocal(lista);
-      return pedido;
-    }
-  }
+<section class="container">
+  <div class="beneficios">
+    <div class="beneficio-card">
+      <div class="icono">🚚</div>
+      <h3>Envío a domicilio</h3>
+      <p>Recibí tu pedido donde estés, coordinando el costo y tiempo de entrega.</p>
+    </div>
+    <div class="beneficio-card">
+      <div class="icono">🏬</div>
+      <h3>Retiro en depósito</h3>
+      <p data-empresa-direccion>Retirá tu pedido sin costo adicional en nuestro depósito.</p>
+    </div>
+    <div class="beneficio-card">
+      <div class="icono">📍</div>
+      <h3>Reparto local por zonas</h3>
+      <p>Reparto propio en Centro, Zona Norte, Zona Sur y Zona Oeste.</p>
+    </div>
+    <div class="beneficio-card">
+      <div class="icono">💲</div>
+      <h3>Precios actualizados</h3>
+      <p>Nuestros precios y stock se actualizan directamente desde nuestro sistema.</p>
+    </div>
+  </div>
+</section>
 
-  async function misPedidos(email) {
-    if (usarBackend()) {
-      const resp = await llamarBackend({ accion: "misPedidos", email });
-      return resp.ok ? resp.pedidos : [];
-    } else {
-      return leerLocal().filter(p => p.cliente && p.cliente.email && p.cliente.email.toLowerCase() === email.toLowerCase());
-    }
-  }
+<section class="container">
+  <div class="promo-banner">
+    <div>
+      <h3>¿Ya tenés cuenta?</h3>
+      <p>Registrate una vez y hacé tus próximos pedidos en minutos.</p>
+    </div>
+    <a href="registro.html" class="btn btn-navy" style="background:#fff; color:var(--maroon);">Crear cuenta</a>
+  </div>
 
-  return { crearPedido, misPedidos };
-})();
+  <div class="section-title">
+    <h2>Categorías</h2>
+    <a href="catalogo.html">Ver catálogo completo →</a>
+  </div>
+  <div class="categorias-grid">
+    <a href="catalogo.html?cat=Almac%C3%A9n" class="categoria-card"><span class="icono">🛒</span>Almacén</a>
+    <a href="catalogo.html?cat=Bebidas" class="categoria-card"><span class="icono">🥤</span>Bebidas</a>
+    <a href="catalogo.html?cat=Limpieza" class="categoria-card"><span class="icono">🧽</span>Limpieza</a>
+    <a href="catalogo.html?cat=Perfumer%C3%ADa" class="categoria-card"><span class="icono">🧴</span>Perfumería</a>
+    <a href="catalogo.html?cat=Kiosco" class="categoria-card"><span class="icono">🍬</span>Kiosco</a>
+    <a href="catalogo.html?cat=Congelados" class="categoria-card"><span class="icono">🧊</span>Congelados</a>
+    <a href="catalogo.html?cat=Panificados" class="categoria-card"><span class="icono">🍞</span>Panificados</a>
+  </div>
+</section>
+
+<section class="container">
+  <div class="section-title">
+    <h2>Productos destacados</h2>
+    <a href="catalogo.html">Ver todos →</a>
+  </div>
+  <div class="productos-grid" id="destacados-grid">
+    <div class="vacio-msg" style="grid-column:1/-1;">Cargando productos…</div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <h4>AY-FA Distribuciones</h4>
+        <p>Tu distribuidora de confianza: almacén, bebidas, limpieza, perfumería y más, a los mejores precios.</p>
+      </div>
+      <div>
+        <h4>Enlaces</h4>
+        <a href="catalogo.html">Catálogo completo</a>
+        <a href="registro.html">Crear cuenta</a>
+        <a href="ingresar.html">Ingresar</a>
+        <a href="contacto.html">Contacto</a>
+      </div>
+      <div>
+        <h4>Entrega</h4>
+        <p>🚚 Envío a domicilio</p>
+        <p>🏬 Retiro en depósito</p>
+        <p>📍 Reparto local por zonas</p>
+      </div>
+      <div>
+        <h4>Contacto</h4>
+        <p data-empresa-email>—</p>
+        <p data-empresa-horarios>—</p>
+      </div>
+    </div>
+    <div class="footer-bottom">© <span data-anio></span> AY-FA Distribuciones. Todos los derechos reservados.</div>
+  </div>
+</footer>
+<a href="#" class="whatsapp-float" data-whatsapp title="Escribinos por WhatsApp" target="_blank">💬</a>
+
+<script src="js/config.js"></script>
+<script src="js/datos.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/carrito.js"></script>
+<script src="js/principal.js"></script>
+<script>
+  (async function () {
+    const productos = await AyfaDatos.obtenerProductos();
+    const destacados = productos.filter(p => p.destacado || (p.precioPromo && p.precioPromo > 0)).slice(0, 8);
+    const lista = destacados.length ? destacados : productos.slice(0, 8);
+    const grid = document.getElementById("destacados-grid");
+    grid.innerHTML = lista.map(p => {
+      const stockInfo = AyfaDatos.estadoStock(p.stock);
+      const tienePromo = p.precioPromo && p.precioPromo > 0 && p.precioPromo < p.precio;
+      const precioMostrar = tienePromo ? p.precioPromo : p.precio;
+      const badge = tienePromo ? (p.promo || "Oferta") : (p.destacado ? "Destacado" : "");
+      return `
+        <div class="producto-card">
+          ${badge ? `<span class="producto-badge">${badge}</span>` : ""}
+          <div class="producto-img">${p.imagen ? `<img src="${p.imagen}" alt="${p.nombre}">` : "📦"}</div>
+          <div class="producto-marca">${p.marca || ""}</div>
+          <div class="producto-nombre">${p.nombre}</div>
+          <div class="producto-presentacion">${p.presentacion || ""}</div>
+          <div class="stock-info ${stockInfo.clase}">${stockInfo.texto}</div>
+          <div class="producto-precio-row">
+            ${tienePromo ? `<span class="precio-tachado">${AyfaDatos.formatoPrecio(p.precio)}</span>` : ""}
+            <span class="precio">${AyfaDatos.formatoPrecio(precioMostrar)}</span>
+          </div>
+          <a href="catalogo.html" class="btn btn-primary btn-sm" style="margin-top:10px; text-align:center;">Ver en catálogo</a>
+        </div>`;
+    }).join("");
+  })();
+</script>
+</body>
+</html>
