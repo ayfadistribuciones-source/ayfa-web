@@ -115,7 +115,14 @@ const AyfaDatos = (function () {
   }
 
   async function obtenerDeUnaHoja(nombreHoja) {
-    const url = `https://docs.google.com/spreadsheets/d/${AYFA_CONFIG.SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(nombreHoja)}`;
+    // Preferimos el endpoint "export" (usa el permiso de compartir del
+    // archivo, siempre en vivo) sobre el viejo endpoint "gviz" (depende de
+    // que "Publicar en la web" esté al día, y puede quedar desactualizado).
+    const gids = AYFA_CONFIG.SHEET_GIDS || {};
+    const tieneGid = Object.prototype.hasOwnProperty.call(gids, nombreHoja);
+    const url = tieneGid
+      ? `https://docs.google.com/spreadsheets/d/${AYFA_CONFIG.SHEET_ID}/export?format=csv&gid=${gids[nombreHoja]}`
+      : `https://docs.google.com/spreadsheets/d/${AYFA_CONFIG.SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(nombreHoja)}`;
     const res = await fetch(url, { cache: "no-store" });
     if (!res.ok) throw new Error(`No se pudo leer la hoja "${nombreHoja}" del Google Sheet`);
     const texto = await res.text();
