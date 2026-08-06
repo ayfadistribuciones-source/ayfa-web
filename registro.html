@@ -1,64 +1,185 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Contacto — AY-FA Distribuciones</title>
+<title>Crear cuenta — AY-FA Distribuciones</title>
 <link rel="icon" href="assets/logo.png">
 <link rel="stylesheet" href="css/estilos.css">
 </head>
 <body>
 
+<div class="topbar">🚚 Envío a domicilio · 🏬 Retiro en depósito · 📍 Reparto local por zonas — <strong>Hacé tu pedido online</strong></div>
+
 <header class="site-header">
   <div class="header-inner">
     <a href="index.html" class="logo-link"><img src="assets/logo.png" alt="AY-FA Distribuciones"></a>
-    <nav class="main-nav" style="margin-left:auto;">
+    <form class="search-bar" data-search-form>
+      <input type="text" placeholder="Buscar productos, marcas, categorías...">
+      <button type="submit">Buscar</button>
+    </form>
+    <nav class="main-nav">
       <a href="index.html">Inicio</a>
       <a href="catalogo.html">Catálogo</a>
-      <a href="contacto.html" class="activo">Contacto</a>
+      <a href="contacto.html">Contacto</a>
       <a href="ingresar.html" data-login-link>Ingresar</a>
       <a href="mi-cuenta.html" class="user-chip" data-user-chip style="display:none;"></a>
       <a href="carrito.html" class="cart-btn">🛒 Carrito <span class="cart-count" data-cart-count>0</span></a>
     </nav>
   </div>
+  <div class="cat-bar">
+    <div class="cat-bar-inner">
+      <a href="catalogo.html?cat=Galletitas">Galletitas</a>
+      <a href="catalogo.html?cat=Perfumer%C3%ADa">Perfumería</a>
+      <a href="catalogo.html?cat=Limpieza">Limpieza</a>
+      <a href="catalogo.html?cat=Vinos">Vinos</a>
+      <a href="catalogo.html?cat=Enlatados">Enlatados</a>
+      <a href="catalogo.html?cat=Golosinas">Golosinas</a>
+      <a href="catalogo.html?cat=Bebidas">Bebidas</a>
+      <a href="catalogo.html">Ver todo</a>
+    </div>
+  </div>
 </header>
 
-<section class="container" style="padding: 44px 20px 80px;">
-  <div class="section-title"><h2>Contacto</h2></div>
-  <div class="beneficios">
-    <div class="beneficio-card">
-      <div class="icono">💬</div>
-      <h3>WhatsApp</h3>
-      <p><a href="#" data-whatsapp target="_blank" style="color:var(--teal); font-weight:700;">Escribinos ahora</a></p>
-    </div>
-    <div class="beneficio-card">
-      <div class="icono">✉️</div>
-      <h3>Email</h3>
-      <p data-empresa-email>—</p>
-    </div>
-    <div class="beneficio-card">
-      <div class="icono">🏬</div>
-      <h3>Depósito / Retiro</h3>
-      <p data-empresa-direccion>—</p>
-    </div>
-    <div class="beneficio-card">
-      <div class="icono">🕒</div>
-      <h3>Horarios</h3>
-      <p data-empresa-horarios>—</p>
-    </div>
+<section class="container" style="padding: 40px 0 60px;">
+  <div class="form-card">
+    <h2>Crear cuenta</h2>
+    <p style="color:var(--gray); font-size:0.9rem; margin-top:-10px;">Registrate una vez y hacé tus próximos pedidos en minutos.</p>
+
+    <div class="msg-box msg-ok" id="msg-ok"></div>
+    <div class="msg-box msg-error" id="msg-error"></div>
+
+    <form id="form-registro">
+      <div class="campo">
+        <label for="campo-nombre">Nombre y apellido / Razón social</label>
+        <input type="text" id="campo-nombre" required>
+      </div>
+      <div class="campo-fila">
+        <div class="campo">
+          <label for="campo-email">Email</label>
+          <input type="email" id="campo-email" required>
+        </div>
+        <div class="campo">
+          <label for="campo-telefono">Teléfono</label>
+          <input type="tel" id="campo-telefono">
+        </div>
+      </div>
+      <div class="campo">
+        <label for="campo-direccion">Dirección (para envío a domicilio)</label>
+        <input type="text" id="campo-direccion">
+      </div>
+      <div class="campo">
+        <label for="campo-zona">Zona de reparto local (si corresponde)</label>
+        <select id="campo-zona">
+          <option value="">— Elegir zona —</option>
+        </select>
+      </div>
+      <div class="campo">
+        <label for="campo-password">Contraseña</label>
+        <input type="password" id="campo-password" required minlength="6">
+        <div class="ayuda-texto">Mínimo 6 caracteres.</div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Crear cuenta</button>
+      <p style="text-align:center; font-size:0.85rem; margin-top:14px;">¿Ya tenés cuenta? <a href="ingresar.html" style="color:var(--teal); font-weight:600;">Ingresá acá</a></p>
+    </form>
   </div>
 </section>
 
 <footer class="site-footer">
   <div class="container">
+    <div class="footer-grid">
+      <div>
+        <h4>AY-FA Distribuciones</h4>
+        <p>Tu distribuidora de confianza: almacén, bebidas, limpieza, perfumería y más, a los mejores precios.</p>
+      </div>
+      <div>
+        <h4>Enlaces</h4>
+        <a href="catalogo.html">Catálogo completo</a>
+        <a href="registro.html">Crear cuenta</a>
+        <a href="ingresar.html">Ingresar</a>
+        <a href="contacto.html">Contacto</a>
+      </div>
+      <div>
+        <h4>Entrega</h4>
+        <p>🚚 Envío a domicilio</p>
+        <p>🏬 Retiro en depósito</p>
+        <p>📍 Reparto local por zonas</p>
+      </div>
+      <div>
+        <h4>Contacto</h4>
+        <p data-empresa-email>—</p>
+        <p data-empresa-horarios>—</p>
+      </div>
+    </div>
     <div class="footer-bottom">© <span data-anio></span> AY-FA Distribuciones. Todos los derechos reservados.</div>
   </div>
 </footer>
+<a href="#" class="whatsapp-float" data-whatsapp title="Escribinos por WhatsApp" target="_blank">💬</a>
 
 <script src="js/config.js"></script>
 <script src="js/datos.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/carrito.js"></script>
 <script src="js/principal.js"></script>
+<script>
+(function () {
+  const selectZona = document.getElementById("campo-zona");
+  (AYFA_CONFIG.ZONAS_REPARTO_LOCAL || []).forEach(z => {
+    const opt = document.createElement("option");
+    opt.value = z; opt.textContent = z;
+    selectZona.appendChild(opt);
+  });
+
+  const form = document.getElementById("form-registro");
+  const msgOk = document.getElementById("msg-ok");
+  const msgError = document.getElementById("msg-error");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    msgOk.style.display = "none";
+    msgError.style.display = "none";
+
+    const datos = {
+      nombre: document.getElementById("campo-nombre").value.trim(),
+      email: document.getElementById("campo-email").value.trim().toLowerCase(),
+      telefono: document.getElementById("campo-telefono").value.trim(),
+      direccion: document.getElementById("campo-direccion").value.trim(),
+      zona: selectZona.value,
+      password: document.getElementById("campo-password").value
+    };
+
+    if (!datos.nombre || !datos.email || !datos.password) {
+      msgError.textContent = "Completá nombre, email y contraseña.";
+      msgError.style.display = "block";
+      return;
+    }
+    if (datos.password.length < 6) {
+      msgError.textContent = "La contraseña tiene que tener al menos 6 caracteres.";
+      msgError.style.display = "block";
+      return;
+    }
+
+    const btn = form.querySelector("button[type=submit]");
+    btn.disabled = true; btn.textContent = "Creando cuenta…";
+    try {
+      const resp = await AyfaAuth.registrar(datos);
+      if (resp && resp.ok) {
+        msgOk.textContent = "¡Cuenta creada con éxito! Redirigiendo…";
+        msgOk.style.display = "block";
+        setTimeout(() => { window.location.href = "mi-cuenta.html"; }, 900);
+      } else {
+        msgError.textContent = (resp && resp.mensaje) || "No pudimos crear la cuenta. Probá de nuevo.";
+        msgError.style.display = "block";
+        btn.disabled = false; btn.textContent = "Crear cuenta";
+      }
+    } catch (err) {
+      msgError.textContent = "No pudimos crear la cuenta: " + err.message;
+      msgError.style.display = "block";
+      btn.disabled = false; btn.textContent = "Crear cuenta";
+    }
+  });
+})();
+</script>
 </body>
 </html>
