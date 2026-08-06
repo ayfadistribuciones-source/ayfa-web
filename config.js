@@ -1,156 +1,53 @@
 /*
-  AY-FA DISTRIBUCIONES — Google Apps Script (backend gratuito)
-  ================================================================
-  Este script convierte tu Google Sheet en una mini base de datos para la
-  web: guarda los clientes que se registran y los pedidos que hacen.
+  CONFIGURACIÓN CENTRAL DE AY-FA DISTRIBUCIONES
+  ================================================
+  Acá se conecta la web con tu Google Sheet (precios/stock en vivo) y con el
+  Google Apps Script (que guarda registros de clientes y pedidos).
 
-  CÓMO INSTALARLO (ver también INSTRUCCIONES.md):
-  1. Abrí tu Google Sheet (el mismo donde tenés/vas a tener la hoja "Productos").
-  2. Menú Extensiones → Apps Script.
-  3. Borrá el contenido de Code.gs que aparece por defecto y pegá TODO este archivo.
-  4. Guardá (ícono de disco).
-  5. Arriba a la derecha: Implementar → Nueva implementación.
-     - Tipo: "Aplicación web"
-     - Ejecutar como: "Yo (tu cuenta)"
-     - Quién tiene acceso: "Cualquier usuario"
-  6. Autorizá los permisos que pida Google (es tu propia planilla).
-  7. Copiá la URL que te da ("URL de la aplicación web") y pegala en
-     js/config.js, en APPS_SCRIPT_URL.
-  8. Cada vez que cambies el código, tenés que hacer "Nueva implementación"
-     de nuevo (o "Gestionar implementaciones" → editar → nueva versión).
-
-  Este script crea automáticamente, si no existen, las hojas "Usuarios" y
-  "Pedidos" la primera vez que alguien se registra o hace un pedido.
+  Mientras SHEET_ID esté vacío, la web usa el catálogo de ejemplo en
+  /data/productos.json. En cuanto completes los datos de abajo, la web
+  empieza a leer tu planilla real automáticamente. Ver INSTRUCCIONES.md.
 */
 
-function doPost(e) {
-  var resultado;
-  try {
-    var body = JSON.parse(e.postData.contents);
-    var accion = body.accion;
+const AYFA_CONFIG = {
+  // 1) ID de tu Google Sheet (lo sacás de la URL de la planilla, la parte
+  //    larga entre /d/ y /edit). Dejalo vacío ("") para usar datos de ejemplo.
+  SHEET_ID: "1ScLpisoteStd_VdAJi4RHxK-lEZ4Bsh93IHbh5xZ0bE",
 
-    if (accion === "registrar") resultado = registrarCliente(body.cliente);
-    else if (accion === "login") resultado = loginCliente(body.email, body.passwordHash);
-    else if (accion === "pedido") resultado = crearPedido(body.pedido);
-    else if (accion === "misPedidos") resultado = obtenerPedidos(body.email);
-    else resultado = { ok: false, mensaje: "Acción no reconocida." };
-  } catch (err) {
-    resultado = { ok: false, mensaje: "Error en el servidor: " + err.message };
-  }
-  return ContentService.createTextOutput(JSON.stringify(resultado)).setMimeType(ContentService.MimeType.JSON);
-}
+  // 2) Nombres exactos de las hojas/pestañas con productos. Usá una pestaña
+  //    por proveedor así pegás cada lista de PDF por separado, sin mezclarlas
+  //    ni reformatearlas a mano — la web las junta solas para armar el
+  //    catálogo. Agregá o sacá nombres de esta lista según cuántos
+  //    proveedores tengas (podés tener 2, 3, o los que necesites).
+  SHEET_TABS_PRODUCTOS: ["AyFa", "Ramseyer"],
 
-function doGet(e) {
-  return ContentService.createTextOutput(JSON.stringify({ ok: true, mensaje: "AY-FA backend activo." })).setMimeType(ContentService.MimeType.JSON);
-}
+  // 3) URL del Google Apps Script publicado como "Aplicación web" (ver
+  //    INSTRUCCIONES.md). Se usa para guardar registros de clientes y pedidos.
+  //    Dejalo vacío ("") para que el sitio guarde todo localmente en el
+  //    navegador (modo demo, sin backend).
+  APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbxLym6i5VKzw5-7it7sPF7UfoZUJ7U7punwoctECBBSF1RHEO-4tUfWsFecM1NYHVD8yw/exec",
 
-// ---------- Utilidades de hojas ----------
+  // 4) Datos de contacto y de la empresa
+  EMPRESA: {
+    nombre: "AY-FA Distribuciones",
+    whatsapp: "5493400000000", // reemplazar por el número real, con código de país sin +
+    email: "pedidos@ayfadistribuciones.com.ar",
+    direccionRetiro: "Depósito AY-FA — Dirección a confirmar",
+    horarios: "Lunes a Viernes 8 a 18 hs · Sábados 8 a 13 hs"
+  },
 
-var ENCABEZADOS_USUARIOS = ["Fecha", "Nombre", "Apellido", "Email", "Telefono", "Direccion", "Localidad", "TipoCliente", "CuitDni", "Zona", "PasswordHash"];
-var ENCABEZADOS_PEDIDOS = ["Numero", "Fecha", "Estado", "ClienteNombre", "ClienteApellido", "ClienteEmail", "ClienteTelefono", "TipoEntrega", "Zona", "DireccionEnvio", "Items", "Total"];
+  // 5) Zonas donde ofrecen reparto local propio (aparecen como opción en el checkout)
+  ZONAS_REPARTO_LOCAL: [
+    "Centro",
+    "Zona Norte",
+    "Zona Sur",
+    "Zona Oeste"
+  ],
 
-function obtenerHoja(nombre, encabezados) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var hoja = ss.getSheetByName(nombre);
-  if (!hoja) {
-    hoja = ss.insertSheet(nombre);
-    hoja.appendRow(encabezados);
-    hoja.getRange(1, 1, 1, encabezados.length).setFontWeight("bold");
-  }
-  return hoja;
-}
+  // 6) Costo de envío (se puede dejar en 0 y coordinar el costo por WhatsApp)
+  COSTO_ENVIO: 0,
+  COSTO_REPARTO_LOCAL: 0,
 
-function filasComoObjetos(hoja) {
-  var datos = hoja.getDataRange().getValues();
-  var headers = datos[0];
-  var objetos = [];
-  for (var i = 1; i < datos.length; i++) {
-    var obj = {};
-    for (var j = 0; j < headers.length; j++) obj[headers[j]] = datos[i][j];
-    obj._fila = i + 1;
-    objetos.push(obj);
-  }
-  return objetos;
-}
-
-// ---------- Clientes ----------
-
-function registrarCliente(cliente) {
-  var lock = LockService.getScriptLock();
-  lock.waitLock(10000);
-  try {
-    var hoja = obtenerHoja("Usuarios", ENCABEZADOS_USUARIOS);
-    var existentes = filasComoObjetos(hoja);
-    var yaExiste = existentes.some(function (u) {
-      return String(u.Email).toLowerCase() === String(cliente.email).toLowerCase();
-    });
-    if (yaExiste) return { ok: false, mensaje: "Ya existe una cuenta registrada con ese email." };
-
-    hoja.appendRow([
-      new Date(), cliente.nombre || "", cliente.apellido || "", cliente.email || "",
-      cliente.telefono || "", cliente.direccion || "", cliente.localidad || "",
-      cliente.tipoCliente || "", cliente.cuitDni || "", cliente.zona || "", cliente.passwordHash || ""
-    ]);
-
-    var clienteSinPass = Object.assign({}, cliente);
-    delete clienteSinPass.passwordHash;
-    return { ok: true, cliente: clienteSinPass };
-  } finally {
-    lock.releaseLock();
-  }
-}
-
-function loginCliente(email, passwordHash) {
-  var hoja = obtenerHoja("Usuarios", ENCABEZADOS_USUARIOS);
-  var usuarios = filasComoObjetos(hoja);
-  var encontrado = usuarios.find(function (u) {
-    return String(u.Email).toLowerCase() === String(email).toLowerCase() && String(u.PasswordHash) === String(passwordHash);
-  });
-  if (!encontrado) return { ok: false, mensaje: "Email o contraseña incorrectos." };
-
-  return {
-    ok: true,
-    cliente: {
-      nombre: encontrado.Nombre, apellido: encontrado.Apellido, email: encontrado.Email,
-      telefono: encontrado.Telefono, direccion: encontrado.Direccion, localidad: encontrado.Localidad,
-      tipoCliente: encontrado.TipoCliente, cuitDni: encontrado.CuitDni, zona: encontrado.Zona
-    }
-  };
-}
-
-// ---------- Pedidos ----------
-
-function crearPedido(pedido) {
-  var lock = LockService.getScriptLock();
-  lock.waitLock(10000);
-  try {
-    var hoja = obtenerHoja("Pedidos", ENCABEZADOS_PEDIDOS);
-    hoja.appendRow([
-      pedido.numero, pedido.fecha, pedido.estado || "Nuevo",
-      pedido.cliente.nombre || "", pedido.cliente.apellido || "", pedido.cliente.email || "", pedido.cliente.telefono || "",
-      pedido.tipoEntrega || "", pedido.zona || "", pedido.direccionEnvio || "",
-      JSON.stringify(pedido.items || []), pedido.total || 0
-    ]);
-    return { ok: true };
-  } finally {
-    lock.releaseLock();
-  }
-}
-
-function obtenerPedidos(email) {
-  var hoja = obtenerHoja("Pedidos", ENCABEZADOS_PEDIDOS);
-  var filas = filasComoObjetos(hoja);
-  var pedidos = filas
-    .filter(function (p) { return String(p.ClienteEmail).toLowerCase() === String(email).toLowerCase(); })
-    .map(function (p) {
-      var items = [];
-      try { items = JSON.parse(p.Items); } catch (e) {}
-      return {
-        numero: p.Numero, fecha: p.Fecha, estado: p.Estado, tipoEntrega: p.TipoEntrega,
-        zona: p.Zona, direccionEnvio: p.DireccionEnvio, items: items, total: p.Total,
-        cliente: { nombre: p.ClienteNombre, apellido: p.ClienteApellido, email: p.ClienteEmail, telefono: p.ClienteTelefono }
-      };
-    })
-    .reverse();
-  return { ok: true, pedidos: pedidos };
-}
+  // 7) Monto de compra mínima (0 = sin mínimo)
+  COMPRA_MINIMA: 0
+};
