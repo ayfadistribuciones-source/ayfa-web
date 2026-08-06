@@ -1,69 +1,140 @@
-/*
-  principal.js — Cosas comunes a todas las páginas: contador de carrito,
-  chip de usuario logueado, buscador del header, toasts y año del footer.
-*/
-function ayfaActualizarHeader() {
-  const cont = document.querySelectorAll("[data-cart-count]");
-  const total = AyfaCarrito.cantidadTotal();
-  cont.forEach(el => { el.textContent = total; el.style.display = total > 0 ? "inline-flex" : "none"; });
 
-  const user = AyfaAuth.usuarioActual();
-  const chip = document.querySelector("[data-user-chip]");
-  const loginLink = document.querySelector("[data-login-link]");
-  if (chip && loginLink) {
-    if (user) {
-      chip.style.display = "inline-flex";
-      chip.textContent = "Hola, " + (user.nombre || user.email);
-      loginLink.style.display = "none";
-    } else {
-      chip.style.display = "none";
-      loginLink.style.display = "inline-block";
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ingresar — AY-FA Distribuciones</title>
+<link rel="icon" href="assets/logo.png">
+<link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+<div class="topbar">🚚 Envío a domicilio · 🏬 Retiro en depósito · 📍 Reparto local por zonas — <strong>Hacé tu pedido online</strong></div>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a href="index.html" class="logo-link"><img src="assets/logo.png" alt="AY-FA Distribuciones"></a>
+    <form class="search-bar" data-search-form>
+      <input type="text" placeholder="Buscar productos, marcas, categorías...">
+      <button type="submit">Buscar</button>
+    </form>
+    <nav class="main-nav">
+      <a href="index.html">Inicio</a>
+      <a href="catalogo.html">Catálogo</a>
+      <a href="contacto.html">Contacto</a>
+      <a href="ingresar.html" data-login-link>Ingresar</a>
+      <a href="mi-cuenta.html" class="user-chip" data-user-chip style="display:none;"></a>
+      <a href="carrito.html" class="cart-btn">🛒 Carrito <span class="cart-count" data-cart-count>0</span></a>
+    </nav>
+  </div>
+  <div class="cat-bar">
+    <div class="cat-bar-inner">
+      <a href="catalogo.html?cat=Galletitas">Galletitas</a>
+      <a href="catalogo.html?cat=Perfumer%C3%ADa">Perfumería</a>
+      <a href="catalogo.html?cat=Limpieza">Limpieza</a>
+      <a href="catalogo.html?cat=Vinos">Vinos</a>
+      <a href="catalogo.html?cat=Enlatados">Enlatados</a>
+      <a href="catalogo.html?cat=Golosinas">Golosinas</a>
+      <a href="catalogo.html?cat=Bebidas">Bebidas</a>
+      <a href="catalogo.html">Ver todo</a>
+    </div>
+  </div>
+</header>
+
+<section class="container" style="padding: 40px 0 60px;">
+  <div class="form-card">
+    <h2>Ingresar</h2>
+    <p style="color:var(--gray); font-size:0.9rem; margin-top:-10px;">Accedé a tu cuenta para ver tu historial y hacer pedidos más rápido.</p>
+
+    <div class="msg-box msg-ok" id="msg-ok"></div>
+    <div class="msg-box msg-error" id="msg-error"></div>
+
+    <form id="form-ingresar">
+      <div class="campo">
+        <label for="campo-email">Email</label>
+        <input type="email" id="campo-email" required>
+      </div>
+      <div class="campo">
+        <label for="campo-password">Contraseña</label>
+        <input type="password" id="campo-password" required>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Ingresar</button>
+      <p style="text-align:center; font-size:0.85rem; margin-top:14px;">¿No tenés cuenta? <a href="registro.html" style="color:var(--teal); font-weight:600;">Creá una gratis</a></p>
+    </form>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <h4>AY-FA Distribuciones</h4>
+        <p>Tu distribuidora de confianza: almacén, bebidas, limpieza, perfumería y más, a los mejores precios.</p>
+      </div>
+      <div>
+        <h4>Enlaces</h4>
+        <a href="catalogo.html">Catálogo completo</a>
+        <a href="registro.html">Crear cuenta</a>
+        <a href="ingresar.html">Ingresar</a>
+        <a href="contacto.html">Contacto</a>
+      </div>
+      <div>
+        <h4>Entrega</h4>
+        <p>🚚 Envío a domicilio</p>
+        <p>🏬 Retiro en depósito</p>
+        <p>📍 Reparto local por zonas</p>
+      </div>
+      <div>
+        <h4>Contacto</h4>
+        <p data-empresa-email>—</p>
+        <p data-empresa-horarios>—</p>
+      </div>
+    </div>
+    <div class="footer-bottom">© <span data-anio></span> AY-FA Distribuciones. Todos los derechos reservados.</div>
+  </div>
+</footer>
+<a href="#" class="whatsapp-float" data-whatsapp title="Escribinos por WhatsApp" target="_blank">💬</a>
+
+<script src="js/config.js"></script>
+<script src="js/datos.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/carrito.js"></script>
+<script src="js/principal.js"></script>
+<script>
+(function () {
+  const form = document.getElementById("form-ingresar");
+  const msgOk = document.getElementById("msg-ok");
+  const msgError = document.getElementById("msg-error");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    msgOk.style.display = "none";
+    msgError.style.display = "none";
+
+    const email = document.getElementById("campo-email").value.trim().toLowerCase();
+    const password = document.getElementById("campo-password").value;
+
+    const btn = form.querySelector("button[type=submit]");
+    btn.disabled = true; btn.textContent = "Ingresando…";
+    try {
+      const resp = await AyfaAuth.login(email, password);
+      if (resp && resp.ok) {
+        msgOk.textContent = "¡Bienvenido! Redirigiendo…";
+        msgOk.style.display = "block";
+        setTimeout(() => { window.location.href = "mi-cuenta.html"; }, 700);
+      } else {
+        msgError.textContent = (resp && resp.mensaje) || "Email o contraseña incorrectos.";
+        msgError.style.display = "block";
+        btn.disabled = false; btn.textContent = "Ingresar";
+      }
+    } catch (err) {
+      msgError.textContent = "No pudimos iniciar sesión: " + err.message;
+      msgError.style.display = "block";
+      btn.disabled = false; btn.textContent = "Ingresar";
     }
-  }
-}
-
-function ayfaMostrarToast(msg) {
-  let toast = document.querySelector(".toast");
-  if (!toast) {
-    toast = document.createElement("div");
-    toast.className = "toast";
-    document.body.appendChild(toast);
-  }
-  toast.textContent = msg;
-  toast.classList.add("show");
-  clearTimeout(toast._t);
-  toast._t = setTimeout(() => toast.classList.remove("show"), 2600);
-}
-
-function ayfaSetupBuscador() {
-  const form = document.querySelector("[data-search-form]");
-  if (!form) return;
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const q = form.querySelector("input").value.trim();
-    window.location.href = "catalogo.html" + (q ? ("?q=" + encodeURIComponent(q)) : "");
   });
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  ayfaActualizarHeader();
-  ayfaSetupBuscador();
-  const anio = document.querySelector("[data-anio]");
-  if (anio) anio.textContent = new Date().getFullYear();
-
-  const logoutBtn = document.querySelector("[data-logout]");
-  if (logoutBtn) logoutBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    AyfaAuth.cerrarSesion();
-    window.location.href = "index.html";
-  });
-
-  const wa = document.querySelector("[data-whatsapp]");
-  if (wa && AYFA_CONFIG.EMPRESA.whatsapp) {
-    wa.href = "https://wa.me/" + AYFA_CONFIG.EMPRESA.whatsapp + "?text=" + encodeURIComponent("Hola AY-FA! Quiero hacer una consulta.");
-  }
-  document.querySelectorAll("[data-empresa-email]").forEach(el => el.textContent = AYFA_CONFIG.EMPRESA.email);
-  document.querySelectorAll("[data-empresa-horarios]").forEach(el => el.textContent = AYFA_CONFIG.EMPRESA.horarios);
-  document.querySelectorAll("[data-empresa-direccion]").forEach(el => el.textContent = AYFA_CONFIG.EMPRESA.direccionRetiro);
-});
-document.addEventListener("ayfa:carrito-actualizado", ayfaActualizarHeader);
+})();
+</script>
+</body>
+</html>
