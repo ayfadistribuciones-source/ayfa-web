@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Catálogo — AY-FA Distribuciones</title>
+<title>Mi cuenta — AY-FA Distribuciones</title>
 <link rel="icon" href="assets/logo.png">
 <link rel="stylesheet" href="css/estilos.css">
 </head>
@@ -20,71 +21,44 @@
     </form>
     <nav class="main-nav">
       <a href="index.html">Inicio</a>
-      <a href="catalogo.html" class="activo">Catálogo</a>
+      <a href="catalogo.html">Catálogo</a>
       <a href="contacto.html">Contacto</a>
       <a href="ingresar.html" data-login-link>Ingresar</a>
-      <a href="mi-cuenta.html" class="user-chip" data-user-chip style="display:none;"></a>
+      <a href="mi-cuenta.html" class="user-chip activo" data-user-chip style="display:none;"></a>
       <a href="carrito.html" class="cart-btn">🛒 Carrito <span class="cart-count" data-cart-count>0</span></a>
     </nav>
   </div>
   <div class="cat-bar">
     <div class="cat-bar-inner">
-      <a href="catalogo.html?cat=Almac%C3%A9n">Almacén</a>
-      <a href="catalogo.html?cat=Bebidas">Bebidas</a>
-      <a href="catalogo.html?cat=Limpieza">Limpieza</a>
+      <a href="catalogo.html?cat=Galletitas">Galletitas</a>
       <a href="catalogo.html?cat=Perfumer%C3%ADa">Perfumería</a>
-      <a href="catalogo.html?cat=Kiosco">Kiosco</a>
-      <a href="catalogo.html?cat=Congelados">Congelados</a>
-      <a href="catalogo.html?cat=Panificados">Panificados</a>
+      <a href="catalogo.html?cat=Limpieza">Limpieza</a>
+      <a href="catalogo.html?cat=Vinos">Vinos</a>
+      <a href="catalogo.html?cat=Enlatados">Enlatados</a>
+      <a href="catalogo.html?cat=Golosinas">Golosinas</a>
+      <a href="catalogo.html?cat=Bebidas">Bebidas</a>
       <a href="catalogo.html">Ver todo</a>
     </div>
   </div>
 </header>
 
-<section class="container" style="padding-bottom:70px;">
+<section class="container" style="padding: 30px 0 60px;">
   <div class="section-title">
-    <h2>Catálogo</h2>
-    <span id="contador-resultados" style="color:var(--gray); font-size:0.85rem;"></span>
+    <h2>Mi cuenta</h2>
+    <a href="#" data-logout>Cerrar sesión</a>
   </div>
 
-  <div class="productos-layout">
-    <aside class="filtros-panel">
-      <h4>Buscar</h4>
-      <input type="text" id="input-buscar" placeholder="Nombre, marca..." style="width:100%; padding:8px 10px; border:1px solid #d8dce3; border-radius:6px; margin-bottom:16px;">
-
-      <div class="grupo">
-        <h4>Categorías</h4>
-        <div id="filtro-categorias"></div>
-      </div>
-
-      <div class="grupo">
-        <h4>Proveedor</h4>
-        <div id="filtro-proveedores"></div>
-      </div>
-
-      <div class="grupo">
-        <h4>Filtros</h4>
-        <label><input type="checkbox" id="chk-oferta"> Solo ofertas</label>
-        <label><input type="checkbox" id="chk-stock"> Solo con stock</label>
-      </div>
-
-      <div class="grupo">
-        <h4>Ordenar por</h4>
-        <select id="select-orden" style="width:100%; padding:8px; border:1px solid #d8dce3; border-radius:6px;">
-          <option value="relevancia">Relevancia</option>
-          <option value="precio-asc">Precio: menor a mayor</option>
-          <option value="precio-desc">Precio: mayor a menor</option>
-          <option value="nombre">Nombre A-Z</option>
-        </select>
-      </div>
-
-      <button class="btn btn-outline" id="btn-limpiar-filtros" style="width:100%; border-color:var(--gray-light); color:var(--navy);">Limpiar filtros</button>
-    </aside>
-
-    <div class="productos-grid" id="productos-grid">
-      <div class="vacio-msg" style="grid-column:1/-1;">Cargando catálogo…</div>
-    </div>
+  <div class="form-card" style="max-width:100%; margin-bottom:26px;">
+    <h3 style="margin-top:0; color:var(--navy);">Mis datos</h3>
+    <p id="dato-nombre" style="margin:4px 0;"></p>
+    <p id="dato-email" style="margin:4px 0; color:var(--gray);"></p>
+    <p id="dato-telefono" style="margin:4px 0; color:var(--gray);"></p>
   </div>
+
+  <div class="section-title">
+    <h2 style="font-size:1.15rem;">Mis pedidos</h2>
+  </div>
+  <div id="lista-pedidos"></div>
 </section>
 
 <footer class="site-footer">
@@ -122,7 +96,47 @@
 <script src="js/datos.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/carrito.js"></script>
+<script src="js/pedidos.js"></script>
 <script src="js/principal.js"></script>
-<script src="js/catalogo.js"></script>
+<script>
+(function () {
+  if (!AyfaAuth.requiereLogin("ingresar.html")) return;
+
+  const usuario = AyfaAuth.usuarioActual();
+  document.getElementById("dato-nombre").innerHTML = "<strong>" + (usuario.nombre || "") + "</strong>";
+  document.getElementById("dato-email").textContent = usuario.email || "";
+  document.getElementById("dato-telefono").textContent = usuario.telefono || "";
+
+  const lista = document.getElementById("lista-pedidos");
+
+  function pedidoHTML(p) {
+    const items = (p.items || []).map(it => `${it.cantidad}x ${it.nombre}`).join(", ");
+    return `
+      <div class="carrito-item" style="align-items:flex-start;">
+        <div class="carrito-item-info">
+          <div class="nombre">Pedido ${p.numero || ""} <span class="badge-tag">${p.estado || "Nuevo"}</span></div>
+          <div class="precio-unit">${p.fecha ? new Date(p.fecha).toLocaleDateString("es-AR") : ""}</div>
+          <div class="precio-unit" style="margin-top:6px;">${items}</div>
+        </div>
+        <strong>${p.total ? AyfaDatos.formatoPrecio(p.total) : ""}</strong>
+      </div>
+    `;
+  }
+
+  (async function () {
+    lista.innerHTML = `<div class="vacio-msg">Cargando pedidos…</div>`;
+    try {
+      const pedidos = await AyfaPedidos.misPedidos(usuario.email);
+      if (!pedidos || !pedidos.length) {
+        lista.innerHTML = `<div class="vacio-msg">Todavía no hiciste ningún pedido. <br><a href="catalogo.html" class="btn btn-primary" style="margin-top:14px;">Ver catálogo</a></div>`;
+        return;
+      }
+      lista.innerHTML = pedidos.map(pedidoHTML).join("");
+    } catch (e) {
+      lista.innerHTML = `<div class="vacio-msg">No pudimos cargar tus pedidos.</div>`;
+    }
+  })();
+})();
+</script>
 </body>
 </html>
