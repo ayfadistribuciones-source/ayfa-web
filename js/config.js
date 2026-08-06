@@ -21,11 +21,18 @@ const AYFA_CONFIG = {
   //    proveedores tengas (podés tener 2, 3, o los que necesites).
   SHEET_TABS_PRODUCTOS: ["AyFa", "Ramseyer"],
 
+  // 2.1) GID de cada pestaña (número que aparece en la URL después de
+  //    "gid=" cuando tenés esa pestaña abierta en Sheets). Si lo completás,
+  //    la web lee los datos siempre en vivo (evita el problema de que Google
+  //    "Publicar en la web" quede desactualizado). Si dejás un nombre sin
+  //    GID acá, la web usa el método anterior (gviz) como respaldo.
+  SHEET_GIDS: { "AyFa": 0, "Ramseyer": 665061965 },
+
   // 3) URL del Google Apps Script publicado como "Aplicación web" (ver
   //    INSTRUCCIONES.md). Se usa para guardar registros de clientes y pedidos.
   //    Dejalo vacío ("") para que el sitio guarde todo localmente en el
   //    navegador (modo demo, sin backend).
-  APPS_SCRIPT_URL: "",
+  APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbxLym6i5VKzw5-7it7sPF7UfoZUJ7U7punwoctECBBSF1RHEO-4tUfWsFecM1NYHVD8yw/exec",
 
   // 4) Datos de contacto y de la empresa
   EMPRESA: {
