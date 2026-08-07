@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Panel de pedidos — AY-FA Distribuciones</title>
+<link rel="icon" href="assets/logo.png">
+<link rel="stylesheet" href="css/estilos.css">
+<style>
+  .admin-wrap{ max-width: 1200px; margin: 0 auto; padding: 30px 20px 60px; }
+  .admin-login{ max-width: 380px; margin: 60px auto; }
+  .tabla-pedidos{ width:100%; border-collapse: collapse; background:#fff; border-radius: var(--radius); overflow:hidden; box-shadow: var(--shadow); }
+  .tabla-pedidos th, .tabla-pedidos td{ padding: 10px 12px; text-align:left; font-size:0.85rem; border-bottom:1px solid var(--gray-light); vertical-align:top; }
+  .tabla-pedidos th{ background: var(--navy); color:#fff; font-weight:700; white-space:nowrap; }
+  .tabla-pedidos tr:last-child td{ border-bottom:none; }
+  .tabla-pedidos tr:hover td{ background: #f7f9fc; }
+  .estado-select{ padding:6px 8px; border:1px solid #d8dce3; border-radius:6px; font-size:0.82rem; font-weight:600; }
+  .estado-select.guardando{ opacity:.5; }
+  .estado-guardado{ font-size:0.72rem; color: var(--success); margin-left:6px; display:none; }
+  .estado-guardado.show{ display:inline; }
+  .detalle-items{ font-size:0.78rem; color:var(--gray); white-space:pre-line; max-width:340px; }
+  .cliente-nombre{ font-weight:700; color:#222; }
+  .cliente-info{ font-size:0.78rem; color:var(--gray); }
+  .barra-admin{ display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:18px; flex-wrap:wrap; }
+  .buscador-admin{ padding:9px 12px; border:1px solid #d8dce3; border-radius:8px; min-width:240px; }
+  .total-pedidos{ font-size:0.85rem; color:var(--gray); }
+  @media (max-width: 900px){ .tabla-pedidos{ font-size:0.78rem; } }
+</style>
+</head>
+<body>
+
+<div class="topbar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><rect x="1" y="6" width="14" height="10"></rect><path d="M15 10h4l3 3v3h-7z"></path><circle cx="6" cy="19" r="1.6"></circle><circle cx="17.5" cy="19" r="1.6"></circle></svg> Envío a domicilio · <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><path d="M3 21V9l9-6 9 6v12"></path><path d="M9 21v-7h6v7"></path></svg> Retiro en depósito · <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 1 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> Reparto local por zonas — <strong>Panel interno</strong></div>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a href="index.html" class="logo-link"><img src="assets/logo.png" alt="AY-FA Distribuciones"></a>
+    <nav class="main-nav" style="margin-left:auto;">
+      <a href="index.html">Volver al sitio</a>
+    </nav>
+  </div>
+</header>
+
+<section class="admin-wrap">
+
+  <div class="admin-login form-card" id="bloque-login">
+    <h2>Panel de pedidos</h2>
+    <p style="color:var(--gray); font-size:0.9rem; margin-top:-10px;">Acceso interno. Ingresá la contraseña de administrador.</p>
+    <div class="msg-box msg-error" id="msg-error-admin"></div>
+    <div class="campo">
+      <label for="campo-admin-pass">Contraseña</label>
+      <input type="password" id="campo-admin-pass">
+    </div>
+    <button class="btn btn-primary btn-block" id="btn-entrar-admin">Ingresar</button>
+  </div>
+
+  <div id="bloque-pedidos" style="display:none;">
+    <div class="section-title">
+      <h2>Pedidos</h2>
+      <a href="#" id="btn-salir-admin">Cerrar sesión</a>
+    </div>
+    <div class="barra-admin">
+      <input type="text" class="buscador-admin" id="buscador-pedidos" placeholder="Buscar por número, nombre o email...">
+      <span class="total-pedidos" id="total-pedidos-txt"></span>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="tabla-pedidos">
+        <thead>
+          <tr>
+            <th>Pedido</th>
+            <th>Fecha</th>
+            <th>Cliente</th>
+            <th>Entrega</th>
+            <th>Items</th>
+            <th>Total</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-pedidos">
+          <tr><td colspan="7" class="vacio-msg">Cargando pedidos…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-bottom">© <span data-anio></span> AY-FA Distribuciones. Panel interno — no indexado.</div>
+  </div>
+</footer>
+
+<script src="js/config.js"></script>
+<script>
+(function () {
+  const ADMIN_KEY = "ayfaAdminPass";
+  document.querySelector("[data-anio]") && (document.querySelector("[data-anio]").textContent = new Date().getFullYear());
+
+  const bloqueLogin = document.getElementById("bloque-login");
+  const bloquePedidos = document.getElementById("bloque-pedidos");
+  const msgError = document.getElementById("msg-error-admin");
+  const tbody = document.getElementById("tbody-pedidos");
+  const buscador = document.getElementById("buscador-pedidos");
+  const totalTxt = document.getElementById("total-pedidos-txt");
+
+  let ESTADOS = ["Nuevo", "Confirmado", "En preparación", "Listo para entrega/retiro", "En camino", "Entregado", "Cancelado"];
+  let PEDIDOS = [];
+
+  async function hashPassword(password) {
+    const datos = new TextEncoder().encode(String(password));
+    const buffer = await crypto.subtle.digest("SHA-256", datos);
+    return Array.from(new Uint8Array(buffer)).map((b) => b.toString(16).padStart(2, "0")).join("");
+  }
+
+  async function llamarBackend(payload) {
+    const resp = await fetch(AYFA_CONFIG.APPS_SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload),
+    });
+    return await resp.json();
+  }
+
+  function getAdminPass() {
+    return sessionStorage.getItem(ADMIN_KEY);
+  }
+
+  function pedidoFilaHTML(p) {
+    const itemsTxt = (p.items || []).map(it => `${it.cantidad}x ${it.nombre}`).join("\n") + (p.notas ? "\n\nNotas: " + p.notas : "");
+    const entregaTxt = p.tipoEntrega === "envio" ? "Envío — " + (p.detalleEntrega || "")
+      : p.tipoEntrega === "reparto" ? "Reparto — " + (p.detalleEntrega || "")
+      : "Retiro en depósito";
+    const fecha = p.fecha ? new Date(p.fecha).toLocaleString("es-AR") : "";
+    const opciones = ESTADOS.map(e => `<option value="${e}" ${e === p.estado ? "selected" : ""}>${e}</option>`).join("");
+    return `
+      <tr data-numero="${p.numero}">
+        <td><strong>${p.numero}</strong></td>
+        <td>${fecha}</td>
+        <td>
+          <div class="cliente-nombre">${p.nombre || ""}</div>
+          <div class="cliente-info">${p.email || ""}${p.telefono ? " · " + p.telefono : ""}</div>
+          <div class="cliente-info">${p.localidad || ""}</div>
+        </td>
+        <td>${entregaTxt}</td>
+        <td class="detalle-items">${itemsTxt}</td>
+        <td><strong>${p.total ? "$" + Number(p.total).toLocaleString("es-AR") : ""}</strong></td>
+        <td>
+          <select class="estado-select">${opciones}</select>
+          <span class="estado-guardado">✓ Guardado</span>
+        </td>
+      </tr>
+    `;
+  }
+
+  function renderPedidos(lista) {
+    if (!lista.length) {
+      tbody.innerHTML = `<tr><td colspan="7" class="vacio-msg">No hay pedidos todavía.</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = lista.map(pedidoFilaHTML).join("");
+    tbody.querySelectorAll(".estado-select").forEach(select => {
+      select.addEventListener("change", async (e) => {
+        const fila = e.target.closest("tr");
+        const numero = fila.getAttribute("data-numero");
+        const nuevoEstado = e.target.value;
+        e.target.classList.add("guardando");
+        e.target.disabled = true;
+        try {
+          const resp = await llamarBackend({ accion: "actualizarEstado", adminPassword: getAdminPass(), numero, estado: nuevoEstado });
+          if (resp && resp.ok) {
+            const badge = fila.querySelector(".estado-guardado");
+            badge.classList.add("show");
+            setTimeout(() => badge.classList.remove("show"), 2000);
+            const p = PEDIDOS.find(x => String(x.numero) === String(numero));
+            if (p) p.estado = nuevoEstado;
+          } else {
+            alert((resp && resp.mensaje) || "No se pudo actualizar el estado.");
+          }
+        } catch (err) {
+          alert("No se pudo actualizar el estado: " + err.message);
+        }
+        e.target.classList.remove("guardando");
+        e.target.disabled = false;
+      });
+    });
+  }
+
+  function aplicarFiltro() {
+    const q = buscador.value.trim().toLowerCase();
+    if (!q) { renderPedidos(PEDIDOS); totalTxt.textContent = PEDIDOS.length + " pedidos"; return; }
+    const filtrados = PEDIDOS.filter(p =>
+      String(p.numero).toLowerCase().includes(q) ||
+      String(p.nombre).toLowerCase().includes(q) ||
+      String(p.email).toLowerCase().includes(q)
+    );
+    renderPedidos(filtrados);
+    totalTxt.textContent = filtrados.length + " de " + PEDIDOS.length + " pedidos";
+  }
+  buscador.addEventListener("input", aplicarFiltro);
+
+  async function cargarPedidos() {
+    tbody.innerHTML = `<tr><td colspan="7" class="vacio-msg">Cargando pedidos…</td></tr>`;
+    try {
+      const resp = await llamarBackend({ accion: "todosPedidos", adminPassword: getAdminPass() });
+      if (!resp || !resp.ok) {
+        sessionStorage.removeItem(ADMIN_KEY);
+        mostrarLogin("Tu sesión expiró, ingresá de nuevo.");
+        return;
+      }
+      PEDIDOS = resp.pedidos || [];
+      if (resp.estados && resp.estados.length) ESTADOS = resp.estados;
+      totalTxt.textContent = PEDIDOS.length + " pedidos";
+      renderPedidos(PEDIDOS);
+    } catch (err) {
+      tbody.innerHTML = `<tr><td colspan="7" class="vacio-msg">No pudimos cargar los pedidos: ${err.message}</td></tr>`;
+    }
+  }
+
+  function mostrarPanel() {
+    bloqueLogin.style.display = "none";
+    bloquePedidos.style.display = "block";
+    cargarPedidos();
+  }
+
+  function mostrarLogin(mensaje) {
+    bloqueLogin.style.display = "block";
+    bloquePedidos.style.display = "none";
+    if (mensaje) {
+      msgError.textContent = mensaje;
+      msgError.style.display = "block";
+    }
+  }
+
+  document.getElementById("btn-entrar-admin").addEventListener("click", async () => {
+    const btn = document.getElementById("btn-entrar-admin");
+    const pass = document.getElementById("campo-admin-pass").value;
+    msgError.style.display = "none";
+    if (!pass) return;
+    btn.disabled = true; btn.textContent = "Verificando…";
+    try {
+      const hash = await hashPassword(pass);
+      const resp = await llamarBackend({ accion: "loginAdmin", password: hash });
+      if (resp && resp.ok) {
+        sessionStorage.setItem(ADMIN_KEY, hash);
+        mostrarPanel();
+      } else {
+        msgError.textContent = (resp && resp.mensaje) || "Contraseña incorrecta.";
+        msgError.style.display = "block";
+      }
+    } catch (err) {
+      msgError.textContent = "Error de conexión: " + err.message;
+      msgError.style.display = "block";
+    }
+    btn.disabled = false; btn.textContent = "Ingresar";
+  });
+
+  document.getElementById("campo-admin-pass").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") document.getElementById("btn-entrar-admin").click();
+  });
+
+  document.getElementById("btn-salir-admin").addEventListener("click", (e) => {
+    e.preventDefault();
+    sessionStorage.removeItem(ADMIN_KEY);
+    mostrarLogin();
+  });
+
+  if (getAdminPass()) {
+    mostrarPanel();
+  }
+})();
+</script>
+</body>
+</html>
