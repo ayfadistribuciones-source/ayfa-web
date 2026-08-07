@@ -62,6 +62,18 @@ return "Perfumería" + (resto ? " - " + resto : "");
 return c;
 }
 
+// Combina Categoria + Subcategoria (columnas separadas en la planilla) en
+// un solo valor "Categoria - Subcategoria", que es el formato que ya usa
+// el resto del sitio (mega-menú, filtros) para agrupar subcategorías. Si
+// no hay columna/valor de Subcategoria, devuelve solo la categoría.
+function combinarCategoria(cat, subcat) {
+const base = normalizarCategoria(cat);
+const sub = (subcat || "").trim();
+if (!sub) return base;
+if (base.toLowerCase().includes(sub.toLowerCase())) return base;
+return base + " - " + sub;
+}
+
 // Intenta reconocer cuántas unidades trae el bulto/caja a partir del
 // nombre o la presentación del producto (que suelen traer el formato
 // escrito, ej. "24x150Gr", "18*200 GR", "8 UNI. X 35 GR", "X 25 UNI").
@@ -86,6 +98,7 @@ if (!filas.length) return [];
 const headers = filas[0].map(h => h.trim());
 const idx = (nombre) => headers.findIndex(h => h.toLowerCase() === nombre.toLowerCase());
 const iSKU = idx("SKU"), iProd = idx("Producto"), iCat = idx("Categoria"),
+iSubcat = idx("Subcategoria"),
 iMarca = idx("Marca"), iPres = idx("Presentacion"), iPrecio = idx("Precio"),
 iStock = idx("Stock"), iPromo = idx("Promo"), iPrecioPromo = idx("PrecioPromo"),
 iImg = idx("Imagen"), iDest = idx("Destacado"), iProv = idx("Proveedor"),
@@ -114,7 +127,7 @@ productos.push({
 id: proveedor + "::" + (sku || ("fila" + r)),
 sku, proveedor,
 nombre: nombreProd,
-categoria: normalizarCategoria(f[iCat]),
+categoria: combinarCategoria(f[iCat], iSubcat >= 0 ? f[iSubcat] : ""),
 marca: (f[iMarca] || "").trim(),
 presentacion: presentacionProd,
 precio: isNaN(precio) ? 0 : precio,
@@ -140,7 +153,7 @@ return {
 id: proveedor + "::" + (sku || ("fila" + i)),
 sku, proveedor,
 nombre: nombreProd,
-categoria: normalizarCategoria(p.Categoria),
+categoria: combinarCategoria(p.Categoria, p.Subcategoria || ""),
 marca: p.Marca || "",
 presentacion: presentacionProd,
 precio: Number(p.Precio) || 0,
