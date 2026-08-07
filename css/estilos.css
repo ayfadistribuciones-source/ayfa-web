@@ -187,12 +187,12 @@ nav.main-nav a.activo{ color: var(--teal); border-bottom: 2px solid var(--teal);
   flex: 1 1 280px;
   position: relative;
   display:flex; align-items:center; justify-content:center;
-  min-height: 300px;
+  min-height: 380px;
   padding: 62px;
 }
 .hero-glow{ position:absolute; border-radius:50%; filter: blur(38px); z-index:0; }
-.hero-glow.glow-teal{ width:180px; height:180px; background:var(--teal); opacity:.55; top:26px; left:10px; }
-.hero-glow.glow-maroon{ width:170px; height:170px; background:var(--maroon); opacity:.5; bottom:20px; right:14px; }
+.hero-glow.glow-teal{ width:180px; height:180px; background:var(--teal); opacity:.4; top:26px; left:10px; }
+.hero-glow.glow-maroon{ width:170px; height:170px; background:var(--maroon); opacity:.35; bottom:20px; right:14px; }
 .hero-dotgrid{
   position:absolute; inset:0; z-index:0; opacity:.5;
   background-image: radial-gradient(rgba(255,255,255,.35) 1.4px, transparent 1.4px);
@@ -201,14 +201,21 @@ nav.main-nav a.activo{ color: var(--teal); border-bottom: 2px solid var(--teal);
   -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,.9) 0%, transparent 72%);
 }
 .hero-logo-crop{
-  width: 339.51px; height: 130px; max-width:100%; overflow:hidden; position:relative; z-index:2;
-  background: radial-gradient(ellipse 75% 78% at center, rgba(255,255,255,.97) 0%, rgba(255,255,255,.85) 45%, rgba(255,255,255,0) 78%);
+  position:relative; z-index:2;
+  display:flex; align-items:center; justify-content:center;
+}
+.hero-logo-crop::before{
+  content:"";
+  position:absolute;
+  width: 300px; height: 280px;
+  left:50%; top:50%; transform:translate(-50%,-50%);
+  background: radial-gradient(ellipse 62% 60% at center, rgba(255,255,255,.95) 0%, rgba(255,255,255,.72) 45%, rgba(255,255,255,0) 78%);
+  z-index:-1;
 }
 .hero-logo-crop img{
-  position:absolute; max-height:none;
-  width: 631.07px; height: 631.07px;
-  left: -145.15px; top: -242.33px;
-  max-width:none;
+  position:relative;
+  height: 210px; width:auto; max-width:100%;
+  filter: drop-shadow(0 12px 22px rgba(0,0,0,.4));
 }
 .hero-chip{
   position:absolute; z-index:3; display:flex; align-items:center; gap:6px;
@@ -219,10 +226,10 @@ nav.main-nav a.activo{ color: var(--teal); border-bottom: 2px solid var(--teal);
 }
 .hero-chip svg{ width:14px; height:14px; flex-shrink:0; }
 @keyframes heroFloaty{ 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(-7px);} }
-.hero-chip.chip-1{ top:16px; left:6px; animation-delay:0s; }
-.hero-chip.chip-2{ top:16px; right:6px; animation-delay:.6s; }
-.hero-chip.chip-3{ bottom:16px; left:0; animation-delay:1.2s; }
-.hero-chip.chip-4{ bottom:16px; right:0; animation-delay:1.8s; }
+.hero-chip.chip-1{ top:2px; left:6px; animation-delay:0s; }
+.hero-chip.chip-2{ top:2px; right:6px; animation-delay:.6s; }
+.hero-chip.chip-3{ bottom:26px; left:0; animation-delay:1.2s; }
+.hero-chip.chip-4{ bottom:26px; right:0; animation-delay:1.8s; }
 .hero-badge{
   position:absolute; z-index:4;
   background:#fff; color: var(--navy); font-weight:800; font-size:.76rem;
@@ -231,14 +238,16 @@ nav.main-nav a.activo{ color: var(--teal); border-bottom: 2px solid var(--teal);
   display:flex; align-items:center; gap:6px; white-space:nowrap;
 }
 .hero-badge svg{ width:14px; height:14px; flex-shrink:0; }
-.hero-badge.badge-top{ top:14px; left:50%; transform: translateX(-50%); }
-.hero-badge.badge-bottom{ bottom:14px; left:50%; transform: translateX(-50%); background: var(--teal); color:#fff; }
+.hero-badge.badge-top{ top:20px; left:50%; transform: translateX(-50%); }
+.hero-badge.badge-bottom{ bottom:20px; left:50%; transform: translateX(-50%); background: var(--teal); color:#fff; }
 @media (max-width: 640px){
-  .hero-visual{ margin-top: 26px; padding: 46px 20px; min-height: 240px; }
+  .hero-visual{ margin-top: 26px; padding: 46px 20px; min-height: 320px; }
   .hero-chip{ display:none; }
+  .hero-logo-crop img{ height: 170px; }
+  .hero-logo-crop::before{ width:240px; height:220px; }
   .hero-badge{ font-size:.68rem; padding:6px 10px; }
-  .hero-badge.badge-top{ top:2px; }
-  .hero-badge.badge-bottom{ bottom:2px; }
+  .hero-badge.badge-top{ top:6px; }
+  .hero-badge.badge-bottom{ bottom:6px; }
 }
 
 /* ---------- Botones ---------- */
