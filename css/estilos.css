@@ -501,7 +501,19 @@ section{ padding: 44px 0; }
   border: 1px solid #e7e9f0;
   box-shadow: 0 3px 12px rgba(29,42,107,0.10);
   padding: 16px; display:flex; flex-direction:column; position:relative;
+  overflow:hidden;
   transition: box-shadow .18s ease, transform .18s ease, border-color .18s ease;
+}
+/* Cinta diagonal de OFERTA (cuando PrecioPromo < Precio en la planilla) */
+.cinta-oferta{
+  position:absolute; top:16px; left:-40px; z-index:3;
+  width:150px; text-align:center;
+  background: linear-gradient(135deg, #ff7a3d, #d81f2f);
+  color:#fff; font-weight:800; font-size:.72rem; letter-spacing:.04em;
+  padding:5px 0; transform: rotate(-45deg);
+  box-shadow: 0 3px 8px rgba(0,0,0,.28);
+  text-transform:uppercase;
+  pointer-events:none;
 }
 .producto-card:hover{
   box-shadow: 0 10px 26px rgba(29,42,107,0.18);
