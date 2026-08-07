@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <title>Panel de pedidos — AY-FA Distribuciones</title>
-<link rel="icon" href="assets/logo.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='42' fill='%2322c55e' stroke='%2315803d' stroke-width='6'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="css/estilos.css">
 <style>
   .admin-wrap{ max-width: 1200px; margin: 0 auto; padding: 30px 20px 60px; }
@@ -74,10 +74,11 @@
             <th>Items</th>
             <th>Total</th>
             <th>Estado</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody id="tbody-pedidos">
-          <tr><td colspan="7" class="vacio-msg">Cargando pedidos…</td></tr>
+          <tr><td colspan="8" class="vacio-msg">Cargando pedidos…</td></tr>
         </tbody>
       </table>
     </div>
@@ -92,6 +93,8 @@
 </footer>
 
 <script src="js/config.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <script>
 (function () {
   const ADMIN_KEY = "ayfaAdminPass";
@@ -153,16 +156,126 @@
           <select class="estado-select">${opciones}</select>
           <span class="estado-guardado">✓ Guardado</span>
         </td>
+        <td><button type="button" class="btn btn-primary btn-sm" data-pdf-btn>PDF</button></td>
       </tr>
     `;
   }
 
+  // Arma un PDF con el detalle del pedido (cliente, entrega, productos con
+  // precio y promo resaltada, totales) para que el negocio lo use como base
+  // para facturar en su sistema aparte. No es una factura fiscal válida
+  // ante AFIP — es un comprobante/detalle interno para armar la factura.
+  function generarPDFPedido(p) {
+    if (!window.jspdf) {
+      alert("No se pudo cargar el generador de PDF. Revisá tu conexión a internet e intentá de nuevo.");
+      return;
+    }
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const margenX = 14;
+    let y = 18;
+
+    doc.setFontSize(16);
+    doc.setFont(undefined, "bold");
+    doc.text("AY-FA Distribuciones", margenX, y);
+    doc.setFontSize(9);
+    doc.setFont(undefined, "normal");
+    doc.setTextColor(120);
+    doc.text("Detalle de pedido para facturar (no es factura fiscal)", margenX, y + 6);
+    doc.setTextColor(0);
+    y += 16;
+
+    doc.setFontSize(12);
+    doc.setFont(undefined, "bold");
+    doc.text("Pedido " + (p.numero || ""), margenX, y);
+    doc.setFont(undefined, "normal");
+    doc.setFontSize(10);
+    const fecha = p.fecha ? new Date(p.fecha).toLocaleString("es-AR") : "";
+    doc.text(fecha, 196, y, { align: "right" });
+    y += 9;
+
+    doc.setFont(undefined, "bold");
+    doc.text("Cliente", margenX, y);
+    doc.setFont(undefined, "normal");
+    y += 6;
+    const lineasCliente = [
+      (p.nombre || "") + (p.razonSocial ? " — " + p.razonSocial : ""),
+      [p.documento, p.condicionIVA].filter(Boolean).join(" · "),
+      p.email || "",
+      p.telefono || "",
+      [p.direccion, p.localidad].filter(Boolean).join(", ")
+    ].filter(Boolean);
+    lineasCliente.forEach(l => { doc.text(l, margenX, y); y += 5; });
+    y += 3;
+
+    doc.setFont(undefined, "bold");
+    doc.text("Entrega", margenX, y);
+    doc.setFont(undefined, "normal");
+    y += 6;
+    const entregaTxt = p.tipoEntrega === "envio" ? "Envío a domicilio — " + (p.detalleEntrega || "")
+      : p.tipoEntrega === "reparto" ? "Reparto local — Zona: " + (p.detalleEntrega || "")
+      : "Retiro en depósito";
+    doc.text(entregaTxt, margenX, y);
+    y += 10;
+
+    const filas = (p.items || []).map(it => [
+      it.cantidad != null ? String(it.cantidad) : "",
+      it.nombre + (it.promo ? "\n" + it.promo.replace(/^—\s*/, "") : ""),
+      it.sku || "-",
+      it.precioUnit ? "$" + it.precioUnit : "",
+      it.subtotal ? "$" + it.subtotal : ""
+    ]);
+
+    doc.autoTable({
+      startY: y,
+      head: [["Cant.", "Producto", "SKU", "P. Unit.", "Subtotal"]],
+      body: filas,
+      styles: { fontSize: 9, cellPadding: 2.5 },
+      headStyles: { fillColor: [15, 40, 80] },
+      columnStyles: { 0: { cellWidth: 16 }, 2: { cellWidth: 24 }, 3: { cellWidth: 24 }, 4: { cellWidth: 26 } },
+      didParseCell: function (data) {
+        if (data.section === "body" && data.column.index === 1 && String(data.cell.raw).includes("PROMO")) {
+          data.cell.styles.textColor = [194, 65, 12];
+        }
+      }
+    });
+
+    let yFinal = doc.lastAutoTable.finalY + 8;
+    doc.setFontSize(10);
+    doc.setFont(undefined, "normal");
+    doc.text("Subtotal: $" + (p.subtotal != null ? Number(p.subtotal).toLocaleString("es-AR") : "0"), 196, yFinal, { align: "right" });
+    yFinal += 6;
+    doc.text("Entrega: " + (p.costoEntrega ? "$" + Number(p.costoEntrega).toLocaleString("es-AR") : "A coordinar"), 196, yFinal, { align: "right" });
+    yFinal += 7;
+    doc.setFontSize(13);
+    doc.setFont(undefined, "bold");
+    doc.text("TOTAL: $" + (p.total != null ? Number(p.total).toLocaleString("es-AR") : "0"), 196, yFinal, { align: "right" });
+    yFinal += 10;
+
+    if (p.notas) {
+      doc.setFontSize(9);
+      doc.setFont(undefined, "normal");
+      doc.setTextColor(90);
+      doc.text("Notas del cliente: " + p.notas, margenX, yFinal, { maxWidth: 180 });
+    }
+
+    doc.save("Pedido-" + (p.numero || "AYFA") + ".pdf");
+  }
+
   function renderPedidos(lista) {
     if (!lista.length) {
-      tbody.innerHTML = `<tr><td colspan="7" class="vacio-msg">No hay pedidos todavía.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="8" class="vacio-msg">No hay pedidos todavía.</td></tr>`;
       return;
     }
     tbody.innerHTML = lista.map(pedidoFilaHTML).join("");
+    tbody.querySelectorAll("[data-pdf-btn]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const fila = btn.closest("tr");
+        const numero = fila.getAttribute("data-numero");
+        const p = PEDIDOS.find(x => String(x.numero) === String(numero));
+        if (p) generarPDFPedido(p);
+      });
+    });
     tbody.querySelectorAll(".estado-select").forEach(select => {
       select.addEventListener("change", async (e) => {
         const fila = e.target.closest("tr");
@@ -217,7 +330,7 @@
       totalTxt.textContent = PEDIDOS.length + " pedidos";
       renderPedidos(PEDIDOS);
     } catch (err) {
-      tbody.innerHTML = `<tr><td colspan="7" class="vacio-msg">No pudimos cargar los pedidos: ${err.message}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="8" class="vacio-msg">No pudimos cargar los pedidos: ${err.message}</td></tr>`;
     }
   }
 
