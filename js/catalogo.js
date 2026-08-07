@@ -11,32 +11,16 @@ let texto = "";
 let orden = "relevancia";
 
 const grid = document.getElementById("productos-grid");
-const catList = document.getElementById("filtro-categorias");
 const contador = document.getElementById("contador-resultados");
 
-const ICONO_TODOS = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1-5h16l1 5"></path><path d="M3 9a2 2 0 0 0 4 0 2 2 0 0 0 4 0 2 2 0 0 0 4 0 2 2 0 0 0 4 0"></path><path d="M4 9v10h16V9"></path><path d="M9 21v-6h6v6"></path></svg>`;
-
+// La selección de categoría ya no se elige en esta página (se sacó la
+// columna de pastillas porque duplicaba el mega-menú "Categorías" del
+// header). categoriaActiva llega por el link (?cat=...) desde el
+// mega-menú, la barra de categorías o "Ver todo"; esCategoriaActiva()
+// matchea por prefijo para incluir subcategorías (ej. "Perfumería - X").
 function esCategoriaActiva(c) {
 if (!categoriaActiva) return false;
 return c === categoriaActiva || c.startsWith(categoriaActiva + " - ");
-}
-
-function renderFiltros() {
-const categorias = [...new Set(TODOS.map(p => p.categoria))].sort();
-const pillsHTML = [
-`<button type="button" class="cat-pill ${!categoriaActiva ? "activo" : ""}" data-cat="">${ICONO_TODOS}<span>Todos</span></button>`
-].concat(
-categorias.map(c => `<button type="button" class="cat-pill ${esCategoriaActiva(c) ? "activo" : ""}" data-cat="${c}"><span>${c}</span></button>`)
-).join("");
-catList.innerHTML = `<div class="cat-pill-list">${pillsHTML}</div>`;
-catList.querySelectorAll(".cat-pill").forEach(btn => {
-btn.addEventListener("click", () => {
-categoriaActiva = btn.getAttribute("data-cat") || "";
-catList.querySelectorAll(".cat-pill").forEach(b => b.classList.remove("activo"));
-btn.classList.add("activo");
-render();
-});
-});
 }
 
 function productoCardHTML(p) {
@@ -127,7 +111,6 @@ filtroSoloOferta = true;
 document.getElementById("chk-oferta").checked = true;
 }
 
-renderFiltros();
 render();
 
 document.getElementById("input-buscar").addEventListener("input", (e) => { texto = e.target.value; render(); });
@@ -139,7 +122,7 @@ categoriaActiva = ""; filtroSoloOferta = false; filtroSoloStock = false; texto =
 document.getElementById("input-buscar").value = "";
 document.getElementById("chk-oferta").checked = false;
 document.getElementById("chk-stock").checked = false;
-renderFiltros(); render();
+render();
 });
 }
 
