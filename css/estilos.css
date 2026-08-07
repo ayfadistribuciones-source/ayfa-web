@@ -201,14 +201,13 @@ nav.main-nav a.activo{ color: var(--teal); border-bottom: 2px solid var(--teal);
   -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,.9) 0%, transparent 72%);
 }
 .hero-logo-crop{
-  width: 288px; height: 130px; max-width:100%; overflow:hidden; position:relative; z-index:2;
-  background:#fff; border-radius: 10px;
-  box-shadow: 0 0 0 4px rgba(255,255,255,.08), 0 20px 44px rgba(0,0,0,.45);
+  width: 339.51px; height: 130px; max-width:100%; overflow:hidden; position:relative; z-index:2;
+  background: radial-gradient(ellipse 75% 78% at center, rgba(255,255,255,.97) 0%, rgba(255,255,255,.85) 45%, rgba(255,255,255,0) 78%);
 }
 .hero-logo-crop img{
   position:absolute; max-height:none;
-  width: 536.77px; height: 536.77px;
-  left: -124.23px; top: -206.53px;
+  width: 631.07px; height: 631.07px;
+  left: -145.15px; top: -242.33px;
   max-width:none;
 }
 .hero-chip{
