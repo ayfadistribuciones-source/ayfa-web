@@ -24,6 +24,7 @@ presentación/formato y un selector de cantidad para agregar al carrito.
               <div class="qv-eyebrow">Producto</div>
               <h3 class="qv-nombre" id="qv-nombre"></h3>
               <div class="qv-precio" id="qv-precio"></div>
+              <div class="qv-bulto" id="qv-bulto" style="display:none;"></div>
               <div class="qv-meta" id="qv-meta"></div>
               <div class="qv-cantidad">
                 <label>Cantidad:</label>
@@ -73,11 +74,23 @@ presentación/formato y un selector de cantidad para agregar al carrito.
       precioBox.textContent = AyfaDatos.formatoPrecio(p.precio);
     }
 
+    // Precio por bulto cerrado: solo aparece si se cargó la columna
+    // "PrecioBulto" en la planilla (lo define el negocio, no se calcula).
+    const bultoBox = document.getElementById("qv-bulto");
+    if (logueado && p.precioBulto && p.precioBulto > 0) {
+      bultoBox.style.display = "block";
+      bultoBox.innerHTML = `<span class="qv-bulto-label">Precio por bulto cerrado</span><span class="qv-bulto-precio">${AyfaDatos.formatoPrecio(p.precioBulto)}</span>`;
+    } else {
+      bultoBox.style.display = "none";
+      bultoBox.innerHTML = "";
+    }
+
     const metaLineas = [
       p.sku ? `Código: ${p.sku}` : "",
       p.categoria ? `Categoría: ${p.categoria}` : "",
       p.marca ? `Marca: ${p.marca}` : "",
       p.presentacion ? `Presentación: ${p.presentacion}` : "",
+      p.unidadesPorBulto ? `Contenido del bulto: ${p.unidadesPorBulto} unidades (según nombre/presentación)` : "",
     ].filter(Boolean);
     document.getElementById("qv-meta").innerHTML =
       metaLineas.map((l) => `<div>${l}</div>`).join("") +
