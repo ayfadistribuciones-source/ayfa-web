@@ -12,382 +12,390 @@
 <div class="topbar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><rect x="1" y="6" width="14" height="10"></rect><path d="M15 10h4l3 3v3h-7z"></path><circle cx="6" cy="19" r="1.6"></circle><circle cx="17.5" cy="19" r="1.6"></circle></svg> Envío a domicilio · <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><path d="M3 21V9l9-6 9 6v12"></path><path d="M9 21v-7h6v7"></path></svg> Retiro en depósito · <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 1 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> Reparto local por zonas — <strong>Hacé tu pedido online</strong></div>
 
 <header class="site-header">
-  <div class="header-inner">
-    <a href="index.html" class="logo-link"><img src="assets/logo.png" alt="AY-FA Distribuciones"></a>
-    <form class="search-bar" data-search-form>
-      <input type="text" placeholder="Buscar productos, marcas, categorías...">
-      <button type="submit">Buscar</button>
-    </form>
-    <nav class="main-nav">
-      <a href="index.html">Inicio</a>
-      <a href="catalogo.html">Catálogo</a>
-      <a href="contacto.html">Contacto</a>
-      <a href="ingresar.html" data-login-link>Ingresar</a>
-      <a href="mi-cuenta.html" class="user-chip" data-user-chip style="display:none;"></a>
-      <a href="carrito.html" class="cart-btn activo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><circle cx="9" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2.5 3h2l2.7 12.4a2 2 0 0 0 2 1.6h8.1a2 2 0 0 0 2-1.6L21 8H6"></path></svg> Carrito <span class="cart-count" data-cart-count>0</span></a>
-    </nav>
-  </div>
-  <div class="cat-bar">
-    <div class="cat-bar-inner">
-      <a href="catalogo.html?cat=Galletitas">Galletitas</a>
-      <a href="catalogo.html?cat=Perfumer%C3%ADa">Perfumería</a>
-      <a href="catalogo.html?cat=Limpieza">Limpieza</a>
-      <a href="catalogo.html?cat=Vinos">Vinos</a>
-      <a href="catalogo.html?cat=Enlatados">Enlatados</a>
-      <a href="catalogo.html?cat=Golosinas">Golosinas</a>
-      <a href="catalogo.html?cat=Bebidas">Bebidas</a>
-      <a href="catalogo.html">Ver todo</a>
-    </div>
-  </div>
+<div class="header-inner">
+<a href="index.html" class="logo-link"><img src="assets/logo.png" alt="AY-FA Distribuciones"></a>
+<form class="search-bar" data-search-form>
+<input type="text" placeholder="Buscar productos, marcas, categorías...">
+<button type="submit">Buscar</button>
+</form>
+<nav class="main-nav">
+<a href="index.html">Inicio</a>
+<a href="catalogo.html">Catálogo</a>
+<a href="contacto.html">Contacto</a>
+<a href="ingresar.html" data-login-link>Ingresar</a>
+<a href="mi-cuenta.html" class="user-chip" data-user-chip style="display:none;"></a>
+<a href="carrito.html" class="cart-btn activo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><circle cx="9" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2.5 3h2l2.7 12.4a2 2 0 0 0 2 1.6h8.1a2 2 0 0 0 2-1.6L21 8H6"></path></svg> Carrito <span class="cart-count" data-cart-count>0</span></a>
+</nav>
+</div>
+<div class="cat-bar">
+<div class="cat-bar-inner">
+<div class="mega-menu-wrap">
+<button type="button" class="mega-menu-btn" id="mega-menu-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg> Categorías <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+<div class="mega-menu-panel" id="mega-menu-panel"></div>
+</div>
+<div class="cat-bar-links">
+<a href="catalogo.html?cat=Galletitas">Galletitas</a>
+<a href="catalogo.html?cat=Perfumer%C3%ADa">Perfumería</a>
+<a href="catalogo.html?cat=Limpieza">Limpieza</a>
+<a href="catalogo.html?cat=Vinos">Vinos</a>
+<a href="catalogo.html?cat=Enlatados">Enlatados</a>
+<a href="catalogo.html?cat=Golosinas">Golosinas</a>
+<a href="catalogo.html?cat=Bebidas">Bebidas</a>
+<a href="catalogo.html">Ver todo</a>
+</div>
+<a href="catalogo.html?oferta=1" class="cat-bar-ofertas">Ofertas</a>
+</div>
+</div>
 </header>
 
 <section class="container" style="padding: 30px 0 60px;">
-  <div class="section-title">
-    <h2>Tu carrito</h2>
-  </div>
+<div class="section-title">
+<h2>Tu carrito</h2>
+</div>
 
-  <div id="carrito-vacio" class="vacio-msg" style="display:none;">
-    <div class="icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1.8rem;height:1.8rem"><circle cx="9" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2.5 3h2l2.7 12.4a2 2 0 0 0 2 1.6h8.1a2 2 0 0 0 2-1.6L21 8H6"></path></svg></div>
-    Todavía no agregaste productos.<br>
-    <a href="catalogo.html" class="btn btn-primary" style="margin-top:14px;">Ver catálogo</a>
-  </div>
+<div id="carrito-vacio" class="vacio-msg" style="display:none;">
+<div class="icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1.8rem;height:1.8rem"><circle cx="9" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2.5 3h2l2.7 12.4a2 2 0 0 0 2 1.6h8.1a2 2 0 0 0 2-1.6L21 8H6"></path></svg></div>
+Todavía no agregaste productos.<br>
+<a href="catalogo.html" class="btn btn-primary" style="margin-top:14px;">Ver catálogo</a>
+</div>
 
-  <div id="carrito-contenido" class="carrito-layout" style="display:none;">
-    <div id="lista-items"></div>
+<div id="carrito-contenido" class="carrito-layout" style="display:none;">
+<div id="lista-items"></div>
 
-    <aside class="resumen-card">
-      <h3>Resumen del pedido</h3>
-      <div class="resumen-linea"><span>Subtotal</span><span id="resumen-subtotal">$0</span></div>
-      <div class="resumen-linea"><span id="resumen-entrega-label">Entrega</span><span id="resumen-entrega-costo">$0</span></div>
-      <div class="resumen-total"><span>Total</span><span id="resumen-total">$0</span></div>
+<aside class="resumen-card">
+<h3>Resumen del pedido</h3>
+<div class="resumen-linea"><span>Subtotal</span><span id="resumen-subtotal">$0</span></div>
+<div class="resumen-linea"><span id="resumen-entrega-label">Entrega</span><span id="resumen-entrega-costo">$0</span></div>
+<div class="resumen-total"><span>Total</span><span id="resumen-total">$0</span></div>
 
-      <div class="grupo" style="margin-top:18px;">
-        <h4>¿Cómo lo recibís?</h4>
-        <div class="entrega-opciones">
-          <label class="entrega-opcion" data-opcion="envio">
-            <input type="radio" name="entrega" value="envio">
-            <div>
-              <div class="titulo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><rect x="1" y="6" width="14" height="10"></rect><path d="M15 10h4l3 3v3h-7z"></path><circle cx="6" cy="19" r="1.6"></circle><circle cx="17.5" cy="19" r="1.6"></circle></svg> Envío a domicilio</div>
-              <div class="desc">Coordinamos el costo y horario por WhatsApp.</div>
-            </div>
-          </label>
-          <label class="entrega-opcion" data-opcion="retiro">
-            <input type="radio" name="entrega" value="retiro">
-            <div>
-              <div class="titulo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><path d="M3 21V9l9-6 9 6v12"></path><path d="M9 21v-7h6v7"></path></svg> Retiro en depósito</div>
-              <div class="desc" data-empresa-direccion>—</div>
-            </div>
-          </label>
-          <label class="entrega-opcion" data-opcion="reparto">
-            <input type="radio" name="entrega" value="reparto">
-            <div>
-              <div class="titulo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 1 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> Reparto local por zona</div>
-              <div class="desc">Elegí tu zona en el siguiente paso.</div>
-            </div>
-          </label>
-        </div>
-      </div>
+<div class="grupo" style="margin-top:18px;">
+<h4>¿Cómo lo recibís?</h4>
+<div class="entrega-opciones">
+<label class="entrega-opcion" data-opcion="envio">
+<input type="radio" name="entrega" value="envio">
+<div>
+<div class="titulo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><rect x="1" y="6" width="14" height="10"></rect><path d="M15 10h4l3 3v3h-7z"></path><circle cx="6" cy="19" r="1.6"></circle><circle cx="17.5" cy="19" r="1.6"></circle></svg> Envío a domicilio</div>
+<div class="desc">Coordinamos el costo y horario por WhatsApp.</div>
+</div>
+</label>
+<label class="entrega-opcion" data-opcion="retiro">
+<input type="radio" name="entrega" value="retiro">
+<div>
+<div class="titulo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><path d="M3 21V9l9-6 9 6v12"></path><path d="M9 21v-7h6v7"></path></svg> Retiro en depósito</div>
+<div class="desc" data-empresa-direccion>—</div>
+</div>
+</label>
+<label class="entrega-opcion" data-opcion="reparto">
+<input type="radio" name="entrega" value="reparto">
+<div>
+<div class="titulo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 1 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> Reparto local por zona</div>
+<div class="desc">Elegí tu zona en el siguiente paso.</div>
+</div>
+</label>
+</div>
+</div>
 
-      <div id="campos-entrega"></div>
+<div id="campos-entrega"></div>
 
-      <div class="grupo" id="campos-cliente" style="margin-top:8px;">
-        <h4>Tus datos</h4>
-        <div id="cliente-logueado" style="display:none; font-size:0.85rem; background:var(--gray-light); border-radius:8px; padding:10px 12px;"></div>
-        <div id="cliente-invitado">
-          <div class="campo-fila">
-            <div class="campo">
-              <input type="text" id="cli-nombre" placeholder="Nombre y apellido">
-            </div>
-            <div class="campo">
-              <input type="text" id="cli-razon" placeholder="Razón social (opcional)">
-            </div>
-          </div>
-          <div class="campo-fila">
-            <div class="campo">
-              <input type="text" id="cli-doc" placeholder="CUIT / DNI">
-            </div>
-            <div class="campo">
-              <select id="cli-condicion-iva">
-                <option value="Consumidor Final">Consumidor Final</option>
-                <option value="Responsable Inscripto">Responsable Inscripto</option>
-                <option value="Monotributista">Monotributista</option>
-                <option value="Exento">Exento</option>
-              </select>
-            </div>
-          </div>
-          <div class="campo">
-            <input type="email" id="cli-email" placeholder="Email">
-          </div>
-          <div class="campo">
-            <input type="tel" id="cli-telefono" placeholder="Teléfono">
-          </div>
-          <div class="campo-fila">
-            <div class="campo">
-              <input type="text" id="cli-direccion" placeholder="Dirección">
-            </div>
-            <div class="campo">
-              <input type="text" id="cli-localidad" placeholder="Localidad">
-            </div>
-          </div>
-          <p style="font-size:0.78rem; color:var(--gray); margin:-6px 0 0;">¿Ya tenés cuenta? <a href="ingresar.html" style="color:var(--teal); font-weight:600;">Ingresá acá</a> para no completar esto cada vez.</p>
-        </div>
-      </div>
+<div class="grupo" id="campos-cliente" style="margin-top:8px;">
+<h4>Tus datos</h4>
+<div id="cliente-logueado" style="display:none; font-size:0.85rem; background:var(--gray-light); border-radius:8px; padding:10px 12px;"></div>
+<div id="cliente-invitado">
+<div class="campo-fila">
+<div class="campo">
+<input type="text" id="cli-nombre" placeholder="Nombre y apellido">
+</div>
+<div class="campo">
+<input type="text" id="cli-razon" placeholder="Razón social (opcional)">
+</div>
+</div>
+<div class="campo-fila">
+<div class="campo">
+<input type="text" id="cli-doc" placeholder="CUIT / DNI">
+</div>
+<div class="campo">
+<select id="cli-condicion-iva">
+<option value="Consumidor Final">Consumidor Final</option>
+<option value="Responsable Inscripto">Responsable Inscripto</option>
+<option value="Monotributista">Monotributista</option>
+<option value="Exento">Exento</option>
+</select>
+</div>
+</div>
+<div class="campo">
+<input type="email" id="cli-email" placeholder="Email">
+</div>
+<div class="campo">
+<input type="tel" id="cli-telefono" placeholder="Teléfono">
+</div>
+<div class="campo-fila">
+<div class="campo">
+<input type="text" id="cli-direccion" placeholder="Dirección">
+</div>
+<div class="campo">
+<input type="text" id="cli-localidad" placeholder="Localidad">
+</div>
+</div>
+<p style="font-size:0.78rem; color:var(--gray); margin:-6px 0 0;">¿Ya tenés cuenta? <a href="ingresar.html" style="color:var(--teal); font-weight:600;">Ingresá acá</a> para no completar esto cada vez.</p>
+</div>
+</div>
 
-      <div class="grupo">
-        <h4>Notas del pedido (opcional)</h4>
-        <textarea id="cli-notas" rows="2" placeholder="Ej: llamar antes de entregar, horario preferido, etc." style="width:100%; padding:10px 12px; border:1px solid #d8dce3; border-radius:8px;"></textarea>
-      </div>
+<div class="grupo">
+<h4>Notas del pedido (opcional)</h4>
+<textarea id="cli-notas" rows="2" placeholder="Ej: llamar antes de entregar, horario preferido, etc." style="width:100%; padding:10px 12px; border:1px solid #d8dce3; border-radius:8px;"></textarea>
+</div>
 
-      <div class="msg-box msg-error" id="msg-error"></div>
-      <div class="msg-box msg-ok" id="msg-ok"></div>
+<div class="msg-box msg-error" id="msg-error"></div>
+<div class="msg-box msg-ok" id="msg-ok"></div>
 
-      <button class="btn btn-primary btn-block" id="btn-confirmar">Confirmar pedido</button>
-    </aside>
-  </div>
+<button class="btn btn-primary btn-block" id="btn-confirmar">Confirmar pedido</button>
+</aside>
+</div>
 </section>
 
 <footer class="site-footer">
-  <div class="container">
-    <div class="footer-grid">
-      <div>
-        <h4>AY-FA Distribuciones</h4>
-        <p>Tu distribuidora de confianza: almacén, bebidas, limpieza, perfumería y más, a los mejores precios.</p>
-      </div>
-      <div>
-        <h4>Enlaces</h4>
-        <a href="catalogo.html">Catálogo completo</a>
-        <a href="registro.html">Crear cuenta</a>
-        <a href="ingresar.html">Ingresar</a>
-        <a href="contacto.html">Contacto</a>
-      </div>
-      <div>
-        <h4>Entrega</h4>
-        <p><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><rect x="1" y="6" width="14" height="10"></rect><path d="M15 10h4l3 3v3h-7z"></path><circle cx="6" cy="19" r="1.6"></circle><circle cx="17.5" cy="19" r="1.6"></circle></svg> Envío a domicilio</p>
-        <p><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><path d="M3 21V9l9-6 9 6v12"></path><path d="M9 21v-7h6v7"></path></svg> Retiro en depósito</p>
-        <p><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 1 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> Reparto local por zonas</p>
-      </div>
-      <div>
-        <h4>Contacto</h4>
-        <p data-empresa-email>—</p>
-        <p data-empresa-horarios>—</p>
-      </div>
-    </div>
-    <div class="footer-bottom">© <span data-anio></span> AY-FA Distribuciones. Todos los derechos reservados.</div>
-  </div>
+<div class="container">
+<div class="footer-grid">
+<div>
+<h4>AY-FA Distribuciones</h4>
+<p>Tu distribuidora de confianza: almacén, bebidas, limpieza, perfumería y más, a los mejores precios.</p>
+</div>
+<div>
+<h4>Enlaces</h4>
+<a href="catalogo.html">Catálogo completo</a>
+<a href="registro.html">Crear cuenta</a>
+<a href="ingresar.html">Ingresar</a>
+<a href="contacto.html">Contacto</a>
+</div>
+<div>
+<h4>Entrega</h4>
+<p><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><rect x="1" y="6" width="14" height="10"></rect><path d="M15 10h4l3 3v3h-7z"></path><circle cx="6" cy="19" r="1.6"></circle><circle cx="17.5" cy="19" r="1.6"></circle></svg> Envío a domicilio</p>
+<p><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><path d="M3 21V9l9-6 9 6v12"></path><path d="M9 21v-7h6v7"></path></svg> Retiro en depósito</p>
+<p><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 1 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> Reparto local por zonas</p>
+</div>
+<div>
+<h4>Contacto</h4>
+<p data-empresa-email>—</p>
+<p data-empresa-horarios>—</p>
+</div>
+</div>
+<div class="footer-bottom">© <span data-anio></span> AY-FA Distribuciones. Todos los derechos reservados.</div>
+</div>
 </footer>
 <a href="#" class="whatsapp-float" data-whatsapp title="Escribinos por WhatsApp" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:26px;height:26px"><path d="M21 11.5a8.4 8.4 0 0 1-8.9 8.4 8.5 8.5 0 0 1-4-1L3 20l1.1-5A8.4 8.4 0 1 1 21 11.5z"></path></svg></a>
 
 <script src="js/config.js"></script>
 <script src="js/datos.js"></script>
+<script src="js/megamenu.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/carrito.js"></script>
 <script src="js/pedidos.js"></script>
 <script src="js/principal.js"></script>
 <script>
 (function () {
-  let PRODUCTOS = [];
-  let entregaElegida = null;
+let PRODUCTOS = [];
+let entregaElegida = null;
 
-  const vacioBox = document.getElementById("carrito-vacio");
-  const contenidoBox = document.getElementById("carrito-contenido");
-  const listaItems = document.getElementById("lista-items");
-  const camposEntrega = document.getElementById("campos-entrega");
-  const msgError = document.getElementById("msg-error");
-  const msgOk = document.getElementById("msg-ok");
+const vacioBox = document.getElementById("carrito-vacio");
+const contenidoBox = document.getElementById("carrito-contenido");
+const listaItems = document.getElementById("lista-items");
+const camposEntrega = document.getElementById("campos-entrega");
+const msgError = document.getElementById("msg-error");
+const msgOk = document.getElementById("msg-ok");
 
-  function itemHTML(it) {
-    return `
-      <div class="carrito-item" data-item="${it.id}">
-        <div class="producto-img">${it.imagen ? `<img src="${it.imagen}" alt="${it.nombre}">` : "📦"}</div>
-        <div class="carrito-item-info">
-          <div class="nombre">${it.nombre}</div>
-          <div class="precio-unit">${AyfaDatos.formatoPrecio(it.precioUnit)} c/u · ${it.proveedor || ""}</div>
-        </div>
-        <div class="carrito-item-acciones">
-          <input type="number" min="1" value="${it.cantidad}" class="qty-input" data-cant="${it.id}">
-          <strong>${AyfaDatos.formatoPrecio(it.subtotal)}</strong>
-          <span class="quitar-item" data-quitar="${it.id}">Quitar</span>
-        </div>
-      </div>
-    `;
-  }
+function itemHTML(it) {
+return `
+<div class="carrito-item" data-item="${it.id}">
+<div class="producto-img">${it.imagen ? `<img src="${it.imagen}" alt="${it.nombre}">` : "📦"}</div>
+<div class="carrito-item-info">
+<div class="nombre">${it.nombre}</div>
+<div class="precio-unit">${AyfaDatos.formatoPrecio(it.precioUnit)} c/u · ${it.proveedor || ""}</div>
+</div>
+<div class="carrito-item-acciones">
+<input type="number" min="1" value="${it.cantidad}" class="qty-input" data-cant="${it.id}">
+<strong>${AyfaDatos.formatoPrecio(it.subtotal)}</strong>
+<span class="quitar-item" data-quitar="${it.id}">Quitar</span>
+</div>
+</div>
+`;
+}
 
-  function renderEntregaCampos(tipo) {
-    if (tipo === "envio") {
-      camposEntrega.innerHTML = `
-        <div class="campo">
-          <label>Dirección de entrega</label>
-          <input type="text" id="entrega-direccion" placeholder="Calle, número, localidad">
-        </div>`;
-    } else if (tipo === "reparto") {
-      const zonas = AYFA_CONFIG.ZONAS_REPARTO_LOCAL || [];
-      camposEntrega.innerHTML = `
-        <div class="campo">
-          <label>Zona</label>
-          <select id="entrega-zona">
-            ${zonas.map(z => `<option value="${z}">${z}</option>`).join("")}
-          </select>
-        </div>`;
-    } else {
-      camposEntrega.innerHTML = "";
-    }
-  }
+function renderEntregaCampos(tipo) {
+if (tipo === "envio") {
+camposEntrega.innerHTML = `
+<div class="campo">
+<label>Dirección de entrega</label>
+<input type="text" id="entrega-direccion" placeholder="Calle, número, localidad">
+</div>`;
+} else if (tipo === "reparto") {
+const zonas = AYFA_CONFIG.ZONAS_REPARTO_LOCAL || [];
+camposEntrega.innerHTML = `
+<div class="campo">
+<label>Zona</label>
+<select id="entrega-zona">
+${zonas.map(z => `<option value="${z}">${z}</option>`).join("")}
+</select>
+</div>`;
+} else {
+camposEntrega.innerHTML = "";
+}
+}
 
-  function render() {
-    const items = AyfaCarrito.detalle(PRODUCTOS);
-    if (!items.length) {
-      vacioBox.style.display = "";
-      contenidoBox.style.display = "none";
-      return;
-    }
-    vacioBox.style.display = "none";
-    contenidoBox.style.display = "grid";
+function render() {
+const items = AyfaCarrito.detalle(PRODUCTOS);
+if (!items.length) {
+vacioBox.style.display = "";
+contenidoBox.style.display = "none";
+return;
+}
+vacioBox.style.display = "none";
+contenidoBox.style.display = "grid";
 
-    listaItems.innerHTML = items.map(itemHTML).join("");
-    const subtotal = AyfaCarrito.total(PRODUCTOS);
-    document.getElementById("resumen-subtotal").textContent = AyfaDatos.formatoPrecio(subtotal);
+listaItems.innerHTML = items.map(itemHTML).join("");
+const subtotal = AyfaCarrito.total(PRODUCTOS);
+document.getElementById("resumen-subtotal").textContent = AyfaDatos.formatoPrecio(subtotal);
 
-    let costoEntrega = 0;
-    let label = "Entrega";
-    if (entregaElegida === "envio") { costoEntrega = AYFA_CONFIG.COSTO_ENVIO || 0; label = "Envío"; }
-    else if (entregaElegida === "reparto") { costoEntrega = AYFA_CONFIG.COSTO_REPARTO_LOCAL || 0; label = "Reparto local"; }
-    else if (entregaElegida === "retiro") { costoEntrega = 0; label = "Retiro en depósito"; }
-    document.getElementById("resumen-entrega-label").textContent = label;
-    document.getElementById("resumen-entrega-costo").textContent = costoEntrega ? AyfaDatos.formatoPrecio(costoEntrega) : "A coordinar";
-    document.getElementById("resumen-total").textContent = AyfaDatos.formatoPrecio(subtotal + costoEntrega);
+let costoEntrega = 0;
+let label = "Entrega";
+if (entregaElegida === "envio") { costoEntrega = AYFA_CONFIG.COSTO_ENVIO || 0; label = "Envío"; }
+else if (entregaElegida === "reparto") { costoEntrega = AYFA_CONFIG.COSTO_REPARTO_LOCAL || 0; label = "Reparto local"; }
+else if (entregaElegida === "retiro") { costoEntrega = 0; label = "Retiro en depósito"; }
+document.getElementById("resumen-entrega-label").textContent = label;
+document.getElementById("resumen-entrega-costo").textContent = costoEntrega ? AyfaDatos.formatoPrecio(costoEntrega) : "A coordinar";
+document.getElementById("resumen-total").textContent = AyfaDatos.formatoPrecio(subtotal + costoEntrega);
 
-    listaItems.querySelectorAll("[data-cant]").forEach(inp => {
-      inp.addEventListener("change", () => {
-        const id = inp.getAttribute("data-cant");
-        AyfaCarrito.actualizarCantidad(id, Math.max(1, parseInt(inp.value, 10) || 1));
-        document.dispatchEvent(new Event("ayfa:carrito-actualizado"));
-        render();
-      });
-    });
-    listaItems.querySelectorAll("[data-quitar]").forEach(el => {
-      el.addEventListener("click", () => {
-        AyfaCarrito.quitar(el.getAttribute("data-quitar"));
-        document.dispatchEvent(new Event("ayfa:carrito-actualizado"));
-        render();
-      });
-    });
-  }
+listaItems.querySelectorAll("[data-cant]").forEach(inp => {
+inp.addEventListener("change", () => {
+const id = inp.getAttribute("data-cant");
+AyfaCarrito.actualizarCantidad(id, Math.max(1, parseInt(inp.value, 10) || 1));
+document.dispatchEvent(new Event("ayfa:carrito-actualizado"));
+render();
+});
+});
+listaItems.querySelectorAll("[data-quitar]").forEach(el => {
+el.addEventListener("click", () => {
+AyfaCarrito.quitar(el.getAttribute("data-quitar"));
+document.dispatchEvent(new Event("ayfa:carrito-actualizado"));
+render();
+});
+});
+}
 
-  document.querySelectorAll(".entrega-opcion").forEach(label => {
-    label.addEventListener("click", () => {
-      document.querySelectorAll(".entrega-opcion").forEach(l => l.classList.remove("selected"));
-      label.classList.add("selected");
-      label.querySelector("input").checked = true;
-      entregaElegida = label.getAttribute("data-opcion");
-      renderEntregaCampos(entregaElegida);
-      render();
-    });
-  });
+document.querySelectorAll(".entrega-opcion").forEach(label => {
+label.addEventListener("click", () => {
+document.querySelectorAll(".entrega-opcion").forEach(l => l.classList.remove("selected"));
+label.classList.add("selected");
+label.querySelector("input").checked = true;
+entregaElegida = label.getAttribute("data-opcion");
+renderEntregaCampos(entregaElegida);
+render();
+});
+});
 
-  document.getElementById("btn-confirmar").addEventListener("click", async () => {
-    msgError.style.display = "none";
-    msgOk.style.display = "none";
+document.getElementById("btn-confirmar").addEventListener("click", async () => {
+msgError.style.display = "none";
+msgOk.style.display = "none";
 
-    const items = AyfaCarrito.detalle(PRODUCTOS);
-    if (!items.length) return;
+const items = AyfaCarrito.detalle(PRODUCTOS);
+if (!items.length) return;
 
-    if (!entregaElegida) {
-      msgError.textContent = "Elegí cómo querés recibir tu pedido.";
-      msgError.style.display = "block";
-      return;
-    }
+if (!entregaElegida) {
+msgError.textContent = "Elegí cómo querés recibir tu pedido.";
+msgError.style.display = "block";
+return;
+}
 
-    const usuario = AyfaAuth.usuarioActual();
-    const cliente = usuario ? {
-      nombre: usuario.nombre || "",
-      razonSocial: usuario.razonSocial || "",
-      documento: usuario.documento || "",
-      condicionIVA: usuario.condicionIVA || "",
-      email: usuario.email || "",
-      telefono: usuario.telefono || "",
-      direccion: usuario.direccion || "",
-      localidad: usuario.localidad || ""
-    } : {
-      nombre: document.getElementById("cli-nombre").value.trim(),
-      razonSocial: document.getElementById("cli-razon").value.trim(),
-      documento: document.getElementById("cli-doc").value.trim(),
-      condicionIVA: document.getElementById("cli-condicion-iva").value,
-      email: document.getElementById("cli-email").value.trim(),
-      telefono: document.getElementById("cli-telefono").value.trim(),
-      direccion: document.getElementById("cli-direccion").value.trim(),
-      localidad: document.getElementById("cli-localidad").value.trim()
-    };
-    const notas = document.getElementById("cli-notas").value.trim();
+const usuario = AyfaAuth.usuarioActual();
+const cliente = usuario ? {
+nombre: usuario.nombre || "",
+razonSocial: usuario.razonSocial || "",
+documento: usuario.documento || "",
+condicionIVA: usuario.condicionIVA || "",
+email: usuario.email || "",
+telefono: usuario.telefono || "",
+direccion: usuario.direccion || "",
+localidad: usuario.localidad || ""
+} : {
+nombre: document.getElementById("cli-nombre").value.trim(),
+razonSocial: document.getElementById("cli-razon").value.trim(),
+documento: document.getElementById("cli-doc").value.trim(),
+condicionIVA: document.getElementById("cli-condicion-iva").value,
+email: document.getElementById("cli-email").value.trim(),
+telefono: document.getElementById("cli-telefono").value.trim(),
+direccion: document.getElementById("cli-direccion").value.trim(),
+localidad: document.getElementById("cli-localidad").value.trim()
+};
+const notas = document.getElementById("cli-notas").value.trim();
 
-    if (!cliente.nombre || !cliente.email || !cliente.telefono || !cliente.documento) {
-      msgError.textContent = "Completá tu nombre, CUIT/DNI, teléfono y email para poder confirmar el pedido.";
-      msgError.style.display = "block";
-      return;
-    }
+if (!cliente.nombre || !cliente.email || !cliente.telefono || !cliente.documento) {
+msgError.textContent = "Completá tu nombre, CUIT/DNI, teléfono y email para poder confirmar el pedido.";
+msgError.style.display = "block";
+return;
+}
 
-    let entregaInfo = { tipo: entregaElegida };
-    if (entregaElegida === "envio") {
-      entregaInfo.direccion = (document.getElementById("entrega-direccion") || {}).value || "";
-    } else if (entregaElegida === "reparto") {
-      entregaInfo.zona = (document.getElementById("entrega-zona") || {}).value || "";
-    }
+let entregaInfo = { tipo: entregaElegida };
+if (entregaElegida === "envio") {
+entregaInfo.direccion = (document.getElementById("entrega-direccion") || {}).value || "";
+} else if (entregaElegida === "reparto") {
+entregaInfo.zona = (document.getElementById("entrega-zona") || {}).value || "";
+}
 
-    const subtotal = AyfaCarrito.total(PRODUCTOS);
-    let costoEntrega = 0;
-    if (entregaElegida === "envio") costoEntrega = AYFA_CONFIG.COSTO_ENVIO || 0;
-    if (entregaElegida === "reparto") costoEntrega = AYFA_CONFIG.COSTO_REPARTO_LOCAL || 0;
+const subtotal = AyfaCarrito.total(PRODUCTOS);
+let costoEntrega = 0;
+if (entregaElegida === "envio") costoEntrega = AYFA_CONFIG.COSTO_ENVIO || 0;
+if (entregaElegida === "reparto") costoEntrega = AYFA_CONFIG.COSTO_REPARTO_LOCAL || 0;
 
-    const pedido = {
-      cliente,
-      entrega: entregaInfo,
-      notas,
-      items,
-      subtotal,
-      costoEntrega,
-      total: subtotal + costoEntrega
-    };
+const pedido = {
+cliente,
+entrega: entregaInfo,
+notas,
+items,
+subtotal,
+costoEntrega,
+total: subtotal + costoEntrega
+};
 
-    const btn = document.getElementById("btn-confirmar");
-    btn.disabled = true; btn.textContent = "Enviando pedido…";
-    try {
-      const resultado = await AyfaPedidos.crearPedido(pedido);
-      AyfaCarrito.vaciar();
-      document.dispatchEvent(new Event("ayfa:carrito-actualizado"));
-      msgOk.textContent = `¡Pedido ${resultado.numero} recibido! Te contactamos para coordinar. También podés escribirnos por WhatsApp.`;
-      msgOk.style.display = "block";
-      render();
-      btn.textContent = "Confirmar pedido";
-      btn.disabled = false;
-    } catch (err) {
-      msgError.textContent = "No pudimos enviar el pedido: " + err.message;
-      msgError.style.display = "block";
-      btn.disabled = false; btn.textContent = "Confirmar pedido";
-    }
-  });
+const btn = document.getElementById("btn-confirmar");
+btn.disabled = true; btn.textContent = "Enviando pedido…";
+try {
+const resultado = await AyfaPedidos.crearPedido(pedido);
+AyfaCarrito.vaciar();
+document.dispatchEvent(new Event("ayfa:carrito-actualizado"));
+msgOk.textContent = `¡Pedido ${resultado.numero} recibido! Te contactamos para coordinar. También podés escribirnos por WhatsApp.`;
+msgOk.style.display = "block";
+render();
+btn.textContent = "Confirmar pedido";
+btn.disabled = false;
+} catch (err) {
+msgError.textContent = "No pudimos enviar el pedido: " + err.message;
+msgError.style.display = "block";
+btn.disabled = false; btn.textContent = "Confirmar pedido";
+}
+});
 
-  (async function init() {
-    PRODUCTOS = await AyfaDatos.obtenerProductos();
-    const usuario = AyfaAuth.usuarioActual();
-    const logueadoBox = document.getElementById("cliente-logueado");
-    const invitadoBox = document.getElementById("cliente-invitado");
-    if (usuario) {
-      logueadoBox.style.display = "block";
-      invitadoBox.style.display = "none";
-      const partes = [
-        `<strong>${usuario.nombre || ""}</strong>` + (usuario.razonSocial ? ` — ${usuario.razonSocial}` : ""),
-        [usuario.documento, usuario.condicionIVA].filter(Boolean).join(" · "),
-        usuario.email,
-        usuario.telefono,
-        [usuario.direccion, usuario.localidad].filter(Boolean).join(", ")
-      ].filter(Boolean);
-      logueadoBox.innerHTML = partes.map(p => `<div>${p}</div>`).join("") +
-        `<div style="margin-top:6px;"><a href="mi-cuenta.html" style="color:var(--teal); font-weight:600;">¿No son correctos? Editá en Mi cuenta</a></div>`;
-    } else {
-      logueadoBox.style.display = "none";
-      invitadoBox.style.display = "block";
-    }
-    render();
-  })();
+(async function init() {
+PRODUCTOS = await AyfaDatos.obtenerProductos();
+const usuario = AyfaAuth.usuarioActual();
+const logueadoBox = document.getElementById("cliente-logueado");
+const invitadoBox = document.getElementById("cliente-invitado");
+if (usuario) {
+logueadoBox.style.display = "block";
+invitadoBox.style.display = "none";
+const partes = [
+`<strong>${usuario.nombre || ""}</strong>` + (usuario.razonSocial ? ` — ${usuario.razonSocial}` : ""),
+[usuario.documento, usuario.condicionIVA].filter(Boolean).join(" · "),
+usuario.email,
+usuario.telefono,
+[usuario.direccion, usuario.localidad].filter(Boolean).join(", ")
+].filter(Boolean);
+logueadoBox.innerHTML = partes.map(p => `<div>${p}</div>`).join("") +
+`<div style="margin-top:6px;"><a href="mi-cuenta.html" style="color:var(--teal); font-weight:600;">¿No son correctos? Editá en Mi cuenta</a></div>`;
+} else {
+logueadoBox.style.display = "none";
+invitadoBox.style.display = "block";
+}
+render();
+})();
 })();
 </script>
 </body>

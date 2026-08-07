@@ -12,136 +12,144 @@
 <div class="topbar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><rect x="1" y="6" width="14" height="10"></rect><path d="M15 10h4l3 3v3h-7z"></path><circle cx="6" cy="19" r="1.6"></circle><circle cx="17.5" cy="19" r="1.6"></circle></svg> Envío a domicilio · <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><path d="M3 21V9l9-6 9 6v12"></path><path d="M9 21v-7h6v7"></path></svg> Retiro en depósito · <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 1 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> Reparto local por zonas — <strong>Hacé tu pedido online</strong></div>
 
 <header class="site-header">
-  <div class="header-inner">
-    <a href="index.html" class="logo-link"><img src="assets/logo.png" alt="AY-FA Distribuciones"></a>
-    <form class="search-bar" data-search-form>
-      <input type="text" placeholder="Buscar productos, marcas, categorías...">
-      <button type="submit">Buscar</button>
-    </form>
-    <nav class="main-nav">
-      <a href="index.html">Inicio</a>
-      <a href="catalogo.html">Catálogo</a>
-      <a href="contacto.html">Contacto</a>
-      <a href="ingresar.html" data-login-link>Ingresar</a>
-      <a href="mi-cuenta.html" class="user-chip activo" data-user-chip style="display:none;"></a>
-      <a href="carrito.html" class="cart-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><circle cx="9" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2.5 3h2l2.7 12.4a2 2 0 0 0 2 1.6h8.1a2 2 0 0 0 2-1.6L21 8H6"></path></svg> Carrito <span class="cart-count" data-cart-count>0</span></a>
-    </nav>
-  </div>
-  <div class="cat-bar">
-    <div class="cat-bar-inner">
-      <a href="catalogo.html?cat=Galletitas">Galletitas</a>
-      <a href="catalogo.html?cat=Perfumer%C3%ADa">Perfumería</a>
-      <a href="catalogo.html?cat=Limpieza">Limpieza</a>
-      <a href="catalogo.html?cat=Vinos">Vinos</a>
-      <a href="catalogo.html?cat=Enlatados">Enlatados</a>
-      <a href="catalogo.html?cat=Golosinas">Golosinas</a>
-      <a href="catalogo.html?cat=Bebidas">Bebidas</a>
-      <a href="catalogo.html">Ver todo</a>
-    </div>
-  </div>
+<div class="header-inner">
+<a href="index.html" class="logo-link"><img src="assets/logo.png" alt="AY-FA Distribuciones"></a>
+<form class="search-bar" data-search-form>
+<input type="text" placeholder="Buscar productos, marcas, categorías...">
+<button type="submit">Buscar</button>
+</form>
+<nav class="main-nav">
+<a href="index.html">Inicio</a>
+<a href="catalogo.html">Catálogo</a>
+<a href="contacto.html">Contacto</a>
+<a href="ingresar.html" data-login-link>Ingresar</a>
+<a href="mi-cuenta.html" class="user-chip activo" data-user-chip style="display:none;"></a>
+<a href="carrito.html" class="cart-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><circle cx="9" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2.5 3h2l2.7 12.4a2 2 0 0 0 2 1.6h8.1a2 2 0 0 0 2-1.6L21 8H6"></path></svg> Carrito <span class="cart-count" data-cart-count>0</span></a>
+</nav>
+</div>
+<div class="cat-bar">
+<div class="cat-bar-inner">
+<div class="mega-menu-wrap">
+<button type="button" class="mega-menu-btn" id="mega-menu-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg> Categorías <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+<div class="mega-menu-panel" id="mega-menu-panel"></div>
+</div>
+<div class="cat-bar-links">
+<a href="catalogo.html?cat=Galletitas">Galletitas</a>
+<a href="catalogo.html?cat=Perfumer%C3%ADa">Perfumería</a>
+<a href="catalogo.html?cat=Limpieza">Limpieza</a>
+<a href="catalogo.html?cat=Vinos">Vinos</a>
+<a href="catalogo.html?cat=Enlatados">Enlatados</a>
+<a href="catalogo.html?cat=Golosinas">Golosinas</a>
+<a href="catalogo.html?cat=Bebidas">Bebidas</a>
+<a href="catalogo.html">Ver todo</a>
+</div>
+<a href="catalogo.html?oferta=1" class="cat-bar-ofertas">Ofertas</a>
+</div>
+</div>
 </header>
 
 <section class="container" style="padding: 30px 0 60px;">
-  <div class="section-title">
-    <h2>Mi cuenta</h2>
-    <a href="#" data-logout>Cerrar sesión</a>
-  </div>
+<div class="section-title">
+<h2>Mi cuenta</h2>
+<a href="#" data-logout>Cerrar sesión</a>
+</div>
 
-  <div class="form-card" style="max-width:100%; margin-bottom:26px;">
-    <h3 style="margin-top:0; color:var(--navy);">Mis datos</h3>
-    <p id="dato-nombre" style="margin:4px 0;"></p>
-    <p id="dato-razon" style="margin:4px 0; color:var(--gray);"></p>
-    <p id="dato-doc" style="margin:4px 0; color:var(--gray);"></p>
-    <p id="dato-email" style="margin:4px 0; color:var(--gray);"></p>
-    <p id="dato-telefono" style="margin:4px 0; color:var(--gray);"></p>
-    <p id="dato-direccion" style="margin:4px 0; color:var(--gray);"></p>
-    <p style="font-size:0.78rem; color:var(--gray); margin-top:10px;">¿Algún dato desactualizado? Escribinos por <a href="#" data-whatsapp target="_blank" style="color:var(--teal); font-weight:600;">WhatsApp</a> y te lo actualizamos.</p>
-  </div>
+<div class="form-card" style="max-width:100%; margin-bottom:26px;">
+<h3 style="margin-top:0; color:var(--navy);">Mis datos</h3>
+<p id="dato-nombre" style="margin:4px 0;"></p>
+<p id="dato-razon" style="margin:4px 0; color:var(--gray);"></p>
+<p id="dato-doc" style="margin:4px 0; color:var(--gray);"></p>
+<p id="dato-email" style="margin:4px 0; color:var(--gray);"></p>
+<p id="dato-telefono" style="margin:4px 0; color:var(--gray);"></p>
+<p id="dato-direccion" style="margin:4px 0; color:var(--gray);"></p>
+<p style="font-size:0.78rem; color:var(--gray); margin-top:10px;">¿Algún dato desactualizado? Escribinos por <a href="#" data-whatsapp target="_blank" style="color:var(--teal); font-weight:600;">WhatsApp</a> y te lo actualizamos.</p>
+</div>
 
-  <div class="section-title">
-    <h2 style="font-size:1.15rem;">Mis pedidos</h2>
-  </div>
-  <div id="lista-pedidos"></div>
+<div class="section-title">
+<h2 style="font-size:1.15rem;">Mis pedidos</h2>
+</div>
+<div id="lista-pedidos"></div>
 </section>
 
 <footer class="site-footer">
-  <div class="container">
-    <div class="footer-grid">
-      <div>
-        <h4>AY-FA Distribuciones</h4>
-        <p>Tu distribuidora de confianza: almacén, bebidas, limpieza, perfumería y más, a los mejores precios.</p>
-      </div>
-      <div>
-        <h4>Enlaces</h4>
-        <a href="catalogo.html">Catálogo completo</a>
-        <a href="registro.html">Crear cuenta</a>
-        <a href="ingresar.html">Ingresar</a>
-        <a href="contacto.html">Contacto</a>
-      </div>
-      <div>
-        <h4>Entrega</h4>
-        <p><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><rect x="1" y="6" width="14" height="10"></rect><path d="M15 10h4l3 3v3h-7z"></path><circle cx="6" cy="19" r="1.6"></circle><circle cx="17.5" cy="19" r="1.6"></circle></svg> Envío a domicilio</p>
-        <p><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><path d="M3 21V9l9-6 9 6v12"></path><path d="M9 21v-7h6v7"></path></svg> Retiro en depósito</p>
-        <p><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 1 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> Reparto local por zonas</p>
-      </div>
-      <div>
-        <h4>Contacto</h4>
-        <p data-empresa-email>—</p>
-        <p data-empresa-horarios>—</p>
-      </div>
-    </div>
-    <div class="footer-bottom">© <span data-anio></span> AY-FA Distribuciones. Todos los derechos reservados.</div>
-  </div>
+<div class="container">
+<div class="footer-grid">
+<div>
+<h4>AY-FA Distribuciones</h4>
+<p>Tu distribuidora de confianza: almacén, bebidas, limpieza, perfumería y más, a los mejores precios.</p>
+</div>
+<div>
+<h4>Enlaces</h4>
+<a href="catalogo.html">Catálogo completo</a>
+<a href="registro.html">Crear cuenta</a>
+<a href="ingresar.html">Ingresar</a>
+<a href="contacto.html">Contacto</a>
+</div>
+<div>
+<h4>Entrega</h4>
+<p><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><rect x="1" y="6" width="14" height="10"></rect><path d="M15 10h4l3 3v3h-7z"></path><circle cx="6" cy="19" r="1.6"></circle><circle cx="17.5" cy="19" r="1.6"></circle></svg> Envío a domicilio</p>
+<p><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><path d="M3 21V9l9-6 9 6v12"></path><path d="M9 21v-7h6v7"></path></svg> Retiro en depósito</p>
+<p><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 1 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> Reparto local por zonas</p>
+</div>
+<div>
+<h4>Contacto</h4>
+<p data-empresa-email>—</p>
+<p data-empresa-horarios>—</p>
+</div>
+</div>
+<div class="footer-bottom">© <span data-anio></span> AY-FA Distribuciones. Todos los derechos reservados.</div>
+</div>
 </footer>
 <a href="#" class="whatsapp-float" data-whatsapp title="Escribinos por WhatsApp" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:26px;height:26px"><path d="M21 11.5a8.4 8.4 0 0 1-8.9 8.4 8.5 8.5 0 0 1-4-1L3 20l1.1-5A8.4 8.4 0 1 1 21 11.5z"></path></svg></a>
 
 <script src="js/config.js"></script>
 <script src="js/datos.js"></script>
+<script src="js/megamenu.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/carrito.js"></script>
 <script src="js/pedidos.js"></script>
 <script src="js/principal.js"></script>
 <script>
 (function () {
-  if (!AyfaAuth.requiereLogin("ingresar.html")) return;
+if (!AyfaAuth.requiereLogin("ingresar.html")) return;
 
-  const usuario = AyfaAuth.usuarioActual();
-  document.getElementById("dato-nombre").innerHTML = "<strong>" + (usuario.nombre || "") + "</strong>";
-  document.getElementById("dato-razon").textContent = usuario.razonSocial || "";
-  document.getElementById("dato-doc").textContent = [usuario.documento, usuario.condicionIVA].filter(Boolean).join(" · ");
-  document.getElementById("dato-email").textContent = usuario.email || "";
-  document.getElementById("dato-telefono").textContent = usuario.telefono || "";
-  document.getElementById("dato-direccion").textContent = [usuario.direccion, usuario.localidad].filter(Boolean).join(", ");
+const usuario = AyfaAuth.usuarioActual();
+document.getElementById("dato-nombre").innerHTML = "<strong>" + (usuario.nombre || "") + "</strong>";
+document.getElementById("dato-razon").textContent = usuario.razonSocial || "";
+document.getElementById("dato-doc").textContent = [usuario.documento, usuario.condicionIVA].filter(Boolean).join(" · ");
+document.getElementById("dato-email").textContent = usuario.email || "";
+document.getElementById("dato-telefono").textContent = usuario.telefono || "";
+document.getElementById("dato-direccion").textContent = [usuario.direccion, usuario.localidad].filter(Boolean).join(", ");
 
-  const lista = document.getElementById("lista-pedidos");
+const lista = document.getElementById("lista-pedidos");
 
-  function pedidoHTML(p) {
-    const items = (p.items || []).map(it => `${it.cantidad}x ${it.nombre}`).join(", ");
-    return `
-      <div class="carrito-item" style="align-items:flex-start;">
-        <div class="carrito-item-info">
-          <div class="nombre">Pedido ${p.numero || ""} <span class="badge-tag">${p.estado || "Nuevo"}</span></div>
-          <div class="precio-unit">${p.fecha ? new Date(p.fecha).toLocaleDateString("es-AR") : ""}</div>
-          <div class="precio-unit" style="margin-top:6px;">${items}</div>
-        </div>
-        <strong>${p.total ? AyfaDatos.formatoPrecio(p.total) : ""}</strong>
-      </div>
-    `;
-  }
+function pedidoHTML(p) {
+const items = (p.items || []).map(it => `${it.cantidad}x ${it.nombre}`).join(", ");
+return `
+<div class="carrito-item" style="align-items:flex-start;">
+<div class="carrito-item-info">
+<div class="nombre">Pedido ${p.numero || ""} <span class="badge-tag">${p.estado || "Nuevo"}</span></div>
+<div class="precio-unit">${p.fecha ? new Date(p.fecha).toLocaleDateString("es-AR") : ""}</div>
+<div class="precio-unit" style="margin-top:6px;">${items}</div>
+</div>
+<strong>${p.total ? AyfaDatos.formatoPrecio(p.total) : ""}</strong>
+</div>
+`;
+}
 
-  (async function () {
-    lista.innerHTML = `<div class="vacio-msg">Cargando pedidos…</div>`;
-    try {
-      const pedidos = await AyfaPedidos.misPedidos(usuario.email);
-      if (!pedidos || !pedidos.length) {
-        lista.innerHTML = `<div class="vacio-msg">Todavía no hiciste ningún pedido. <br><a href="catalogo.html" class="btn btn-primary" style="margin-top:14px;">Ver catálogo</a></div>`;
-        return;
-      }
-      lista.innerHTML = pedidos.map(pedidoHTML).join("");
-    } catch (e) {
-      lista.innerHTML = `<div class="vacio-msg">No pudimos cargar tus pedidos.</div>`;
-    }
-  })();
+(async function () {
+lista.innerHTML = `<div class="vacio-msg">Cargando pedidos…</div>`;
+try {
+const pedidos = await AyfaPedidos.misPedidos(usuario.email);
+if (!pedidos || !pedidos.length) {
+lista.innerHTML = `<div class="vacio-msg">Todavía no hiciste ningún pedido. <br><a href="catalogo.html" class="btn btn-primary" style="margin-top:14px;">Ver catálogo</a></div>`;
+return;
+}
+lista.innerHTML = pedidos.map(pedidoHTML).join("");
+} catch (e) {
+lista.innerHTML = `<div class="vacio-msg">No pudimos cargar tus pedidos.</div>`;
+}
+})();
 })();
 </script>
 </body>

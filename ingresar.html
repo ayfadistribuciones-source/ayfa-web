@@ -12,127 +12,135 @@
 <div class="topbar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><rect x="1" y="6" width="14" height="10"></rect><path d="M15 10h4l3 3v3h-7z"></path><circle cx="6" cy="19" r="1.6"></circle><circle cx="17.5" cy="19" r="1.6"></circle></svg> Envío a domicilio · <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><path d="M3 21V9l9-6 9 6v12"></path><path d="M9 21v-7h6v7"></path></svg> Retiro en depósito · <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 1 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> Reparto local por zonas — <strong>Hacé tu pedido online</strong></div>
 
 <header class="site-header">
-  <div class="header-inner">
-    <a href="index.html" class="logo-link"><img src="assets/logo.png" alt="AY-FA Distribuciones"></a>
-    <form class="search-bar" data-search-form>
-      <input type="text" placeholder="Buscar productos, marcas, categorías...">
-      <button type="submit">Buscar</button>
-    </form>
-    <nav class="main-nav">
-      <a href="index.html">Inicio</a>
-      <a href="catalogo.html">Catálogo</a>
-      <a href="contacto.html">Contacto</a>
-      <a href="ingresar.html" data-login-link>Ingresar</a>
-      <a href="mi-cuenta.html" class="user-chip" data-user-chip style="display:none;"></a>
-      <a href="carrito.html" class="cart-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><circle cx="9" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2.5 3h2l2.7 12.4a2 2 0 0 0 2 1.6h8.1a2 2 0 0 0 2-1.6L21 8H6"></path></svg> Carrito <span class="cart-count" data-cart-count>0</span></a>
-    </nav>
-  </div>
-  <div class="cat-bar">
-    <div class="cat-bar-inner">
-      <a href="catalogo.html?cat=Galletitas">Galletitas</a>
-      <a href="catalogo.html?cat=Perfumer%C3%ADa">Perfumería</a>
-      <a href="catalogo.html?cat=Limpieza">Limpieza</a>
-      <a href="catalogo.html?cat=Vinos">Vinos</a>
-      <a href="catalogo.html?cat=Enlatados">Enlatados</a>
-      <a href="catalogo.html?cat=Golosinas">Golosinas</a>
-      <a href="catalogo.html?cat=Bebidas">Bebidas</a>
-      <a href="catalogo.html">Ver todo</a>
-    </div>
-  </div>
+<div class="header-inner">
+<a href="index.html" class="logo-link"><img src="assets/logo.png" alt="AY-FA Distribuciones"></a>
+<form class="search-bar" data-search-form>
+<input type="text" placeholder="Buscar productos, marcas, categorías...">
+<button type="submit">Buscar</button>
+</form>
+<nav class="main-nav">
+<a href="index.html">Inicio</a>
+<a href="catalogo.html">Catálogo</a>
+<a href="contacto.html">Contacto</a>
+<a href="ingresar.html" data-login-link>Ingresar</a>
+<a href="mi-cuenta.html" class="user-chip" data-user-chip style="display:none;"></a>
+<a href="carrito.html" class="cart-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><circle cx="9" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2.5 3h2l2.7 12.4a2 2 0 0 0 2 1.6h8.1a2 2 0 0 0 2-1.6L21 8H6"></path></svg> Carrito <span class="cart-count" data-cart-count>0</span></a>
+</nav>
+</div>
+<div class="cat-bar">
+<div class="cat-bar-inner">
+<div class="mega-menu-wrap">
+<button type="button" class="mega-menu-btn" id="mega-menu-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg> Categorías <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+<div class="mega-menu-panel" id="mega-menu-panel"></div>
+</div>
+<div class="cat-bar-links">
+<a href="catalogo.html?cat=Galletitas">Galletitas</a>
+<a href="catalogo.html?cat=Perfumer%C3%ADa">Perfumería</a>
+<a href="catalogo.html?cat=Limpieza">Limpieza</a>
+<a href="catalogo.html?cat=Vinos">Vinos</a>
+<a href="catalogo.html?cat=Enlatados">Enlatados</a>
+<a href="catalogo.html?cat=Golosinas">Golosinas</a>
+<a href="catalogo.html?cat=Bebidas">Bebidas</a>
+<a href="catalogo.html">Ver todo</a>
+</div>
+<a href="catalogo.html?oferta=1" class="cat-bar-ofertas">Ofertas</a>
+</div>
+</div>
 </header>
 
 <section class="container" style="padding: 40px 0 60px;">
-  <div class="form-card">
-    <h2>Ingresar</h2>
-    <p style="color:var(--gray); font-size:0.9rem; margin-top:-10px;">Accedé a tu cuenta para ver tu historial y hacer pedidos más rápido.</p>
+<div class="form-card">
+<h2>Ingresar</h2>
+<p style="color:var(--gray); font-size:0.9rem; margin-top:-10px;">Accedé a tu cuenta para ver tu historial y hacer pedidos más rápido.</p>
 
-    <div class="msg-box msg-ok" id="msg-ok"></div>
-    <div class="msg-box msg-error" id="msg-error"></div>
+<div class="msg-box msg-ok" id="msg-ok"></div>
+<div class="msg-box msg-error" id="msg-error"></div>
 
-    <form id="form-ingresar">
-      <div class="campo">
-        <label for="campo-email">Email</label>
-        <input type="email" id="campo-email" required>
-      </div>
-      <div class="campo">
-        <label for="campo-password">Contraseña</label>
-        <input type="password" id="campo-password" required>
-      </div>
-      <button type="submit" class="btn btn-primary btn-block">Ingresar</button>
-      <p style="text-align:center; font-size:0.85rem; margin-top:14px;">¿No tenés cuenta? <a href="registro.html" style="color:var(--teal); font-weight:600;">Creá una gratis</a></p>
-    </form>
-  </div>
+<form id="form-ingresar">
+<div class="campo">
+<label for="campo-email">Email</label>
+<input type="email" id="campo-email" required>
+</div>
+<div class="campo">
+<label for="campo-password">Contraseña</label>
+<input type="password" id="campo-password" required>
+</div>
+<button type="submit" class="btn btn-primary btn-block">Ingresar</button>
+<p style="text-align:center; font-size:0.85rem; margin-top:14px;">¿No tenés cuenta? <a href="registro.html" style="color:var(--teal); font-weight:600;">Creá una gratis</a></p>
+</form>
+</div>
 </section>
 
 <footer class="site-footer">
-  <div class="container">
-    <div class="footer-grid">
-      <div>
-        <h4>AY-FA Distribuciones</h4>
-        <p>Tu distribuidora de confianza: almacén, bebidas, limpieza, perfumería y más, a los mejores precios.</p>
-      </div>
-      <div>
-        <h4>Enlaces</h4>
-        <a href="catalogo.html">Catálogo completo</a>
-        <a href="registro.html">Crear cuenta</a>
-        <a href="ingresar.html">Ingresar</a>
-        <a href="contacto.html">Contacto</a>
-      </div>
-      <div>
-        <h4>Entrega</h4>
-        <p><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><rect x="1" y="6" width="14" height="10"></rect><path d="M15 10h4l3 3v3h-7z"></path><circle cx="6" cy="19" r="1.6"></circle><circle cx="17.5" cy="19" r="1.6"></circle></svg> Envío a domicilio</p>
-        <p><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><path d="M3 21V9l9-6 9 6v12"></path><path d="M9 21v-7h6v7"></path></svg> Retiro en depósito</p>
-        <p><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 1 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> Reparto local por zonas</p>
-      </div>
-      <div>
-        <h4>Contacto</h4>
-        <p data-empresa-email>—</p>
-        <p data-empresa-horarios>—</p>
-      </div>
-    </div>
-    <div class="footer-bottom">© <span data-anio></span> AY-FA Distribuciones. Todos los derechos reservados.</div>
-  </div>
+<div class="container">
+<div class="footer-grid">
+<div>
+<h4>AY-FA Distribuciones</h4>
+<p>Tu distribuidora de confianza: almacén, bebidas, limpieza, perfumería y más, a los mejores precios.</p>
+</div>
+<div>
+<h4>Enlaces</h4>
+<a href="catalogo.html">Catálogo completo</a>
+<a href="registro.html">Crear cuenta</a>
+<a href="ingresar.html">Ingresar</a>
+<a href="contacto.html">Contacto</a>
+</div>
+<div>
+<h4>Entrega</h4>
+<p><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><rect x="1" y="6" width="14" height="10"></rect><path d="M15 10h4l3 3v3h-7z"></path><circle cx="6" cy="19" r="1.6"></circle><circle cx="17.5" cy="19" r="1.6"></circle></svg> Envío a domicilio</p>
+<p><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><path d="M3 21V9l9-6 9 6v12"></path><path d="M9 21v-7h6v7"></path></svg> Retiro en depósito</p>
+<p><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 1 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> Reparto local por zonas</p>
+</div>
+<div>
+<h4>Contacto</h4>
+<p data-empresa-email>—</p>
+<p data-empresa-horarios>—</p>
+</div>
+</div>
+<div class="footer-bottom">© <span data-anio></span> AY-FA Distribuciones. Todos los derechos reservados.</div>
+</div>
 </footer>
 <a href="#" class="whatsapp-float" data-whatsapp title="Escribinos por WhatsApp" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:26px;height:26px"><path d="M21 11.5a8.4 8.4 0 0 1-8.9 8.4 8.5 8.5 0 0 1-4-1L3 20l1.1-5A8.4 8.4 0 1 1 21 11.5z"></path></svg></a>
 
 <script src="js/config.js"></script>
 <script src="js/datos.js"></script>
+<script src="js/megamenu.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/carrito.js"></script>
 <script src="js/principal.js"></script>
 <script>
 (function () {
-  const form = document.getElementById("form-ingresar");
-  const msgOk = document.getElementById("msg-ok");
-  const msgError = document.getElementById("msg-error");
+const form = document.getElementById("form-ingresar");
+const msgOk = document.getElementById("msg-ok");
+const msgError = document.getElementById("msg-error");
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    msgOk.style.display = "none";
-    msgError.style.display = "none";
+form.addEventListener("submit", async (e) => {
+e.preventDefault();
+msgOk.style.display = "none";
+msgError.style.display = "none";
 
-    const email = document.getElementById("campo-email").value.trim().toLowerCase();
-    const password = document.getElementById("campo-password").value;
+const email = document.getElementById("campo-email").value.trim().toLowerCase();
+const password = document.getElementById("campo-password").value;
 
-    const btn = form.querySelector("button[type=submit]");
-    btn.disabled = true; btn.textContent = "Ingresando…";
-    try {
-      const resp = await AyfaAuth.login(email, password);
-      if (resp && resp.ok) {
-        msgOk.textContent = "¡Bienvenido! Redirigiendo…";
-        msgOk.style.display = "block";
-        setTimeout(() => { window.location.href = "mi-cuenta.html"; }, 700);
-      } else {
-        msgError.textContent = (resp && resp.mensaje) || "Email o contraseña incorrectos.";
-        msgError.style.display = "block";
-        btn.disabled = false; btn.textContent = "Ingresar";
-      }
-    } catch (err) {
-      msgError.textContent = "No pudimos iniciar sesión: " + err.message;
-      msgError.style.display = "block";
-      btn.disabled = false; btn.textContent = "Ingresar";
-    }
-  });
+const btn = form.querySelector("button[type=submit]");
+btn.disabled = true; btn.textContent = "Ingresando…";
+try {
+const resp = await AyfaAuth.login(email, password);
+if (resp && resp.ok) {
+msgOk.textContent = "¡Bienvenido! Redirigiendo…";
+msgOk.style.display = "block";
+setTimeout(() => { window.location.href = "mi-cuenta.html"; }, 700);
+} else {
+msgError.textContent = (resp && resp.mensaje) || "Email o contraseña incorrectos.";
+msgError.style.display = "block";
+btn.disabled = false; btn.textContent = "Ingresar";
+}
+} catch (err) {
+msgError.textContent = "No pudimos iniciar sesión: " + err.message;
+msgError.style.display = "block";
+btn.disabled = false; btn.textContent = "Ingresar";
+}
+});
 })();
 </script>
 </body>
