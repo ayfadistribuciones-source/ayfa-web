@@ -185,21 +185,53 @@ nav.main-nav a.activo{ color: var(--teal); border-bottom: 2px solid var(--teal);
 .hero-actions{ display:flex; gap:12px; flex-wrap:wrap; }
 .hero-visual{
   flex: 1 1 280px;
-  background: rgba(255,255,255,0.06);
-  border-radius: var(--radius);
-  padding: 30px;
+  position: relative;
   display:flex; align-items:center; justify-content:center;
-  min-height: 190px;
+  min-height: 220px;
+  padding: 44px;
+}
+.hero-visual::before,
+.hero-visual::after{
+  content:"";
+  position:absolute;
+  width:230px; height:150px;
+  border-radius:16px;
+  z-index:1;
+}
+.hero-visual::before{
+  background: var(--teal); opacity:.4;
+  transform: rotate(-8deg);
+  top: 14px; left: 4px;
+}
+.hero-visual::after{
+  background: var(--maroon); opacity:.35;
+  transform: rotate(7deg);
+  bottom: 6px; right: 0;
 }
 .hero-logo-crop{
-  width: 288px; height: 130px; max-width:100%; overflow:hidden; position:relative;
+  width: 288px; height: 130px; max-width:100%; overflow:hidden; position:relative; z-index:2;
   background:#fff; border-radius: 8px;
+  box-shadow: 0 16px 36px rgba(0,0,0,.4);
 }
 .hero-logo-crop img{
   position:absolute; max-height:none;
   width: 536.77px; height: 536.77px;
   left: -124.23px; top: -206.53px;
   max-width:none;
+}
+.hero-badge{
+  position:absolute; z-index:3;
+  background:#fff; color: var(--navy); font-weight:700; font-size:.78rem;
+  padding:8px 14px; border-radius:999px;
+  box-shadow: 0 6px 16px rgba(0,0,0,.3);
+  display:flex; align-items:center; gap:6px; white-space:nowrap;
+}
+.hero-badge svg{ width:15px; height:15px; flex-shrink:0; }
+.hero-badge.badge-top{ top:-16px; right: 4px; }
+.hero-badge.badge-bottom{ bottom:-16px; left: 4px; background: var(--teal); color:#fff; }
+@media (max-width: 640px){
+  .hero-visual{ margin-top: 26px; }
+  .hero-badge{ font-size:.7rem; padding:6px 10px; }
 }
 
 /* ---------- Botones ---------- */
