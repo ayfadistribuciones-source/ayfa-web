@@ -1,201 +1,84 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Carrito — AY-FA Distribuciones</title>
-<link rel="icon" href="assets/logo.png">
-<link rel="stylesheet" href="css/estilos.css">
-</head>
-<body>
+# AY-FA Distribuciones — Cómo cargar la planilla de productos
 
-<header class="site-header">
-  <div class="header-inner">
-    <a href="index.html" class="logo-link"><img src="assets/logo.png" alt="AY-FA Distribuciones"></a>
-    <nav class="main-nav" style="margin-left:auto;">
-      <a href="index.html">Inicio</a>
-      <a href="catalogo.html">Catálogo</a>
-      <a href="ingresar.html" data-login-link>Ingresar</a>
-      <a href="mi-cuenta.html" class="user-chip" data-user-chip style="display:none;"></a>
-    </nav>
-  </div>
-</header>
+Este documento reemplaza al `INSTRUCCIONES.md` anterior, que había quedado
+con contenido mezclado por error (tenía código de `carrito.html` en vez de
+instrucciones). Acá están las columnas actuales que usa la web para leer
+la planilla de Google Sheets en vivo.
 
-<section class="container" style="padding: 30px 20px 80px;">
-  <div class="section-title"><h2>Tu carrito</h2></div>
+## Dónde se cargan los productos
 
-  <div class="carrito-layout">
-    <div id="items-carrito"></div>
+La web lee directamente de tu Google Sheet (`AYFA_CONFIG.SHEET_ID` en
+`js/config.js`). Cada pestaña listada en `SHEET_TABS_PRODUCTOS` (hoy:
+`AyFa` y `Ramseyer`) se lee como una lista de productos de ese proveedor.
+Los cambios que hagas en la planilla se ven en la web en unos minutos
+(hay una caché de 3 minutos en el navegador del cliente).
 
-    <div class="resumen-card">
-      <h3>Resumen del pedido</h3>
-      <div id="resumen-lineas"></div>
+## Columnas de la planilla
 
-      <h4 style="margin: 18px 0 6px; color:var(--navy); font-size:0.92rem;">¿Cómo lo recibís?</h4>
-      <div class="entrega-opciones" id="entrega-opciones">
-        <label class="entrega-opcion" data-opcion="envio">
-          <input type="radio" name="entrega" value="Envío a domicilio">
-          <div>
-            <div class="titulo">🚚 Envío a domicilio</div>
-            <div class="desc">Coordinamos el costo y horario según tu dirección.</div>
-          </div>
-        </label>
-        <label class="entrega-opcion" data-opcion="retiro">
-          <input type="radio" name="entrega" value="Retiro en depósito">
-          <div>
-            <div class="titulo">🏬 Retiro en depósito</div>
-            <div class="desc" data-empresa-direccion>Sin costo adicional.</div>
-          </div>
-        </label>
-        <label class="entrega-opcion" data-opcion="reparto">
-          <input type="radio" name="entrega" value="Reparto local">
-          <div style="width:100%;">
-            <div class="titulo">📍 Reparto local por zona</div>
-            <div class="desc">Reparto propio en el día según zona.</div>
-            <select id="select-zona-reparto" style="width:100%; margin-top:8px; padding:7px; border:1px solid #d8dce3; border-radius:6px; display:none;"></select>
-          </div>
-        </label>
-      </div>
+La primera fila de cada pestaña tiene que tener estos encabezados
+exactos (no importa el orden de las columnas, pero sí el texto del
+encabezado). Las columnas marcadas **obligatorias** tienen que estar
+siempre completas; el resto son opcionales y podés dejarlas vacías.
 
-      <div class="campo" id="campo-direccion-envio" style="display:none;">
-        <label>Dirección de envío</label>
-        <input type="text" id="input-direccion-envio" placeholder="Calle, número, localidad">
-      </div>
+| Columna | Obligatoria | Qué va | Ejemplo |
+|---|---|---|---|
+| `SKU` | Sí | Código interno del producto | `2914` |
+| `Producto` | Sí | Nombre del producto tal como se muestra en la web | `LHERITIER CHUPETONCITO 8 UNI. X 35 GR` |
+| `Categoria` | Sí | Categoría (se usa para el menú y los filtros) | `Golosinas` |
+| `Marca` | No | Marca del producto | `Fantoche` |
+| `Presentacion` | No | Formato/presentación, si no está ya en el nombre | `Caja x 24` |
+| `Precio` | Sí | Precio normal, en pesos | `2050` o `2.050,00` |
+| `Stock` | No | Cantidad disponible. Si la dejás vacía, la web muestra "Disponible" sin límite. Poné `0` a propósito si de verdad no hay stock | `15` |
+| `Proveedor` | No | Si una pestaña mezcla productos de más de un proveedor. Si no la completás, se usa el nombre de la pestaña | `Ramseyer` |
+| `Imagen` | No | URL pública de una foto del producto | `https://...jpg` |
+| `Destacado` | No | Poné `SI` para que aparezca en "Productos destacados" del Inicio | `SI` |
+| `Promo` | No | Texto corto para la cinta de oferta (si lo dejás vacío se muestra "OFERTA") | `2x1`, `20% OFF` |
+| `PrecioPromo` | No | Precio promocional. **Tiene que ser menor a `Precio`** para que se active la oferta | `1750` |
+| `PrecioBulto` | No (nueva) | Precio del bulto/caja cerrada, si querés mostrarlo aparte del precio unitario | `35000` |
 
-      <button class="btn btn-primary btn-block" id="btn-confirmar" style="margin-top:16px;">Confirmar pedido</button>
-      <p style="font-size:0.75rem; color:var(--gray); text-align:center; margin-top:10px;">El pago se coordina por WhatsApp o al recibir el pedido.</p>
-    </div>
-  </div>
-</section>
+## Cómo funciona "Ofertas" (la cinta roja/naranja)
 
-<footer class="site-footer">
-  <div class="container">
-    <div class="footer-bottom">© <span data-anio></span> AY-FA Distribuciones. Todos los derechos reservados.</div>
-  </div>
-</footer>
+Apenas un producto tiene `PrecioPromo` cargado y ese valor es menor que
+`Precio`, automáticamente:
 
-<script src="js/config.js"></script>
-<script src="js/datos.js"></script>
-<script src="js/auth.js"></script>
-<script src="js/carrito.js"></script>
-<script src="js/pedidos.js"></script>
-<script src="js/principal.js"></script>
-<script>
-(async function () {
-  const productos = await AyfaDatos.obtenerProductos();
-  const itemsCont = document.getElementById("items-carrito");
-  const resumenCont = document.getElementById("resumen-lineas");
-  const btnConfirmar = document.getElementById("btn-confirmar");
+- Aparece con una **cinta diagonal "OFERTA"** (o el texto que pongas en
+  `Promo`, ej. "2x1") en la esquina de su tarjeta, en Catálogo e Inicio.
+- Se muestra el precio normal tachado y el precio promocional al lado.
+- Entra en la sección **"Aprovechá nuestras ofertas"** del Inicio (esa
+  sección se muestra sola cuando hay al menos un producto en oferta; si
+  no hay ninguno, queda oculta).
+- Aparece al filtrar por "Solo ofertas" en el Catálogo.
 
-  const selectZona = document.getElementById("select-zona-reparto");
-  AYFA_CONFIG.ZONAS_REPARTO_LOCAL.forEach(z => {
-    const opt = document.createElement("option");
-    opt.value = z; opt.textContent = z;
-    selectZona.appendChild(opt);
-  });
+No hace falta tocar nada del sitio: cargar `PrecioPromo` en la planilla
+alcanza para que todo esto se actualice solo.
 
-  function renderCarrito() {
-    const detalle = AyfaCarrito.detalle(productos);
+## Cómo funciona "Precio por bulto cerrado"
 
-    if (!detalle.length) {
-      itemsCont.innerHTML = `<div class="vacio-msg"><div class="icono">🛒</div>Tu carrito está vacío.<br><a href="catalogo.html" class="btn btn-primary" style="margin-top:14px;">Ir al catálogo</a></div>`;
-      resumenCont.innerHTML = "";
-      btnConfirmar.disabled = true;
-      return;
-    }
-    btnConfirmar.disabled = false;
+Si cargás `PrecioBulto` en un producto, ese precio aparece en la ficha
+de detalle rápido (el ícono del ojito 👁 en cada tarjeta), debajo del
+precio unitario, con la etiqueta "Precio por bulto cerrado". Si la
+dejás vacía, esa línea no se muestra.
 
-    itemsCont.innerHTML = detalle.map(i => `
-      <div class="carrito-item">
-        <div class="producto-img">${i.imagen ? `<img src="${i.imagen}">` : "📦"}</div>
-        <div class="carrito-item-info">
-          <div class="nombre">${i.nombre}</div>
-          <div class="precio-unit">${i.marca || ""} ${i.presentacion ? "· " + i.presentacion : ""}</div>
-          <div class="precio-unit">${AyfaDatos.formatoPrecio(i.precioUnit)} c/u</div>
-        </div>
-        <div class="carrito-item-acciones">
-          <input type="number" min="1" ${(i.stock !== null && i.stock !== undefined) ? `max="${i.stock}"` : ""} value="${i.cantidad}" class="qty-input" data-cambiar-cant="${i.id}">
-          <strong>${AyfaDatos.formatoPrecio(i.subtotal)}</strong>
-          <span class="quitar-item" data-quitar="${i.id}">Quitar</span>
-        </div>
-      </div>
-    `).join("");
+Además, la ficha de detalle intenta reconocer sola cuántas unidades
+trae el bulto a partir del nombre o la presentación (por ejemplo,
+"24x150Gr" o "8 UNI. X 35 GR"). Es solo una ayuda visual — si querés
+que sea exacto, lo mejor es escribirlo siempre igual en el nombre o la
+presentación (ej. "24x150Gr").
 
-    const total = detalle.reduce((a, i) => a + i.subtotal, 0);
-    resumenCont.innerHTML = `
-      <div class="resumen-linea"><span>Subtotal</span><span>${AyfaDatos.formatoPrecio(total)}</span></div>
-      <div class="resumen-total"><span>Total</span><span>${AyfaDatos.formatoPrecio(total)}</span></div>
-    `;
+## Precios visibles solo para clientes registrados
 
-    itemsCont.querySelectorAll("[data-cambiar-cant]").forEach(inp => {
-      inp.addEventListener("change", () => {
-        AyfaCarrito.actualizarCantidad(inp.getAttribute("data-cambiar-cant"), Math.max(1, parseInt(inp.value, 10) || 1));
-        renderCarrito();
-      });
-    });
-    itemsCont.querySelectorAll("[data-quitar]").forEach(el => {
-      el.addEventListener("click", () => {
-        AyfaCarrito.quitar(el.getAttribute("data-quitar"));
-        renderCarrito();
-      });
-    });
-  }
+Los precios (en Catálogo, Inicio y la ficha de detalle) solo se
+muestran a quien inició sesión. A un visitante sin cuenta se le muestra
+"Precio para clientes registrados" con un link para iniciar sesión, en
+vez del precio y el botón de agregar al carrito.
 
-  document.querySelectorAll(".entrega-opcion").forEach(op => {
-    op.addEventListener("click", () => {
-      document.querySelectorAll(".entrega-opcion").forEach(o => o.classList.remove("selected"));
-      op.classList.add("selected");
-      op.querySelector('input[type="radio"]').checked = true;
-      document.getElementById("campo-direccion-envio").style.display = op.dataset.opcion === "envio" ? "block" : "none";
-      selectZona.style.display = op.dataset.opcion === "reparto" ? "block" : "none";
-    });
-  });
+## Otros datos del negocio
 
-  btnConfirmar.addEventListener("click", async () => {
-    if (!AyfaAuth.requiereLogin("carrito.html")) return;
+Se configuran en `js/config.js`, dentro de `EMPRESA`:
 
-    const entradaSel = document.querySelector('input[name="entrega"]:checked');
-    if (!entradaSel) { ayfaMostrarToast("Elegí cómo querés recibir tu pedido."); return; }
+- `whatsapp`: número sin el `+` (ej. `5493482713000`)
+- `email`
+- `direccionRetiro`
+- `horarios`
 
-    const opcion = document.querySelector(".entrega-opcion.selected").dataset.opcion;
-    if (opcion === "envio" && !document.getElementById("input-direccion-envio").value.trim()) {
-      ayfaMostrarToast("Ingresá la dirección de envío.");
-      return;
-    }
-
-    const detalle = AyfaCarrito.detalle(productos);
-    const u = AyfaAuth.usuarioActual();
-    const pedido = {
-      cliente: { nombre: u.nombre, apellido: u.apellido, email: u.email, telefono: u.telefono },
-      items: detalle.map(i => ({ sku: i.sku, proveedor: i.proveedor, nombre: i.nombre, cantidad: i.cantidad, precioUnit: i.precioUnit, subtotal: i.subtotal })),
-      total: detalle.reduce((a, i) => a + i.subtotal, 0),
-      tipoEntrega: entradaSel.value,
-      zona: opcion === "reparto" ? selectZona.value : "",
-      direccionEnvio: opcion === "envio" ? document.getElementById("input-direccion-envio").value.trim() : ""
-    };
-
-    btnConfirmar.disabled = true; btnConfirmar.textContent = "Enviando pedido…";
-    try {
-      const guardado = await AyfaPedidos.crearPedido(pedido);
-      AyfaCarrito.vaciar();
-      itemsCont.innerHTML = `
-        <div class="vacio-msg">
-          <div class="icono">✅</div>
-          <h3 style="color:var(--navy);">¡Pedido confirmado!</h3>
-          <p>Tu número de pedido es <strong>${guardado.numero}</strong>.<br>Te contactaremos para coordinar el pago y la entrega.</p>
-          <a href="mi-cuenta.html" class="btn btn-primary" style="margin-top:14px;">Ver mis pedidos</a>
-        </div>`;
-      resumenCont.innerHTML = "";
-      document.getElementById("entrega-opciones").style.display = "none";
-      btnConfirmar.style.display = "none";
-    } catch (err) {
-      ayfaMostrarToast(err.message || "No se pudo enviar el pedido.");
-      btnConfirmar.disabled = false; btnConfirmar.textContent = "Confirmar pedido";
-    }
-  });
-
-  renderCarrito();
-})();
-</script>
-</body>
-</html>
+Y la lista de zonas de reparto local en `ZONAS_REPARTO_LOCAL`.
