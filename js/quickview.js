@@ -57,7 +57,8 @@ presentación/formato y un selector de cantidad para agregar al carrito.
     if (!p) return;
 
     const logueado = !!AyfaAuth.usuarioActual();
-    const tienePromo = p.precioPromo && p.precioPromo > 0 && p.precioPromo < p.precio;
+    const esPromoFlat = p.precioPromo && p.precioPromo > 0 && p.precioPromo < p.precio;
+    const nxm = AyfaDatos.parsePromoNxM(p.promo);
     const stockInfo = AyfaDatos.estadoStock(p.stock);
 
     document.getElementById("qv-img").innerHTML = p.imagen
@@ -68,7 +69,7 @@ presentación/formato y un selector de cantidad para agregar al carrito.
     const precioBox = document.getElementById("qv-precio");
     if (!logueado) {
       precioBox.innerHTML = `<a href="ingresar.html" style="font-size:1rem; color:var(--maroon); text-decoration:underline;">Iniciá sesión para ver el precio</a>`;
-    } else if (tienePromo) {
+    } else if (esPromoFlat) {
       precioBox.innerHTML = `<span class="tachado">${AyfaDatos.formatoPrecio(p.precio)}</span> ${AyfaDatos.formatoPrecio(p.precioPromo)}`;
     } else {
       precioBox.textContent = AyfaDatos.formatoPrecio(p.precio);
@@ -115,10 +116,10 @@ presentación/formato y un selector de cantidad para agregar al carrito.
       cerrar();
     };
 
-    // Nota: la planilla todavía no tiene columnas separadas de "unidades
-    // por bulto/caja" ni "precio por bulto cerrado" — solo un precio por
-    // línea. Si se cargan esos datos en el futuro se puede mostrar acá.
-    document.getElementById("qv-nota").textContent = "";
+    // Si la promo es de cantidad (2x1, 3x2...) avisamos acá cómo se va a
+    // calcular el precio al agregarlo al carrito.
+    document.getElementById("qv-nota").innerHTML =
+      (logueado && nxm) ? `<div class="promo-aviso">🎁 Promo ${p.promo}: llevando ${nxm.lleva} pagás ${nxm.paga}. El precio se calcula solo al agregarlo al carrito.</div>` : "";
 
     document.getElementById("qv-overlay").classList.add("activo");
   }

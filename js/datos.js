@@ -274,5 +274,58 @@ function formatoPrecio(n) {
 return "$" + Number(n).toLocaleString("es-AR", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 }
 
-return { obtenerProductos, porId, estadoStock, formatoPrecio };
+// Reconoce promos de cantidad tipo "2x1", "3x2", "4x3" en el texto de la
+// columna "Promo" (ej. "2x1", "3X2", "3 x 2"). Devuelve { lleva, paga } o
+// null si el texto no matchea ese patrón (ej. "20% OFF", "Oferta").
+function parsePromoNxM(promoTexto) {
+if (!promoTexto) return null;
+const m = String(promoTexto).trim().match(/^(\d+)\s*[x×]\s*(\d+)$/i);
+if (!m) return null;
+const lleva = parseInt(m[1], 10);
+const paga = parseInt(m[2], 10);
+if (!lleva || !paga || paga >= lleva) return null; // tiene que pagar menos de lo que se lleva
+return { lleva, paga };
+}
+
+// Un producto está "en oferta" si tiene PrecioPromo menor al Precio normal,
+// O si el texto de Promo es una promo de cantidad reconocible (2x1, 3x2...).
+function tienePromoActiva(p) {
+if (p.precioPromo && p.precioPromo > 0 && p.precioPromo < p.precio) return true;
+return !!parsePromoNxM(p.promo);
+}
+
+// Calcula el precio real de una línea del carrito para un producto y una
+// cantidad, contemplando:
+// - Precio normal.
+// - Precio promocional plano (PrecioPromo < Precio): se cobra ese precio
+//   por unidad.
+// - Promo de cantidad tipo "2x1"/"3x2" (columna Promo): se cobran solo las
+//   unidades "pagas" de cada grupo completo, el resto queda gratis.
+// Devuelve el detalle (unidades pagadas/gratis, subtotal) para poder
+// mostrarlo resaltado tanto en el carrito como en el pedido que le llega
+// al dueño.
+function calcularLineaPrecio(p, cantidad) {
+const nxm = parsePromoNxM(p.promo);
+const tienePromoFlat = !!(p.precioPromo && p.precioPromo > 0 && p.precioPromo < p.precio);
+const precioUnitario = tienePromoFlat ? p.precioPromo : p.precio;
+
+if (nxm) {
+const grupos = Math.floor(cantidad / nxm.lleva);
+const resto = cantidad % nxm.lleva;
+const unidadesPagadas = grupos * nxm.paga + resto;
+const unidadesGratis = cantidad - unidadesPagadas;
+return {
+tipo: "nxm", promoTexto: p.promo || "", precioUnitario, cantidad,
+unidadesPagadas, unidadesGratis, subtotal: unidadesPagadas * precioUnitario, esPromo: true
+};
+}
+
+return {
+tipo: tienePromoFlat ? "flat" : "normal", promoTexto: p.promo || "", precioUnitario, cantidad,
+unidadesPagadas: cantidad, unidadesGratis: 0,
+subtotal: precioUnitario * cantidad, esPromo: tienePromoFlat
+};
+}
+
+return { obtenerProductos, porId, estadoStock, formatoPrecio, parsePromoNxM, tienePromoActiva, calcularLineaPrecio };
 })();

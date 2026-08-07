@@ -27,13 +27,14 @@ function productoCardHTML(p) {
 const stockInfo = AyfaDatos.estadoStock(p.stock);
 const sinStock = p.stock !== null && p.stock !== undefined && p.stock <= 0;
 const maxAttr = (p.stock !== null && p.stock !== undefined && p.stock > 0) ? `max="${p.stock}"` : "";
-const tienePromo = p.precioPromo && p.precioPromo > 0 && p.precioPromo < p.precio;
-const precioMostrar = tienePromo ? p.precioPromo : p.precio;
+const tienePromo = AyfaDatos.tienePromoActiva(p);
+const esPromoFlat = p.precioPromo && p.precioPromo > 0 && p.precioPromo < p.precio;
+const precioMostrar = esPromoFlat ? p.precioPromo : p.precio;
 const badge = tienePromo ? (p.promo || "Oferta") : (p.destacado ? "Destacado" : "");
 const logueado = !!AyfaAuth.usuarioActual();
 const bloquePrecioCompra = logueado ? `
 <div class="producto-precio-row">
-${tienePromo ? `<span class="precio-tachado">${AyfaDatos.formatoPrecio(p.precio)}</span>` : ""}
+${esPromoFlat ? `<span class="precio-tachado">${AyfaDatos.formatoPrecio(p.precio)}</span>` : ""}
 <span class="precio">${AyfaDatos.formatoPrecio(precioMostrar)}</span>
 </div>
 <div class="add-cart-row" style="margin-top:10px;">
@@ -72,7 +73,7 @@ p.nombre.toLowerCase().includes(t) ||
 );
 }
 if (categoriaActiva) lista = lista.filter(p => esCategoriaActiva(p.categoria));
-if (filtroSoloOferta) lista = lista.filter(p => p.precioPromo && p.precioPromo > 0);
+if (filtroSoloOferta) lista = lista.filter(p => AyfaDatos.tienePromoActiva(p));
 if (filtroSoloStock) lista = lista.filter(p => p.stock === null || p.stock === undefined || p.stock > 0);
 
 if (orden === "precio-asc") lista.sort((a, b) => (a.precioPromo || a.precio) - (b.precioPromo || b.precio));
