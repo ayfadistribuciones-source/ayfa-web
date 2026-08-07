@@ -63,8 +63,16 @@ header.site-header{
   margin: 0 auto;
   flex-wrap: wrap;
 }
-.logo-link{ display:flex; align-items:center; gap:10px; flex-shrink:0; }
-.logo-link img{ height: 48px; }
+.logo-link{
+  display:flex; align-items:center; gap:10px; flex-shrink:0;
+  width: 131px; height: 50px; overflow: hidden; position: relative;
+}
+.logo-link img{
+  position: absolute;
+  width: 242.72px; height: 242.72px;
+  left: -55.83px; top: -93.2px;
+  max-width: none;
+}
 
 .search-bar{
   flex: 1 1 320px;
@@ -180,9 +188,19 @@ nav.main-nav a.activo{ color: var(--teal); border-bottom: 2px solid var(--teal);
   background: rgba(255,255,255,0.06);
   border-radius: var(--radius);
   padding: 30px;
-  text-align:center;
+  display:flex; align-items:center; justify-content:center;
+  min-height: 190px;
 }
-.hero-visual img{ max-height: 160px; margin: 0 auto; }
+.hero-logo-crop{
+  width: 288px; height: 130px; max-width:100%; overflow:hidden; position:relative;
+  background:#fff; border-radius: 8px;
+}
+.hero-logo-crop img{
+  position:absolute; max-height:none;
+  width: 536.77px; height: 536.77px;
+  left: -124.23px; top: -206.53px;
+  max-width:none;
+}
 
 /* ---------- Botones ---------- */
 .btn{
