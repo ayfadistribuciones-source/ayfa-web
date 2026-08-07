@@ -48,7 +48,7 @@ ${sinStock ? "Sin stock" : "Agregar"}
 `;
 return `
 <div class="producto-card">
-${badge ? `<span class="producto-badge">${badge}</span>` : ""}
+${tienePromo ? `<div class="cinta-oferta">${(p.promo || "Oferta").toUpperCase()}</div>` : (badge ? `<span class="producto-badge">${badge}</span>` : "")}
 <button type="button" class="producto-ver" data-vermas="${p.id}" aria-label="Ver detalle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
 <div class="producto-img">${p.imagen ? `<img src="${p.imagen}" alt="${p.nombre}">` : "📦"}</div>
 <div class="producto-marca">${p.marca || ""}</div>
