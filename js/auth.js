@@ -1,84 +1,70 @@
 /*
-  auth.js — Registro, login y sesión de clientes.
-  Si AYFA_CONFIG.APPS_SCRIPT_URL está configurado, los datos se guardan en tu
-  Google Sheet (hoja "Usuarios") a través del Google Apps Script.
-  Si no, funciona en modo demo guardando todo en el navegador (localStorage).
+  AY-FA Distribuciones — Autenticación de clientes
+  =================================================
+  Habla directo con el backend (Google Apps Script). No guarda usuarios
+  en localStorage: solo guarda la sesión activa (el cliente ya logueado)
+  para no tener que pedir usuario y contraseña en cada página.
 */
 
 const AyfaAuth = (function () {
-  const SESION_KEY = "ayfa_sesion";
-  const USUARIOS_LOCAL_KEY = "ayfa_usuarios_local";
+  const SESION_KEY = "ayfaSesion";
 
-  async function hashPassword(pass) {
-    const enc = new TextEncoder().encode(pass);
-    const buf = await crypto.subtle.digest("SHA-256", enc);
-    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
-  }
-
-  function usarBackend() {
-    return !!(AYFA_CONFIG.APPS_SCRIPT_URL && AYFA_CONFIG.APPS_SCRIPT_URL.trim());
-  }
-
-  function leerUsuariosLocal() {
-    try { return JSON.parse(localStorage.getItem(USUARIOS_LOCAL_KEY) || "[]"); } catch (e) { return []; }
-  }
-  function guardarUsuariosLocal(lista) {
-    localStorage.setItem(USUARIOS_LOCAL_KEY, JSON.stringify(lista));
+  async function hashPassword(password) {
+    const datos = new TextEncoder().encode(String(password));
+    const buffer = await crypto.subtle.digest("SHA-256", datos);
+    return Array.from(new Uint8Array(buffer))
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
   }
 
   async function llamarBackend(payload) {
-    const res = await fetch(AYFA_CONFIG.APPS_SCRIPT_URL, {
+    const resp = await fetch(AYFA_CONFIG.APPS_SCRIPT_URL, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     });
-    return res.json();
+    return await resp.json();
   }
 
-  // datos = {nombre, apellido, email, telefono, direccion, localidad, tipoCliente, cuitDni, password}
+  function guardarSesion(cliente) {
+    localStorage.setItem(SESION_KEY, JSON.stringify(cliente));
+  }
+
   async function registrar(datos) {
     const passwordHash = await hashPassword(datos.password);
-    const registro = { ...datos, passwordHash };
-    delete registro.password;
-
-    if (usarBackend()) {
-      const resp = await llamarBackend({ accion: "registrar", cliente: registro });
-      if (!resp.ok) throw new Error(resp.mensaje || "No se pudo completar el registro.");
-      iniciarSesion(resp.cliente || registro);
-      return resp;
-    } else {
-      const usuarios = leerUsuariosLocal();
-      if (usuarios.some(u => u.email.toLowerCase() === datos.email.toLowerCase())) {
-        throw new Error("Ya existe una cuenta registrada con ese email.");
-      }
-      usuarios.push(registro);
-      guardarUsuariosLocal(usuarios);
-      iniciarSesion(registro);
-      return { ok: true, cliente: registro };
+    const payload = {
+      accion: "registrar",
+      datos: {
+        nombre: datos.nombre || "",
+        razonSocial: datos.razonSocial || "",
+        documento: datos.documento || "",
+        condicionIVA: datos.condicionIVA || "",
+        email: datos.email || "",
+        telefono: datos.telefono || "",
+        direccion: datos.direccion || "",
+        localidad: datos.localidad || "",
+        zona: datos.zona || "",
+        password: passwordHash,
+      },
+    };
+    const resp = await llamarBackend(payload);
+    if (resp && resp.ok && resp.cliente) {
+      guardarSesion(resp.cliente);
     }
+    return resp;
   }
 
   async function login(email, password) {
     const passwordHash = await hashPassword(password);
-
-    if (usarBackend()) {
-      const resp = await llamarBackend({ accion: "login", email, passwordHash });
-      if (!resp.ok) throw new Error(resp.mensaje || "Email o contraseña incorrectos.");
-      iniciarSesion(resp.cliente);
-      return resp.cliente;
-    } else {
-      const usuarios = leerUsuariosLocal();
-      const u = usuarios.find(x => x.email.toLowerCase() === email.toLowerCase() && x.passwordHash === passwordHash);
-      if (!u) throw new Error("Email o contraseña incorrectos.");
-      iniciarSesion(u);
-      return u;
+    const resp = await llamarBackend({
+      accion: "login",
+      email: email,
+      password: passwordHash,
+    });
+    if (resp && resp.ok && resp.cliente) {
+      guardarSesion(resp.cliente);
     }
-  }
-
-  function iniciarSesion(cliente) {
-    const copia = { ...cliente };
-    delete copia.passwordHash;
-    localStorage.setItem(SESION_KEY, JSON.stringify(copia));
+    return resp;
   }
 
   function cerrarSesion() {
@@ -86,16 +72,22 @@ const AyfaAuth = (function () {
   }
 
   function usuarioActual() {
-    try { return JSON.parse(localStorage.getItem(SESION_KEY) || "null"); } catch (e) { return null; }
+    try {
+      const raw = localStorage.getItem(SESION_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) {
+      return null;
+    }
   }
 
-  function requiereLogin(redirigirA) {
+  function requiereLogin(redirectUrl) {
     if (!usuarioActual()) {
-      window.location.href = "ingresar.html" + (redirigirA ? ("?volver=" + encodeURIComponent(redirigirA)) : "");
+      const volver = encodeURIComponent(window.location.pathname.split("/").pop());
+      window.location.href = redirectUrl + "?volver=" + volver;
       return false;
     }
     return true;
   }
 
-  return { registrar, login, cerrarSesion, usuarioActual, requiereLogin, usarBackend };
+  return { registrar, login, cerrarSesion, usuarioActual, requiereLogin };
 })();
