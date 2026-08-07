@@ -5,10 +5,10 @@ const AYFA_CONFIG = {
   APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbxLym6i5VKzw5-7it7sPF7UfoZUJ7U7punwoctECBBSF1RHEO-4tUfWsFecM1NYHVD8yw/exec",
   EMPRESA: {
     nombre: "AY-FA Distribuciones",
-    whatsapp: "5493400000000",
-    email: "pedidos@ayfadistribuciones.com.ar",
-    direccionRetiro: "Depósito AY-FA — Dirección a confirmar",
-    horarios: "Lunes a Viernes 8 a 18 hs · Sábados 8 a 13 hs"
+    whatsapp: "5493482713000",
+    email: "ayfadistribuciones@gmail.com",
+    direccionRetiro: "Depósito AY-FA — Reconquista, Santa Fe",
+    horarios: "Lunes a Viernes 8 a 19 hs"
   },
   ZONAS_REPARTO_LOCAL: ["Reconquista", "Romang", "Alejandra", "Malabrigo", "Avellaneda"],
   COSTO_ENVIO: 0,
