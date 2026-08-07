@@ -204,12 +204,19 @@ const msgError = document.getElementById("msg-error");
 const msgOk = document.getElementById("msg-ok");
 
 function itemHTML(it) {
+let avisoPromo = "";
+if (it.tipoPromo === "nxm") {
+avisoPromo = `<div class="promo-aviso">🎁 Promo ${it.promoTexto} — pagás ${it.cantidad - it.unidadesGratis} de ${it.cantidad}${it.unidadesGratis ? `, <strong>${it.unidadesGratis} sin cargo</strong>` : ""}</div>`;
+} else if (it.esPromo) {
+avisoPromo = `<div class="promo-aviso">🏷️ Precio promocional aplicado</div>`;
+}
 return `
 <div class="carrito-item" data-item="${it.id}">
 <div class="producto-img">${it.imagen ? `<img src="${it.imagen}" alt="${it.nombre}">` : "📦"}</div>
 <div class="carrito-item-info">
 <div class="nombre">${it.nombre}</div>
 <div class="precio-unit">${AyfaDatos.formatoPrecio(it.precioUnit)} c/u · ${it.proveedor || ""}</div>
+${avisoPromo}
 </div>
 <div class="carrito-item-acciones">
 <input type="number" min="1" value="${it.cantidad}" class="qty-input" data-cant="${it.id}">

@@ -191,14 +191,16 @@
 <script>
 (async function () {
 const productos = await AyfaDatos.obtenerProductos();
-const destacados = productos.filter(p => p.destacado || (p.precioPromo && p.precioPromo > 0)).slice(0, 8);
+const destacados = productos.filter(p => p.destacado || AyfaDatos.tienePromoActiva(p)).slice(0, 8);
 const lista = destacados.length ? destacados : productos.slice(0, 8);
 const logueadoHome = !!AyfaAuth.usuarioActual();
 const grid = document.getElementById("destacados-grid");
 grid.innerHTML = lista.map(p => {
 const stockInfo = AyfaDatos.estadoStock(p.stock);
-const tienePromo = p.precioPromo && p.precioPromo > 0 && p.precioPromo < p.precio;
-const precioMostrar = tienePromo ? p.precioPromo : p.precio;
+const tienePromo = AyfaDatos.tienePromoActiva(p);
+const esPromoFlat = p.precioPromo && p.precioPromo > 0 && p.precioPromo < p.precio;
+const nxm = AyfaDatos.parsePromoNxM(p.promo);
+const precioMostrar = esPromoFlat ? p.precioPromo : p.precio;
 const badge = tienePromo ? (p.promo || "Oferta") : (p.destacado ? "Destacado" : "");
 return `
 <div class="producto-card">
@@ -211,9 +213,10 @@ ${tienePromo ? `<div class="cinta-oferta">${(p.promo || "Oferta").toUpperCase()}
 <div class="stock-info ${stockInfo.clase}">${stockInfo.texto}</div>
 ${logueadoHome ? `
 <div class="producto-precio-row">
-${tienePromo ? `<span class="precio-tachado">${AyfaDatos.formatoPrecio(p.precio)}</span>` : ""}
+${esPromoFlat ? `<span class="precio-tachado">${AyfaDatos.formatoPrecio(p.precio)}</span>` : ""}
 <span class="precio">${AyfaDatos.formatoPrecio(precioMostrar)}</span>
 </div>
+${nxm ? `<div class="promo-aviso">Llevando ${nxm.lleva} pagás ${nxm.paga}</div>` : ""}
 <a href="catalogo.html" class="btn btn-primary btn-sm" style="margin-top:10px; text-align:center;">Ver en catálogo</a>
 ` : `
 <div class="precio-oculto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg><span>Precio para clientes registrados</span></div>
@@ -225,11 +228,13 @@ ${tienePromo ? `<span class="precio-tachado">${AyfaDatos.formatoPrecio(p.precio)
 // ---------- Sección de ofertas (solo si hay PrecioPromo cargado) ----------
 const seccionOfertas = document.getElementById("seccion-ofertas");
 const ofertasGrid = document.getElementById("ofertas-grid");
-const ofertasReales = productos.filter(p => p.precioPromo && p.precioPromo > 0 && p.precioPromo < p.precio);
+const ofertasReales = productos.filter(p => AyfaDatos.tienePromoActiva(p));
 if (ofertasReales.length) {
 seccionOfertas.style.display = "";
 ofertasGrid.innerHTML = ofertasReales.slice(0, 8).map(p => {
 const stockInfo = AyfaDatos.estadoStock(p.stock);
+const esPromoFlat = p.precioPromo && p.precioPromo > 0 && p.precioPromo < p.precio;
+const nxm = AyfaDatos.parsePromoNxM(p.promo);
 return `
 <div class="producto-card">
 <span class="producto-badge">${p.promo || "Oferta"}</span>
@@ -241,9 +246,10 @@ return `
 <div class="stock-info ${stockInfo.clase}">${stockInfo.texto}</div>
 ${logueadoHome ? `
 <div class="producto-precio-row">
-<span class="precio-tachado">${AyfaDatos.formatoPrecio(p.precio)}</span>
-<span class="precio">${AyfaDatos.formatoPrecio(p.precioPromo)}</span>
+${esPromoFlat ? `<span class="precio-tachado">${AyfaDatos.formatoPrecio(p.precio)}</span>` : ""}
+<span class="precio">${AyfaDatos.formatoPrecio(esPromoFlat ? p.precioPromo : p.precio)}</span>
 </div>
+${nxm ? `<div class="promo-aviso">Llevando ${nxm.lleva} pagás ${nxm.paga}</div>` : ""}
 <a href="catalogo.html?oferta=1" class="btn btn-primary btn-sm" style="margin-top:10px; text-align:center;">Ver en catálogo</a>
 ` : `
 <div class="precio-oculto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg><span>Precio para clientes registrados</span></div>
@@ -271,13 +277,15 @@ function iconoProducto() {
 // ícono genérico como placeholder hasta que se cargue una foto.
 function armarSlideProducto(p) {
   if (!p) return "";
-  const tienePromo = p.precioPromo && p.precioPromo > 0 && p.precioPromo < p.precio;
+  const tienePromo = AyfaDatos.tienePromoActiva(p);
+  const esPromoFlat = p.precioPromo && p.precioPromo > 0 && p.precioPromo < p.precio;
+  const nxm = AyfaDatos.parsePromoNxM(p.promo);
   const imgHTML = p.imagen
     ? `<img src="${p.imagen}" alt="${p.nombre}">`
     : iconoProducto();
   const precioHTML = !AyfaAuth.usuarioActual()
     ? `<a href="ingresar.html" class="normal" style="font-size:.95rem; text-decoration:underline;">Iniciá sesión para ver precio</a>`
-    : (tienePromo
+    : (esPromoFlat
       ? `<span class="tachado">${AyfaDatos.formatoPrecio(p.precio)}</span><span class="promo">${AyfaDatos.formatoPrecio(p.precioPromo)}</span>`
       : `<span class="normal">${AyfaDatos.formatoPrecio(p.precio)}</span>`);
   return `
@@ -288,16 +296,18 @@ function armarSlideProducto(p) {
         <div class="hero-oferta-cat">${p.categoria || ""}</div>
         <div class="hero-oferta-nombre">${p.nombre}</div>
         <div class="hero-oferta-precios">${precioHTML}</div>
+        ${nxm && AyfaAuth.usuarioActual() ? `<div class="promo-aviso">Llevando ${nxm.lleva} pagás ${nxm.paga}</div>` : ""}
         <div class="hero-oferta-caption">Precio actualizado en vivo</div>
       </div>
     </div>
   `;
 }
 
-// Prioridad para elegir qué mostrar: 1) ofertas reales (PrecioPromo
-// cargado), 2) productos destacados, 3) productos al azar con precio.
-// Así, apenas se cargan ofertas en la planilla, aparecen acá solas.
-const conOferta = productos.filter(p => p.precioPromo && p.precioPromo > 0 && p.precioPromo < p.precio);
+// Prioridad para elegir qué mostrar: 1) ofertas reales (PrecioPromo o promo
+// de cantidad tipo 2x1 cargada), 2) productos destacados, 3) productos al
+// azar con precio. Así, apenas se cargan ofertas en la planilla, aparecen
+// acá solas.
+const conOferta = productos.filter(p => AyfaDatos.tienePromoActiva(p));
 const destacados2 = productos.filter(p => p.destacado);
 const conStock = productos.filter(p => p.precio && p.precio > 0);
 

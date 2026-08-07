@@ -127,7 +127,11 @@
   }
 
   function pedidoFilaHTML(p) {
-    const itemsTxt = (p.items || []).map(it => `${it.cantidad}x ${it.nombre}`).join("\n") + (p.notas ? "\n\nNotas: " + p.notas : "");
+    const tieneAlgunaPromo = (p.items || []).some(it => it.promo);
+    const itemsTxt = (p.items || []).map(it => {
+      const base = `${it.cantidad}x ${it.nombre}`;
+      return it.promo ? `${base}\n<span style="color:#c2410c;font-weight:700;">${it.promo}</span>` : base;
+    }).join("\n") + (p.notas ? "\n\n<em>Notas: " + p.notas + "</em>" : "");
     const entregaTxt = p.tipoEntrega === "envio" ? "Envío — " + (p.detalleEntrega || "")
       : p.tipoEntrega === "reparto" ? "Reparto — " + (p.detalleEntrega || "")
       : "Retiro en depósito";
@@ -135,7 +139,7 @@
     const opciones = ESTADOS.map(e => `<option value="${e}" ${e === p.estado ? "selected" : ""}>${e}</option>`).join("");
     return `
       <tr data-numero="${p.numero}">
-        <td><strong>${p.numero}</strong></td>
+        <td><strong>${p.numero}</strong>${tieneAlgunaPromo ? `<br><span style="font-size:0.7rem; color:#c2410c; font-weight:700;">🎁 CON PROMO</span>` : ""}</td>
         <td>${fecha}</td>
         <td>
           <div class="cliente-nombre">${p.nombre || ""}</div>
