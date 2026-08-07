@@ -30,14 +30,8 @@ const maxAttr = (p.stock !== null && p.stock !== undefined && p.stock > 0) ? `ma
 const tienePromo = p.precioPromo && p.precioPromo > 0 && p.precioPromo < p.precio;
 const precioMostrar = tienePromo ? p.precioPromo : p.precio;
 const badge = tienePromo ? (p.promo || "Oferta") : (p.destacado ? "Destacado" : "");
-return `
-<div class="producto-card">
-${badge ? `<span class="producto-badge">${badge}</span>` : ""}
-<div class="producto-img">${p.imagen ? `<img src="${p.imagen}" alt="${p.nombre}">` : "📦"}</div>
-<div class="producto-marca">${p.marca || ""}</div>
-<div class="producto-nombre">${p.nombre}</div>
-<div class="producto-presentacion">${p.presentacion || ""}</div>
-<div class="stock-info ${stockInfo.clase}">${stockInfo.texto}</div>
+const logueado = !!AyfaAuth.usuarioActual();
+const bloquePrecioCompra = logueado ? `
 <div class="producto-precio-row">
 ${tienePromo ? `<span class="precio-tachado">${AyfaDatos.formatoPrecio(p.precio)}</span>` : ""}
 <span class="precio">${AyfaDatos.formatoPrecio(precioMostrar)}</span>
@@ -48,6 +42,20 @@ ${tienePromo ? `<span class="precio-tachado">${AyfaDatos.formatoPrecio(p.precio)
 ${sinStock ? "Sin stock" : "Agregar"}
 </button>
 </div>
+` : `
+<div class="precio-oculto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg><span>Precio para clientes registrados</span></div>
+<a href="ingresar.html" class="btn btn-primary btn-sm" style="margin-top:10px; text-align:center;">Iniciá sesión para ver precio</a>
+`;
+return `
+<div class="producto-card">
+${badge ? `<span class="producto-badge">${badge}</span>` : ""}
+<button type="button" class="producto-ver" data-vermas="${p.id}" aria-label="Ver detalle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+<div class="producto-img">${p.imagen ? `<img src="${p.imagen}" alt="${p.nombre}">` : "📦"}</div>
+<div class="producto-marca">${p.marca || ""}</div>
+<div class="producto-nombre">${p.nombre}</div>
+<div class="producto-presentacion">${p.presentacion || ""}</div>
+<div class="stock-info ${stockInfo.clase}">${stockInfo.texto}</div>
+${bloquePrecioCompra}
 </div>
 `;
 }
