@@ -518,6 +518,54 @@ section{ padding: 44px 0; }
   position:absolute; top:10px; left:10px; background: var(--maroon); color:#fff;
   font-size: 0.7rem; font-weight:700; padding: 3px 8px; border-radius: 5px;
 }
+.producto-ver{
+  position:absolute; top:10px; right:10px; z-index:2;
+  width:30px; height:30px; border-radius:50%;
+  background:#fff; border:1px solid #e7e9f0; box-shadow:0 2px 6px rgba(0,0,0,.14);
+  display:flex; align-items:center; justify-content:center; cursor:pointer;
+  color: var(--navy); padding:0;
+}
+.producto-ver:hover{ background: var(--gray-light); color: var(--teal-dark); }
+.producto-ver svg{ width:16px; height:16px; }
+
+/* ---------- Modal de detalle rápido (ícono ojito) ---------- */
+.qv-overlay{
+  position:fixed; inset:0; background: rgba(15,20,40,.55); z-index:1000;
+  display:none; align-items:center; justify-content:center; padding:20px;
+}
+.qv-overlay.activo{ display:flex; }
+.qv-modal{
+  background:#fff; border-radius:14px; max-width:700px; width:100%;
+  max-height:90vh; overflow:auto; position:relative;
+  box-shadow: 0 30px 60px rgba(0,0,0,.35);
+}
+.qv-cerrar{
+  position:absolute; top:12px; right:14px; background:none; border:none;
+  font-size:1.7rem; line-height:1; cursor:pointer; color: var(--gray); z-index:2;
+}
+.qv-cerrar:hover{ color: var(--navy); }
+.qv-grid{ display:grid; grid-template-columns: 1fr 1fr; }
+.qv-img{
+  background: var(--gray-light); display:flex; align-items:center; justify-content:center;
+  min-height:280px; border-radius:14px 0 0 14px; overflow:hidden;
+}
+.qv-img img{ width:100%; height:100%; object-fit:cover; }
+.qv-img svg{ width:60px; height:60px; color:#b7bccb; }
+.qv-info{ padding:36px 32px; }
+.qv-eyebrow{ font-size:.72rem; font-weight:800; color: var(--teal); text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px; }
+.qv-nombre{ margin:0 0 12px; color: var(--navy); font-size:1.25rem; line-height:1.3; }
+.qv-precio{ font-size:1.6rem; font-weight:800; color: var(--navy); margin-bottom:12px; }
+.qv-precio .tachado{ font-size:1rem; color: var(--gray); text-decoration:line-through; margin-right:8px; font-weight:600; }
+.qv-meta{ font-size:.82rem; color: var(--gray); margin-bottom:20px; }
+.qv-meta div{ margin-bottom:4px; }
+.qv-cantidad{ display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+.qv-cantidad label{ font-weight:700; color: var(--navy); font-size:.88rem; }
+.qv-cantidad input{ width:70px; padding:8px; border:1px solid #d8dce3; border-radius:6px; }
+@media (max-width:640px){
+  .qv-grid{ grid-template-columns: 1fr; }
+  .qv-img{ border-radius:14px 14px 0 0; min-height:200px; }
+  .qv-info{ padding:26px 22px; }
+}
 .producto-marca{ font-size: 0.72rem; color: var(--gray); text-transform:uppercase; letter-spacing:.03em; }
 .producto-nombre{ font-weight:700; color:#222; font-size: 0.95rem; margin: 3px 0 6px; min-height: 40px; }
 .producto-presentacion{ font-size: 0.78rem; color: var(--gray); margin-bottom: 8px; }
@@ -529,6 +577,13 @@ section{ padding: 44px 0; }
 .stock-bajo{ color: var(--warning); }
 .stock-sin{ color: var(--danger); }
 .add-cart-row{ display:flex; gap:6px; align-items:center; }
+.precio-oculto{
+  display:flex; align-items:center; gap:6px;
+  color: var(--gray); font-size:.78rem; font-weight:600;
+  background: var(--gray-light); border-radius:6px; padding:8px 10px;
+  margin-top:auto;
+}
+.precio-oculto svg{ width:15px; height:15px; flex-shrink:0; }
 .qty-input{
   width: 52px; text-align:center; padding: 8px 4px; border:1px solid #d8dce3; border-radius:6px;
 }
@@ -596,6 +651,19 @@ section{ padding: 44px 0; }
 .ofertas-eyebrow{ font-size:.72rem; font-weight:800; color:var(--maroon); text-transform:uppercase; letter-spacing:.04em; }
 .ofertas-header h2{ margin:2px 0 2px; color:var(--navy); font-size:1.4rem; }
 .ofertas-header p{ margin:0; color:var(--gray); font-size:.88rem; }
+.productos-grid-grande{
+  grid-template-columns: repeat(auto-fill, minmax(280px,1fr));
+  gap: 24px;
+}
+.productos-grid-grande .producto-card{ padding:22px; }
+.productos-grid-grande .producto-img{ height:200px; margin-bottom:14px; }
+.productos-grid-grande .producto-nombre{ font-size:1.08rem; min-height:auto; }
+.productos-grid-grande .producto-precio-row .precio{ font-size:1.55rem; }
+.productos-grid-grande .producto-badge{ font-size:.78rem; padding:5px 10px; }
+@media (max-width:640px){
+  .productos-grid-grande{ grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap:16px; }
+  .productos-grid-grande .producto-img{ height:150px; }
+}
 
 /* ---------- Promos banner ---------- */
 .promo-banner{
