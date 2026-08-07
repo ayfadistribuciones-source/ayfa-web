@@ -204,18 +204,13 @@ nav.main-nav a.activo{ color: var(--teal); border-bottom: 2px solid var(--teal);
   position:relative; z-index:2;
   display:flex; align-items:center; justify-content:center;
 }
-.hero-logo-crop::before{
-  content:"";
-  position:absolute;
-  width: 300px; height: 280px;
-  left:50%; top:50%; transform:translate(-50%,-50%);
-  background: radial-gradient(ellipse 62% 60% at center, rgba(255,255,255,.95) 0%, rgba(255,255,255,.72) 45%, rgba(255,255,255,0) 78%);
-  z-index:-1;
-}
 .hero-logo-crop img{
   position:relative;
   height: 210px; width:auto; max-width:100%;
-  filter: drop-shadow(0 12px 22px rgba(0,0,0,.4));
+  filter:
+    drop-shadow(0 0 5px rgba(255,255,255,.85))
+    drop-shadow(0 0 16px rgba(255,255,255,.4))
+    drop-shadow(0 14px 16px rgba(0,0,0,.5));
 }
 .hero-chip{
   position:absolute; z-index:3; display:flex; align-items:center; gap:6px;
