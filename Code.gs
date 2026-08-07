@@ -1,397 +1,381 @@
-/* =========================================================
-   AY-FA DISTRIBUCIONES — Hoja de estilos general
-   ========================================================= */
-:root{
-  --navy: #1d2a6b;
-  --navy-dark: #131d4d;
-  --teal: #2f9e8f;
-  --teal-dark: #1f6f7a;
-  --maroon: #7a1f3a;
-  --gray: #6b6f76;
-  --gray-light: #eef0f3;
-  --bg: #f5f7fa;
-  --white: #ffffff;
-  --danger: #c0392b;
-  --success: #1e8e4f;
-  --warning: #b8860b;
-  --radius: 10px;
-  --shadow: 0 2px 10px rgba(29,42,107,0.08);
-  --shadow-hover: 0 6px 20px rgba(29,42,107,0.14);
-  font-size: 16px;
+/*
+  AY-FA Distribuciones — Backend (Google Apps Script)
+  =====================================================
+  Este script recibe los pedidos y registros de clientes desde la web y los
+  guarda en dos hojas de este mismo Google Sheet: "Usuarios" y "Pedidos".
+  Si esas hojas no existen todavía, las crea solas con los encabezados
+  correctos la primera vez que se use cada función.
+
+  Panel de administración (admin.html): permite ver todos los pedidos y
+  cambiar su estado desde la web, sin entrar al Google Sheet. Al cambiar el
+  estado, se le manda un mail automático al cliente avisándole.
+*/
+
+const HOJA_USUARIOS = "Usuarios";
+const HOJA_PEDIDOS = "Pedidos";
+
+// Contraseña de administrador (hash SHA-256). La contraseña en texto plano
+// es: AyfaAdmin2026  — para cambiarla, generá el hash SHA-256 de la nueva
+// contraseña y reemplazá el valor de acá abajo.
+const ADMIN_PASSWORD_HASH = "3a26c6444ea3720196e1f4ffc1539056a4e2232bccd104e8d77fe119157c4952";
+
+const COLUMNAS_USUARIOS = [
+  "Fecha", "Nombre", "RazonSocial", "Documento", "CondicionIVA",
+  "Email", "Telefono", "Direccion", "Localidad", "Zona", "PasswordHash"
+];
+
+const COLUMNAS_PEDIDOS = [
+  "Numero", "Fecha", "Estado",
+  "Nombre", "RazonSocial", "Documento", "CondicionIVA", "Email", "Telefono", "Direccion", "Localidad",
+  "TipoEntrega", "DetalleEntrega", "Items", "Notas",
+  "Subtotal", "CostoEntrega", "Total"
+];
+
+const ESTADOS_PEDIDO = [
+  "Nuevo", "Confirmado", "En preparación", "Listo para entrega/retiro", "En camino", "Entregado", "Cancelado"
+];
+
+function doPost(e) {
+  let body;
+  try {
+    body = JSON.parse(e.postData.contents);
+  } catch (err) {
+    return respuesta({ ok: false, mensaje: "Solicitud inválida." });
+  }
+  try {
+    switch (body.accion) {
+      case "registrar": return respuesta(registrar(body.datos || {}));
+      case "login": return respuesta(login(body.email, body.password));
+      case "pedido": return respuesta(crearPedido(body.pedido || {}));
+      case "misPedidos": return respuesta(misPedidos(body.email));
+      case "loginAdmin": return respuesta(loginAdmin(body.password));
+      case "todosPedidos": return respuesta(todosPedidos(body.adminPassword));
+      case "actualizarEstado": return respuesta(actualizarEstado(body.adminPassword, body.numero, body.estado));
+      default: return respuesta({ ok: false, mensaje: "Acción no reconocida." });
+    }
+  } catch (err) {
+    return respuesta({ ok: false, mensaje: "Error del servidor: " + err.message });
+  }
 }
 
-*{ box-sizing: border-box; }
-html,body{ margin:0; padding:0; }
-body{
-  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  background: var(--bg);
-  color: #222;
-  line-height: 1.5;
-}
-a{ color: inherit; text-decoration: none; }
-img{ max-width: 100%; display:block; }
-ul{ list-style:none; margin:0; padding:0; }
-button{ font-family: inherit; cursor:pointer; }
-input, select, textarea{ font-family: inherit; font-size: 1rem; }
-
-.container{ max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-
-/* ---------- Barra superior de anuncio ---------- */
-.topbar{
-  background: var(--navy-dark);
-  color: #dfe4f5;
-  font-size: 0.82rem;
-  padding: 6px 0;
-  text-align: center;
-}
-.topbar strong{ color: var(--teal); }
-
-/* ---------- Header ---------- */
-header.site-header{
-  background: var(--white);
-  box-shadow: var(--shadow);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-.header-inner{
-  display:flex;
-  align-items:center;
-  gap: 24px;
-  padding: 12px 20px;
-  max-width: 1200px;
-  margin: 0 auto;
-  flex-wrap: wrap;
-}
-.logo-link{ display:flex; align-items:center; gap:10px; flex-shrink:0; }
-.logo-link img{ height: 48px; }
-
-.search-bar{
-  flex: 1 1 320px;
-  display:flex;
-  min-width: 200px;
-}
-.search-bar input{
-  flex:1;
-  padding: 10px 14px;
-  border: 1px solid #d8dce3;
-  border-right: none;
-  border-radius: 8px 0 0 8px;
-  outline: none;
-}
-.search-bar input:focus{ border-color: var(--teal); }
-.search-bar button{
-  background: var(--teal);
-  color: #fff;
-  border: none;
-  padding: 0 18px;
-  border-radius: 0 8px 8px 0;
-  font-weight: 600;
-}
-.search-bar button:hover{ background: var(--teal-dark); }
-
-nav.main-nav{
-  display:flex;
-  align-items:center;
-  gap: 18px;
-  flex-shrink: 0;
-}
-nav.main-nav a{
-  font-weight: 600;
-  font-size: 0.92rem;
-  color: var(--navy);
-  padding: 8px 4px;
-  white-space: nowrap;
-}
-nav.main-nav a:hover{ color: var(--teal); }
-nav.main-nav a.activo{ color: var(--teal); border-bottom: 2px solid var(--teal); }
-
-.cart-btn{
-  position: relative;
-  display:flex;
-  align-items:center;
-  gap:6px;
-  background: var(--navy);
-  color:#fff !important;
-  padding: 9px 14px;
-  border-radius: 8px;
-  font-weight:600;
-}
-.cart-btn:hover{ background: var(--teal-dark); }
-.cart-count{
-  background: var(--maroon);
-  color:#fff;
-  border-radius: 50%;
-  min-width: 20px;
-  height:20px;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  font-size: 0.72rem;
-  padding: 0 4px;
+function doGet(e) {
+  return ContentService.createTextOutput("AY-FA Distribuciones — backend activo.");
 }
 
-.user-chip{
-  font-size: 0.85rem;
-  font-weight:600;
-  color: var(--navy);
-  background: var(--gray-light);
-  padding: 8px 12px;
-  border-radius: 8px;
+function respuesta(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
 }
 
-/* ---------- Categorías bar ---------- */
-.cat-bar{
-  background: var(--navy);
-  overflow-x:auto;
-}
-.cat-bar-inner{
-  max-width:1200px;
-  margin:0 auto;
-  display:flex;
-  gap: 4px;
-  padding: 0 20px;
-}
-.cat-bar a{
-  color:#dfe4f5;
-  font-size:0.85rem;
-  font-weight:600;
-  padding: 10px 14px;
-  white-space:nowrap;
-}
-.cat-bar a:hover, .cat-bar a.activo{ color:#fff; background: var(--teal-dark); }
-
-/* ---------- Hero ---------- */
-.hero{
-  background: linear-gradient(120deg, var(--navy) 0%, var(--navy-dark) 60%, var(--teal-dark) 130%);
-  color:#fff;
-  padding: 56px 0;
-}
-.hero-inner{
-  max-width:1200px; margin:0 auto; padding:0 20px;
-  display:flex; align-items:center; gap: 40px; flex-wrap:wrap;
-}
-.hero-text{ flex: 1 1 380px; }
-.hero-text h1{ font-size: 2.3rem; margin: 0 0 12px; line-height:1.2; }
-.hero-text p{ font-size: 1.05rem; color:#dfe4f5; margin-bottom: 22px; max-width: 480px; }
-.hero-actions{ display:flex; gap:12px; flex-wrap:wrap; }
-.hero-visual{
-  flex: 1 1 280px;
-  background: rgba(255,255,255,0.06);
-  border-radius: var(--radius);
-  padding: 30px;
-  text-align:center;
-}
-.hero-visual img{ max-height: 160px; margin: 0 auto; }
-
-/* ---------- Botones ---------- */
-.btn{
-  display:inline-block;
-  padding: 12px 22px;
-  border-radius: 8px;
-  font-weight: 700;
-  border: 2px solid transparent;
-  transition: all .15s ease;
-  font-size: 0.95rem;
-}
-.btn-primary{ background: var(--teal); color:#fff; }
-.btn-primary:hover{ background: var(--teal-dark); }
-.btn-outline{ background: transparent; color:#fff; border-color: rgba(255,255,255,0.6); }
-.btn-outline:hover{ background: rgba(255,255,255,0.12); }
-.btn-navy{ background: var(--navy); color:#fff; }
-.btn-navy:hover{ background: var(--navy-dark); }
-.btn-block{ display:block; width:100%; text-align:center; }
-.btn-sm{ padding: 7px 12px; font-size: 0.82rem; }
-.btn-danger{ background: var(--danger); color:#fff; }
-.btn:disabled{ opacity:.5; cursor:not-allowed; }
-
-/* ---------- Secciones genéricas ---------- */
-section{ padding: 44px 0; }
-.section-title{
-  display:flex; align-items:baseline; justify-content:space-between;
-  margin-bottom: 22px; flex-wrap:wrap; gap: 8px;
-}
-.section-title h2{ margin:0; color: var(--navy); font-size: 1.5rem; }
-.section-title a{ color: var(--teal); font-weight:600; font-size: 0.9rem; }
-
-/* ---------- Íconos de beneficios (envío/retiro/reparto) ---------- */
-.beneficios{
-  display:grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
-  gap: 18px;
-}
-.beneficio-card{
-  background:#fff; border-radius: var(--radius); box-shadow: var(--shadow);
-  padding: 22px; text-align:center;
-}
-.beneficio-card .icono{ font-size: 2rem; margin-bottom: 10px; }
-.beneficio-card h3{ margin: 0 0 6px; color: var(--navy); font-size: 1.05rem; }
-.beneficio-card p{ margin:0; color: var(--gray); font-size: 0.88rem; }
-
-/* ---------- Categorías home ---------- */
-.categorias-grid{
-  display:grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px,1fr));
-  gap: 14px;
-}
-.categoria-card{
-  background:#fff; border-radius: var(--radius); box-shadow: var(--shadow);
-  padding: 20px 10px; text-align:center; font-weight:700; color: var(--navy);
-  border: 2px solid transparent;
-}
-.categoria-card:hover{ border-color: var(--teal); transform: translateY(-2px); box-shadow: var(--shadow-hover); }
-.categoria-card .icono{ font-size: 1.8rem; display:block; margin-bottom:8px; }
-
-/* ---------- Grid de productos ---------- */
-.productos-layout{
-  display:grid;
-  grid-template-columns: 230px 1fr;
-  gap: 26px;
-  align-items:start;
-}
-@media (max-width: 800px){
-  .productos-layout{ grid-template-columns: 1fr; }
-}
-.filtros-panel{
-  background:#fff; border-radius: var(--radius); box-shadow: var(--shadow);
-  padding: 18px; position: sticky; top: 90px;
-}
-.filtros-panel h4{ margin: 0 0 10px; color:var(--navy); font-size: 0.95rem; }
-.filtros-panel .grupo{ margin-bottom: 18px; }
-.filtros-panel label{ display:flex; align-items:center; gap:8px; font-size: 0.86rem; padding: 4px 0; cursor:pointer; }
-.filtros-panel input[type="range"]{ width:100%; }
-
-.productos-grid{
-  display:grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px,1fr));
-  gap: 18px;
-}
-.producto-card{
-  background:#fff; border-radius: var(--radius); box-shadow: var(--shadow);
-  padding: 16px; display:flex; flex-direction:column; position:relative;
-  transition: box-shadow .15s ease, transform .15s ease;
-}
-.producto-card:hover{ box-shadow: var(--shadow-hover); transform: translateY(-2px); }
-.producto-img{
-  height: 130px; background: var(--gray-light); border-radius: 8px;
-  display:flex; align-items:center; justify-content:center; margin-bottom: 10px;
-  font-size: 2.2rem; color:#b7bccb; overflow:hidden;
-}
-.producto-img img{ height:100%; width:100%; object-fit:cover; }
-.producto-badge{
-  position:absolute; top:10px; left:10px; background: var(--maroon); color:#fff;
-  font-size: 0.7rem; font-weight:700; padding: 3px 8px; border-radius: 5px;
-}
-.producto-marca{ font-size: 0.72rem; color: var(--gray); text-transform:uppercase; letter-spacing:.03em; }
-.producto-nombre{ font-weight:700; color:#222; font-size: 0.95rem; margin: 3px 0 6px; min-height: 40px; }
-.producto-presentacion{ font-size: 0.78rem; color: var(--gray); margin-bottom: 8px; }
-.producto-precio-row{ margin-top:auto; }
-.precio{ font-size: 1.25rem; font-weight:800; color: var(--navy); }
-.precio-tachado{ font-size: 0.85rem; color: var(--gray); text-decoration: line-through; margin-right: 6px; }
-.stock-info{ font-size: 0.78rem; margin: 4px 0 10px; font-weight:600; }
-.stock-ok{ color: var(--success); }
-.stock-bajo{ color: var(--warning); }
-.stock-sin{ color: var(--danger); }
-.add-cart-row{ display:flex; gap:6px; align-items:center; }
-.qty-input{
-  width: 52px; text-align:center; padding: 8px 4px; border:1px solid #d8dce3; border-radius:6px;
+// Devuelve la hoja pedida, creándola con encabezados en negrita si todavía
+// no existe (o si está vacía).
+function hojaConEncabezados(nombre, columnas) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let hoja = ss.getSheetByName(nombre);
+  if (!hoja) hoja = ss.insertSheet(nombre);
+  if (hoja.getLastRow() === 0) {
+    hoja.appendRow(columnas);
+    hoja.getRange(1, 1, 1, columnas.length).setFontWeight("bold");
+  }
+  return hoja;
 }
 
-/* ---------- Formularios ---------- */
-.form-card{
-  background:#fff; border-radius: var(--radius); box-shadow: var(--shadow);
-  padding: 32px; max-width: 560px; margin: 0 auto;
-}
-.form-card h2{ color: var(--navy); margin-top:0; }
-.campo{ margin-bottom: 16px; }
-.campo label{ display:block; font-size: 0.85rem; font-weight:700; color: var(--navy); margin-bottom: 5px; }
-.campo input, .campo select, .campo textarea{
-  width:100%; padding: 10px 12px; border: 1px solid #d8dce3; border-radius: 8px; outline:none;
-}
-.campo input:focus, .campo select:focus, .campo textarea:focus{ border-color: var(--teal); }
-.campo-fila{ display:flex; gap:12px; }
-.campo-fila .campo{ flex:1; }
-.ayuda-texto{ font-size: 0.78rem; color: var(--gray); margin-top:4px; }
-.error-texto{ font-size: 0.78rem; color: var(--danger); margin-top:4px; display:none; }
-.msg-box{ padding: 12px 14px; border-radius: 8px; margin-bottom: 16px; font-size: 0.88rem; display:none; }
-.msg-ok{ background:#e6f6ec; color: var(--success); }
-.msg-error{ background:#fbe9e7; color: var(--danger); }
-
-/* ---------- Carrito / checkout ---------- */
-.carrito-layout{
-  display:grid; grid-template-columns: 1fr 340px; gap: 26px; align-items:start;
-}
-@media (max-width: 800px){ .carrito-layout{ grid-template-columns: 1fr; } }
-.carrito-item{
-  background:#fff; border-radius: var(--radius); box-shadow: var(--shadow);
-  padding: 14px; display:flex; gap: 14px; align-items:center; margin-bottom: 12px;
-}
-.carrito-item .producto-img{ width: 64px; height:64px; flex-shrink:0; margin:0; font-size:1.4rem; }
-.carrito-item-info{ flex:1; }
-.carrito-item-info .nombre{ font-weight:700; font-size:0.92rem; }
-.carrito-item-info .precio-unit{ font-size:0.8rem; color:var(--gray); }
-.carrito-item-acciones{ display:flex; align-items:center; gap:8px; }
-.quitar-item{ color: var(--danger); font-size: 0.78rem; font-weight:700; cursor:pointer; margin-left: 10px; }
-
-.resumen-card{
-  background:#fff; border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px; position: sticky; top: 90px;
-}
-.resumen-card h3{ margin-top:0; color:var(--navy); }
-.resumen-linea{ display:flex; justify-content:space-between; font-size: 0.9rem; margin-bottom: 8px; }
-.resumen-total{ display:flex; justify-content:space-between; font-size: 1.15rem; font-weight:800; color: var(--navy); border-top: 1px solid var(--gray-light); padding-top: 10px; margin-top: 10px; }
-
-.entrega-opciones{ display:flex; flex-direction:column; gap:10px; margin: 14px 0; }
-.entrega-opcion{
-  border: 2px solid var(--gray-light); border-radius: 8px; padding: 12px; cursor:pointer; display:flex; gap:10px; align-items:flex-start;
-}
-.entrega-opcion.selected{ border-color: var(--teal); background: #f0faf8; }
-.entrega-opcion input{ margin-top: 3px; }
-.entrega-opcion .titulo{ font-weight:700; font-size: 0.9rem; color: var(--navy); }
-.entrega-opcion .desc{ font-size: 0.78rem; color: var(--gray); }
-
-/* ---------- Promos banner ---------- */
-.promo-banner{
-  background: linear-gradient(90deg, var(--maroon), #a52d52);
-  color:#fff; border-radius: var(--radius); padding: 22px 26px;
-  display:flex; align-items:center; justify-content:space-between; gap: 16px; flex-wrap:wrap;
-  margin-bottom: 26px;
-}
-.promo-banner h3{ margin:0 0 4px; }
-.promo-banner p{ margin:0; opacity:0.9; font-size:0.9rem; }
-
-/* ---------- Footer ---------- */
-footer.site-footer{
-  background: var(--navy-dark); color: #c7cde3; margin-top: 60px; padding: 40px 0 20px;
-}
-.footer-grid{
-  display:grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 30px; margin-bottom: 30px;
-}
-.footer-grid h4{ color:#fff; margin: 0 0 12px; font-size: 0.95rem; }
-.footer-grid a, .footer-grid p{ color:#c7cde3; font-size: 0.85rem; display:block; margin-bottom: 8px; }
-.footer-grid a:hover{ color: var(--teal); }
-.footer-bottom{ text-align:center; font-size: 0.78rem; color: #8990b3; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 16px; }
-
-/* ---------- Utilidades ---------- */
-.badge-tag{ display:inline-block; background: var(--gray-light); color: var(--navy); font-size:0.72rem; font-weight:700; padding: 3px 8px; border-radius:5px; }
-.text-center{ text-align:center; }
-.vacio-msg{ text-align:center; padding: 50px 20px; color: var(--gray); }
-.vacio-msg .icono{ font-size: 2.4rem; margin-bottom: 10px; }
-.toast{
-  position: fixed; bottom: 20px; right: 20px; background: var(--navy); color:#fff;
-  padding: 12px 18px; border-radius: 8px; box-shadow: var(--shadow-hover);
-  font-size: 0.88rem; font-weight:600; z-index: 999; opacity:0; transform: translateY(10px);
-  transition: all .2s ease; pointer-events:none;
-}
-.toast.show{ opacity:1; transform: translateY(0); }
-
-.whatsapp-float{
-  position: fixed; bottom: 20px; left: 20px; background: #25D366; color:#fff;
-  width: 54px; height:54px; border-radius:50%; display:flex; align-items:center; justify-content:center;
-  font-size: 1.6rem; box-shadow: var(--shadow-hover); z-index: 999;
+function buscarUsuarioPorEmail(hoja, email) {
+  const datos = hoja.getDataRange().getValues();
+  const idxEmail = COLUMNAS_USUARIOS.indexOf("Email");
+  for (let i = 1; i < datos.length; i++) {
+    if (String(datos[i][idxEmail]).trim().toLowerCase() === String(email).trim().toLowerCase()) {
+      return { fila: i + 1, datos: datos[i] };
+    }
+  }
+  return null;
 }
 
-@media (max-width: 640px){
-  .hero-text h1{ font-size: 1.7rem; }
-  .header-inner{ gap: 12px; }
-  nav.main-nav{ order: 3; width: 100%; justify-content: space-between; }
+function filaAUsuario(fila) {
+  const obj = {};
+  COLUMNAS_USUARIOS.forEach((col, i) => { obj[col] = fila[i]; });
+  return {
+    nombre: obj.Nombre || "",
+    razonSocial: obj.RazonSocial || "",
+    documento: obj.Documento || "",
+    condicionIVA: obj.CondicionIVA || "",
+    email: obj.Email || "",
+    telefono: obj.Telefono || "",
+    direccion: obj.Direccion || "",
+    localidad: obj.Localidad || "",
+    zona: obj.Zona || ""
+  };
+}
+
+function registrar(datos) {
+  if (!datos.email || !datos.password) {
+    return { ok: false, mensaje: "Faltan datos obligatorios." };
+  }
+  const hoja = hojaConEncabezados(HOJA_USUARIOS, COLUMNAS_USUARIOS);
+  if (buscarUsuarioPorEmail(hoja, datos.email)) {
+    return { ok: false, mensaje: "Ya existe una cuenta creada con ese email." };
+  }
+  hoja.appendRow([
+    new Date(),
+    datos.nombre || "",
+    datos.razonSocial || "",
+    datos.documento || "",
+    datos.condicionIVA || "",
+    datos.email,
+    datos.telefono || "",
+    datos.direccion || "",
+    datos.localidad || "",
+    datos.zona || "",
+    datos.password
+  ]);
+  return {
+    ok: true,
+    cliente: {
+      nombre: datos.nombre || "", razonSocial: datos.razonSocial || "", documento: datos.documento || "",
+      condicionIVA: datos.condicionIVA || "", email: datos.email, telefono: datos.telefono || "",
+      direccion: datos.direccion || "", localidad: datos.localidad || "", zona: datos.zona || ""
+    }
+  };
+}
+
+function login(email, passwordHash) {
+  if (!email || !passwordHash) {
+    return { ok: false, mensaje: "Completá email y contraseña." };
+  }
+  const hoja = hojaConEncabezados(HOJA_USUARIOS, COLUMNAS_USUARIOS);
+  const encontrado = buscarUsuarioPorEmail(hoja, email);
+  if (!encontrado) {
+    return { ok: false, mensaje: "Email o contraseña incorrectos." };
+  }
+  const idxPass = COLUMNAS_USUARIOS.indexOf("PasswordHash");
+  if (String(encontrado.datos[idxPass]) !== String(passwordHash)) {
+    return { ok: false, mensaje: "Email o contraseña incorrectos." };
+  }
+  return { ok: true, cliente: filaAUsuario(encontrado.datos) };
+}
+
+function crearPedido(pedido) {
+  const hoja = hojaConEncabezados(HOJA_PEDIDOS, COLUMNAS_PEDIDOS);
+  const c = pedido.cliente || {};
+  const entrega = pedido.entrega || {};
+  const detalleEntrega =
+    entrega.tipo === "envio" ? (entrega.direccion || "") :
+    entrega.tipo === "reparto" ? (entrega.zona || "") : "";
+
+  const items = construirDetalleItemsTexto(pedido.items);
+
+  hoja.appendRow([
+    pedido.numero || "",
+    pedido.fecha || new Date().toISOString(),
+    pedido.estado || "Nuevo",
+    c.nombre || "", c.razonSocial || "", c.documento || "", c.condicionIVA || "",
+    c.email || "", c.telefono || "", c.direccion || "", c.localidad || "",
+    entrega.tipo || "", detalleEntrega, items, pedido.notas || "",
+    pedido.subtotal || 0, pedido.costoEntrega || 0, pedido.total || 0
+  ]);
+
+  // El pedido ya quedó guardado en la planilla. Si el mail al dueño falla
+  // por lo que sea (permisos, cuota, etc.) no queremos que el pedido del
+  // cliente falle por eso — solo lo intentamos, sin cortar el flujo.
+  try {
+    notificarPedidoAlDuenio(pedido);
+  } catch (errMail) {
+    // Silencioso a propósito.
+  }
+
+  return { ok: true };
+}
+
+// Arma el texto de cada línea de producto para la hoja "Pedidos" y para el
+// mail al dueño, resaltando cuando la línea es una promoción (precio
+// promocional plano) o una promo de cantidad tipo "2x1"/"3x2" (en ese caso
+// muestra cuántas unidades se pagan y cuántas van sin cargo).
+function construirDetalleItemsTexto(items) {
+  return (items || []).map(function (it) {
+    let promoSufijo = "";
+    if (it.tipoPromo === "nxm") {
+      const pagadas = it.cantidad - (it.unidadesGratis || 0);
+      promoSufijo = " — 🎁 PROMO " + (it.promoTexto || "") + ": paga " + pagadas + " de " + it.cantidad +
+        (it.unidadesGratis ? " (" + it.unidadesGratis + " SIN CARGO)" : "");
+    } else if (it.esPromo) {
+      promoSufijo = " — 🏷️ PRECIO PROMOCIONAL";
+    }
+    return it.cantidad + "x " + it.nombre + " (SKU " + (it.sku || "-") + ", " + (it.proveedor || "") + ")" +
+      " — c/u $" + it.precioUnit + " — subtotal $" + it.subtotal + promoSufijo;
+  }).join("\n");
+}
+
+// Le manda un mail detallado al dueño (la cuenta con la que se implementó
+// este Apps Script) cada vez que entra un pedido nuevo, resaltando si hay
+// productos en promoción o con unidades sin cargo (2x1, 3x2, etc.) para
+// que no se le pase por alto al armar el pedido.
+function notificarPedidoAlDuenio(pedido) {
+  const destinatario = Session.getEffectiveUser().getEmail();
+  if (!destinatario) return;
+
+  const c = pedido.cliente || {};
+  const entrega = pedido.entrega || {};
+  const items = pedido.items || [];
+  const tieneAlgunaPromo = items.some(function (it) { return it.esPromo || it.tipoPromo === "nxm"; });
+
+  let entregaTexto = "Retiro en depósito";
+  if (entrega.tipo === "envio") entregaTexto = "Envío a domicilio — " + (entrega.direccion || "(sin dirección)");
+  else if (entrega.tipo === "reparto") entregaTexto = "Reparto local — Zona: " + (entrega.zona || "(sin zona)");
+
+  const cuerpo = [
+    "Nuevo pedido: " + (pedido.numero || ""),
+    tieneAlgunaPromo ? "\n⚠️ Este pedido tiene productos EN PROMOCIÓN — revisá el detalle abajo.\n" : "",
+    "CLIENTE",
+    (c.nombre || "") + (c.razonSocial ? " — " + c.razonSocial : ""),
+    [c.documento, c.condicionIVA].filter(Boolean).join(" · "),
+    c.email || "",
+    c.telefono || "",
+    [c.direccion, c.localidad].filter(Boolean).join(", "),
+    "",
+    "ENTREGA",
+    entregaTexto,
+    "",
+    "PRODUCTOS",
+    construirDetalleItemsTexto(items),
+    "",
+    "Subtotal: $" + (pedido.subtotal || 0),
+    "Entrega: " + (pedido.costoEntrega ? ("$" + pedido.costoEntrega) : "A coordinar"),
+    "TOTAL: $" + (pedido.total || 0),
+    pedido.notas ? ("\nNotas del cliente: " + pedido.notas) : ""
+  ].join("\n");
+
+  MailApp.sendEmail({
+    to: destinatario,
+    subject: (tieneAlgunaPromo ? "🎁 " : "🛒 ") + "Nuevo pedido " + (pedido.numero || "") + " — " + (c.nombre || "Cliente"),
+    body: cuerpo
+  });
+}
+
+function misPedidos(email) {
+  if (!email) return { ok: false, mensaje: "Falta email." };
+  const hoja = hojaConEncabezados(HOJA_PEDIDOS, COLUMNAS_PEDIDOS);
+  const datos = hoja.getDataRange().getValues();
+  const idxEmail = COLUMNAS_PEDIDOS.indexOf("Email");
+  const pedidos = [];
+  for (let i = 1; i < datos.length; i++) {
+    if (String(datos[i][idxEmail]).trim().toLowerCase() === String(email).trim().toLowerCase()) {
+      const fila = datos[i];
+      pedidos.push({
+        numero: fila[COLUMNAS_PEDIDOS.indexOf("Numero")],
+        fecha: fila[COLUMNAS_PEDIDOS.indexOf("Fecha")],
+        estado: fila[COLUMNAS_PEDIDOS.indexOf("Estado")],
+        total: fila[COLUMNAS_PEDIDOS.indexOf("Total")],
+        items: parseItemsTexto(fila[COLUMNAS_PEDIDOS.indexOf("Items")])
+      });
+    }
+  }
+  pedidos.reverse(); // los más recientes primero
+  return { ok: true, pedidos };
+}
+
+// Interpreta las líneas guardadas por construirDetalleItemsTexto() para
+// mostrarlas en "Mis pedidos" y en el panel de admin. Reconoce el formato
+// completo (con SKU, precio y, si corresponde, el aviso de promoción) y
+// si no matchea (pedidos viejos guardados con un formato anterior) devuelve
+// al menos cantidad + nombre para no romper la vista.
+function parseItemsTexto(texto) {
+  if (!texto) return [];
+  const RE_COMPLETA = /^(\d+)x (.+?) \(SKU ([^,]*), ([^)]*)\) — c\/u \$([\d.,]+) — subtotal \$([\d.,]+)(.*)$/;
+  return String(texto).split("\n").filter(Boolean).map(linea => {
+    const m = linea.match(RE_COMPLETA);
+    if (m) {
+      return {
+        cantidad: Number(m[1]), nombre: m[2], sku: m[3], proveedor: m[4],
+        precioUnit: m[5], subtotal: m[6], promo: (m[7] || "").trim()
+      };
+    }
+    const mSimple = linea.match(/^(\d+)x (.+?) \(SKU/);
+    return { cantidad: mSimple ? Number(mSimple[1]) : "", nombre: mSimple ? mSimple[2] : linea, promo: "" };
+  });
+}
+
+// ---------------- Panel de administración ----------------
+
+function loginAdmin(passwordHash) {
+  if (!passwordHash || String(passwordHash) !== ADMIN_PASSWORD_HASH) {
+    return { ok: false, mensaje: "Contraseña incorrecta." };
+  }
+  return { ok: true };
+}
+
+function todosPedidos(adminPasswordHash) {
+  const auth = loginAdmin(adminPasswordHash);
+  if (!auth.ok) return auth;
+
+  const hoja = hojaConEncabezados(HOJA_PEDIDOS, COLUMNAS_PEDIDOS);
+  const datos = hoja.getDataRange().getValues();
+  const pedidos = [];
+  for (let i = 1; i < datos.length; i++) {
+    const fila = datos[i];
+    if (!fila[COLUMNAS_PEDIDOS.indexOf("Numero")]) continue;
+    const obj = {};
+    COLUMNAS_PEDIDOS.forEach((col, idx) => { obj[col] = fila[idx]; });
+    pedidos.push({
+      numero: obj.Numero,
+      fecha: obj.Fecha,
+      estado: obj.Estado,
+      nombre: obj.Nombre,
+      razonSocial: obj.RazonSocial,
+      documento: obj.Documento,
+      condicionIVA: obj.CondicionIVA,
+      email: obj.Email,
+      telefono: obj.Telefono,
+      direccion: obj.Direccion,
+      localidad: obj.Localidad,
+      tipoEntrega: obj.TipoEntrega,
+      detalleEntrega: obj.DetalleEntrega,
+      items: parseItemsTexto(obj.Items),
+      notas: obj.Notas,
+      subtotal: obj.Subtotal,
+      costoEntrega: obj.CostoEntrega,
+      total: obj.Total
+    });
+  }
+  pedidos.reverse();
+  return { ok: true, pedidos, estados: ESTADOS_PEDIDO };
+}
+
+function actualizarEstado(adminPasswordHash, numero, estado) {
+  const auth = loginAdmin(adminPasswordHash);
+  if (!auth.ok) return auth;
+  if (!numero || !estado) return { ok: false, mensaje: "Faltan datos." };
+
+  const hoja = hojaConEncabezados(HOJA_PEDIDOS, COLUMNAS_PEDIDOS);
+  const datos = hoja.getDataRange().getValues();
+  const idxNumero = COLUMNAS_PEDIDOS.indexOf("Numero");
+  const idxEstado = COLUMNAS_PEDIDOS.indexOf("Estado");
+  const idxEmail = COLUMNAS_PEDIDOS.indexOf("Email");
+  const idxNombre = COLUMNAS_PEDIDOS.indexOf("Nombre");
+
+  for (let i = 1; i < datos.length; i++) {
+    if (String(datos[i][idxNumero]) === String(numero)) {
+      const filaSheet = i + 1;
+      hoja.getRange(filaSheet, idxEstado + 1).setValue(estado);
+      const email = datos[i][idxEmail];
+      const nombre = datos[i][idxNombre];
+      if (email) {
+        try {
+          notificarCliente(email, nombre, numero, estado);
+        } catch (errMail) {
+          // Si falla el envío del mail, igual dejamos el estado actualizado.
+        }
+      }
+      return { ok: true };
+    }
+  }
+  return { ok: false, mensaje: "No se encontró el pedido " + numero + "." };
+}
+
+function notificarCliente(email, nombre, numero, estado) {
+  const asunto = "Tu pedido " + numero + " — AY-FA Distribuciones";
+  const cuerpo =
+    "Hola " + (nombre || "") + ",\n\n" +
+    "Tu pedido " + numero + " cambió de estado a: " + estado + ".\n\n" +
+    "Podés ver el detalle completo entrando a \"Mis pedidos\" en la web de AY-FA Distribuciones.\n\n" +
+    "Gracias por tu compra.\nAY-FA Distribuciones";
+  MailApp.sendEmail(email, asunto, cuerpo);
 }
