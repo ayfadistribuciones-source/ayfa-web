@@ -271,32 +271,18 @@ nav.main-nav a.activo{ color: var(--teal); border-bottom: 2px solid var(--teal);
   .mega-menu-grid{ grid-template-columns: 1fr 1fr; }
 }
 
-/* ---------- Hero ---------- */
+/* ---------- Hero (todo el bloque azul es un carrusel: título, texto e
+   imagen rotan juntos) ---------- */
 .hero{
   background: linear-gradient(120deg, var(--navy) 0%, var(--navy-dark) 60%, var(--teal-dark) 130%);
   color:#fff;
   padding: 56px 0;
-}
-.hero-inner{
-  max-width:1200px; margin:0 auto; padding:0 20px;
-  display:flex; align-items:center; gap: 40px; flex-wrap:wrap;
-}
-.hero-text{ flex: 1 1 380px; }
-.hero-text h1{ font-size: 2.3rem; margin: 0 0 12px; line-height:1.2; }
-.hero-text p{ font-size: 1.05rem; color:#dfe4f5; margin-bottom: 22px; max-width: 480px; }
-.hero-actions{ display:flex; gap:12px; flex-wrap:wrap; }
-
-/* ----- Hero visual: carrusel dinámico ----- */
-.hero-visual{
-  flex: 1 1 280px;
   position: relative;
-  display:flex; align-items:center; justify-content:center;
-  min-height: 460px;
-  padding: 62px;
+  overflow: hidden;
 }
 .hero-glow{ position:absolute; border-radius:50%; filter: blur(38px); z-index:0; }
-.hero-glow.glow-teal{ width:180px; height:180px; background:var(--teal); opacity:.4; top:26px; left:10px; }
-.hero-glow.glow-maroon{ width:170px; height:170px; background:var(--maroon); opacity:.35; bottom:20px; right:14px; }
+.hero-glow.glow-teal{ width:200px; height:200px; background:var(--teal); opacity:.35; top:8%; left:6%; }
+.hero-glow.glow-maroon{ width:190px; height:190px; background:var(--maroon); opacity:.3; bottom:8%; right:8%; }
 .hero-dotgrid{
   position:absolute; inset:0; z-index:0; opacity:.5;
   background-image: radial-gradient(rgba(255,255,255,.35) 1.4px, transparent 1.4px);
@@ -305,32 +291,50 @@ nav.main-nav a.activo{ color: var(--teal); border-bottom: 2px solid var(--teal);
   -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,.9) 0%, transparent 72%);
 }
 
+/* Contenedor del carrusel completo: cada slide trae su propio título,
+   texto e imagen/tarjeta, y se cruzan en fade (título y texto incluidos). */
+.hero-slides-full{
+  position:relative; z-index:2;
+  min-height: 440px;
+  transition: height .35s ease;
+}
+.hero-slide-full{
+  position:absolute; top:0; left:0; width:100%;
+  display:flex; align-items:center;
+  opacity:0; transform: translateY(10px);
+  pointer-events:none;
+  transition: opacity .5s ease, transform .5s ease;
+}
+.hero-slide-full.activo{
+  opacity:1; transform: translateY(0);
+  pointer-events:auto;
+}
+
+.hero-inner{
+  max-width:1200px; margin:0 auto; padding:0 20px;
+  display:flex; align-items:center; gap: 40px; flex-wrap:wrap;
+  width:100%;
+}
+.hero-text{ flex: 1 1 380px; }
+.hero-text h1{ font-size: 2.3rem; margin: 0 0 12px; line-height:1.2; }
+.hero-text p{ font-size: 1.05rem; color:#dfe4f5; margin-bottom: 22px; max-width: 480px; }
+.hero-actions{ display:flex; gap:12px; flex-wrap:wrap; }
+
+.hero-visual-inner{
+  flex: 1 1 280px;
+  position: relative;
+  display:flex; align-items:center; justify-content:center;
+  padding: 16px 0;
+}
+
 .hero-badge-fixed{
-  position:absolute; z-index:4; top:14px; left:50%; transform: translateX(-50%);
+  position:absolute; z-index:4; top:0; left:50%; transform: translateX(-50%);
   background:#fff; color: var(--navy); font-weight:800; font-size:.76rem;
   padding:7px 13px; border-radius:999px;
   box-shadow: 0 8px 20px rgba(0,0,0,.35);
   display:flex; align-items:center; gap:6px; white-space:nowrap;
 }
 .hero-badge-fixed svg{ width:14px; height:14px; flex-shrink:0; }
-
-.hero-carousel{
-  position:relative; z-index:2;
-  width: 100%; max-width: 320px;
-  height: 340px;
-  display:flex; align-items:center; justify-content:center;
-}
-.hero-slide{
-  position:absolute; inset:0;
-  display:flex; align-items:center; justify-content:center;
-  opacity:0; transform: translateY(10px) scale(.97);
-  pointer-events:none;
-  transition: opacity .5s ease, transform .5s ease;
-}
-.hero-slide.activo{
-  opacity:1; transform: translateY(0) scale(1);
-  pointer-events:auto;
-}
 
 .hero-logo-crop{
   position:relative;
@@ -432,18 +436,21 @@ nav.main-nav a.activo{ color: var(--teal); border-bottom: 2px solid var(--teal);
 .hero-dot:hover{ background: rgba(255,255,255,.6); }
 
 @media (max-width: 640px){
-  .hero-visual{ margin-top: 26px; padding: 46px 20px; min-height: 380px; }
-  .hero-carousel{ height: 260px; }
+  .hero{ padding: 40px 0; }
+  .hero-slides-full{ min-height: 640px; }
+  .hero-inner{ gap:26px; }
   .hero-logo-crop img{ height: 200px; }
-  .hero-badge-fixed{ font-size:.68rem; padding:6px 10px; top:6px; }
+  .hero-badge-fixed{ font-size:.68rem; padding:6px 10px; }
   .hero-slide-entrega{ padding:22px 24px; gap:12px; }
   .hero-slide-item{ font-size:.85rem; }
   .hero-oferta-card{ width: 240px; }
   .hero-oferta-img{ height:140px; }
   .hero-oferta-nombre{ font-size:.92rem; min-height:34px; }
   .hero-oferta-precios .promo, .hero-oferta-precios .normal{ font-size:1.2rem; }
-  .hero-arrow{ width:28px; height:28px; }
-  .hero-arrow svg{ width:14px; height:14px; }
+  /* En mobile el texto y la imagen quedan apilados (uno debajo del otro);
+     las flechas laterales no tienen un buen lugar donde ir, así que se
+     ocultan y queda la navegación por puntos. */
+  .hero-arrow{ display:none; }
 }
 
 /* ---------- Botones ---------- */
