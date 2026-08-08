@@ -14,18 +14,20 @@
 <header class="site-header">
 <div class="header-inner">
 <a href="index.html" class="logo-link"><img src="assets/logo.png" alt="AY-FA Distribuciones"></a>
-<form class="search-bar" data-search-form>
-<input type="text" placeholder="Buscar productos, marcas, categorías...">
-<button type="submit">Buscar</button>
-</form>
-<nav class="main-nav">
+<button type="button" class="nav-toggle" id="nav-toggle" aria-label="Abrir menú" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+<a href="carrito.html" class="cart-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><circle cx="9" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2.5 3h2l2.7 12.4a2 2 0 0 0 2 1.6h8.1a2 2 0 0 0 2-1.6L21 8H6"></path></svg> Carrito <span class="cart-count" data-cart-count>0</span></a>
+<nav class="main-nav" id="main-nav">
 <a href="index.html">Inicio</a>
 <a href="catalogo.html">Catálogo</a>
 <a href="contacto.html" class="activo">Contacto</a>
 <a href="ingresar.html" data-login-link>Ingresar</a>
 <a href="mi-cuenta.html" class="user-chip" data-user-chip style="display:none;"></a>
-<a href="carrito.html" class="cart-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.15em"><circle cx="9" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2.5 3h2l2.7 12.4a2 2 0 0 0 2 1.6h8.1a2 2 0 0 0 2-1.6L21 8H6"></path></svg> Carrito <span class="cart-count" data-cart-count>0</span></a>
 </nav>
+<form class="search-bar" data-search-form>
+<input type="text" placeholder="Buscar productos, marcas, categorías...">
+<button type="submit">Buscar</button>
+</form>
+
 </div>
 <div class="cat-bar">
 <div class="cat-bar-inner">
