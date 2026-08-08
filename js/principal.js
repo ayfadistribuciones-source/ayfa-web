@@ -45,9 +45,37 @@ window.location.href = "catalogo.html" + (q ? ("?q=" + encodeURIComponent(q)) : 
 });
 }
 
+// Menú hamburguesa del header (solo aparece en pantallas chicas). Se abre y
+// cierra al tocar el botón, se cierra solo al tocar un link del menú o al
+// tocar afuera, y no interfiere en desktop (ahí el botón queda oculto por CSS).
+function ayfaSetupNavToggle() {
+const navToggle = document.getElementById("nav-toggle");
+const mainNav = document.getElementById("main-nav");
+if (!navToggle || !mainNav) return;
+
+function cerrar() {
+mainNav.classList.remove("abierto");
+navToggle.setAttribute("aria-expanded", "false");
+}
+
+navToggle.addEventListener("click", (e) => {
+e.stopPropagation();
+const abierto = mainNav.classList.toggle("abierto");
+navToggle.setAttribute("aria-expanded", abierto ? "true" : "false");
+});
+mainNav.querySelectorAll("a").forEach(a => a.addEventListener("click", cerrar));
+document.addEventListener("click", (e) => {
+if (!mainNav.classList.contains("abierto")) return;
+if (mainNav.contains(e.target) || navToggle.contains(e.target)) return;
+cerrar();
+});
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") cerrar(); });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
 ayfaActualizarHeader();
 ayfaSetupBuscador();
+ayfaSetupNavToggle();
 const anio = document.querySelector("[data-anio]");
 if (anio) anio.textContent = new Date().getFullYear();
 
