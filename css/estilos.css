@@ -66,6 +66,7 @@ header.site-header{
 .logo-link{
   display:flex; align-items:center; gap:10px; flex-shrink:0;
   width: 131px; height: 50px; overflow: hidden; position: relative;
+  order:1;
 }
 .logo-link img{
   position: absolute;
@@ -78,6 +79,7 @@ header.site-header{
   flex: 1 1 320px;
   display:flex;
   min-width: 200px;
+  order:2;
 }
 .search-bar input{
   flex:1;
@@ -103,6 +105,7 @@ nav.main-nav{
   align-items:center;
   gap: 18px;
   flex-shrink: 0;
+  order:3;
 }
 nav.main-nav a{
   font-weight: 600;
@@ -124,6 +127,7 @@ nav.main-nav a.activo{ color: var(--teal); border-bottom: 2px solid var(--teal);
   padding: 9px 14px;
   border-radius: 8px;
   font-weight:600;
+  order:4;
 }
 .cart-btn:hover{ background: var(--teal-dark); }
 .cart-count{
@@ -158,6 +162,7 @@ nav.main-nav a.activo{ color: var(--teal); border-bottom: 2px solid var(--teal);
   color: var(--navy);
   flex-shrink:0;
   cursor:pointer;
+  order:5;
 }
 .nav-toggle svg{ width:22px; height:22px; }
 .nav-toggle:hover{ background:#e4e8ef; }
